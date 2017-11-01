@@ -4,3 +4,6 @@
 /Mes/dist/
 /Mes/nbdist/
 /Mes/.nb-gradle/
+/nbproject/private/
+/dist/
+/build/

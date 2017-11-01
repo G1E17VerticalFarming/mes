@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mes.gui.MainController">
+   <children>
+      <TabPane layoutX="29.0" layoutY="6.0" prefHeight="206.0" prefWidth="320.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+            <Tab closable="false" text="Overview">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="441.0" layoutY="14.0" text="VF-MES">
+                           <font>
+                              <Font name="System Bold" size="39.0" />
+                           </font>
+                        </Label>
+                        <PasswordField fx:id="passwordField_password" layoutX="438.0" layoutY="359.0" promptText="Password" />
+                        <TextField fx:id="textField_username" layoutX="438.0" layoutY="315.0" promptText="Username" />
+                        <Button fx:id="button_login" layoutX="489.0" layoutY="400.0" mnemonicParsing="false" onAction="#handleMESLogin" text="Login" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+          <Tab fx:id="tab_orders" closable="false" disable="true" text="Orders">
+               <content>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <TabPane layoutX="-24.0" layoutY="111.0" prefHeight="421.0" prefWidth="650.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <tabs>
+                            <Tab closable="false" text="Order Picker">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <TableView fx:id="tableView_order_picker" layoutX="18.0" layoutY="45.0" prefHeight="635.0" prefWidth="988.0">
+                                            <columns>
+                                              <TableColumn fx:id="tab_order_id" prefWidth="75.0" text="order_id" />
+                                              <TableColumn fx:id="tab_order_fetched_time" prefWidth="92.33331298828125" text="fetched_time" />
+                                                <TableColumn fx:id="tab_order_qty" prefWidth="57.66668701171875" text="qty" />
+                                                <TableColumn fx:id="tab_order_status" prefWidth="57.66668701171875" text="status" />
+                                                <TableColumn fx:id="tab_order_prod_name" prefWidth="74.0" text="prod_name" />
+                                                <TableColumn fx:id="tab_order_prod_begin" prefWidth="74.0" text="prod_begin" />
+                                                <TableColumn fx:id="tab_order_prod_end" prefWidth="74.0" text="prod_end" />
+                                            </columns>
+                                          </TableView>
+                                          <DatePicker fx:id="datePicker_order_date" layoutX="48.0" layoutY="10.0" />
+                                          <Label layoutX="16.0" layoutY="14.0" text="Date:" />
+                                       </children>
+                                    </AnchorPane>
+                              </content>
+                            </Tab>
+                            <Tab closable="false" disable="true" text="order_name">
+                              <content>
+                                <AnchorPane fx:id="tab_order_name" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <Label layoutX="383.0" layoutY="192.0" text="Order:" />
+                                          <TextField fx:id="textField_prep_order" layoutX="485.0" layoutY="188.0" prefHeight="25.0" prefWidth="158.0" />
+                                          <Label layoutX="384.0" layoutY="281.0" text="ID:" />
+                                          <TextField fx:id="textField_prep_id" disable="true" editable="false" layoutX="485.0" layoutY="277.0" prefHeight="25.0" prefWidth="60.0" />
+                                          <Label layoutX="382.0" layoutY="327.0" text="Order Status:" />
+                                          <Label layoutX="384.0" layoutY="374.0" text="Growth Profile:" />
+                                          <ComboBox fx:id="comboBox_prep_order_status" layoutX="484.0" layoutY="323.0" prefWidth="150.0" />
+                                          <ComboBox fx:id="comboBox_prep_growth_profile" layoutX="484.0" layoutY="370.0" prefWidth="150.0" />
+                                          <Label layoutX="384.0" layoutY="236.0" text="Amount:" />
+                                          <TextField fx:id="textField_prep_amount" layoutX="485.0" layoutY="232.0" prefHeight="25.0" prefWidth="158.0" />
+                                          <Button fx:id="button_prep_prepare" layoutX="484.0" layoutY="418.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Prepare" />
+                                          <Label layoutX="426.0" layoutY="125.0" text="Prepare Order">
+                                             <font>
+                                                <Font name="System Bold" size="26.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </AnchorPane>
+                              </content>
+                            </Tab>
+                          </tabs>
+                        </TabPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+          </Tab>
+          <Tab fx:id="tab_scada" closable="false" disable="true" text="SCADA">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView layoutX="25.0" layoutY="20.0" prefHeight="692.0" prefWidth="971.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab fx:id="tab_growth_profiles" closable="false" disable="true" text="Growth Profiles">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#bababa" height="643.0" layoutX="407.0" layoutY="29.0" stroke="#cccccc" strokeType="INSIDE" width="612.0" />
+                        <TableView fx:id="tableView_gp" layoutX="14.0" layoutY="30.0" prefHeight="675.0" prefWidth="386.0">
+                          <columns>
+                            <TableColumn fx:id="tab_gp_id" prefWidth="90.0" text="ID" />
+                            <TableColumn fx:id="tab_gp_name" prefWidth="295.0" text="Name" />
+                          </columns>
+                        </TableView>
+                        <Label layoutX="14.0" layoutY="6.0" text="Growth Profiles:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
+                        <TextField fx:id="textField_gp_celcius" layoutX="533.0" layoutY="141.0" />
+                        <TextField fx:id="textField_gp_water_level" layoutX="533.0" layoutY="183.0" />
+                        <TextField fx:id="textField_gp_moisture" layoutX="533.0" layoutY="226.0" />
+                        <TextField fx:id="textField_gp_name" layoutX="533.0" layoutY="74.0" prefHeight="25.0" prefWidth="348.0" />
+                        <Label layoutX="534.0" layoutY="30.0" text="Add/Edit Growth Profile:">
+                           <font>
+                              <Font name="System Bold" size="26.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="533.0" layoutY="112.0" text="Data setpoints:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="533.0" layoutY="263.0" text="Light setpoints:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="474.0" layoutY="145.0" text="Celcius" />
+                        <Label layoutX="463.0" layoutY="187.0" text="Water level" />
+                        <Label layoutX="469.0" layoutY="230.0" text="Moisture" />
+                        <Label layoutX="477.0" layoutY="78.0" text="Name" />
+                        <TableView fx:id="tableView_sequences" layoutX="534.0" layoutY="454.0" prefHeight="166.0" prefWidth="347.0">
+                          <columns>
+                            <TableColumn fx:id="tab_sequences_sequence" prefWidth="65.66668701171875" text="Sequence" />
+                            <TableColumn fx:id="tab_sequences_type" prefWidth="105.6666259765625" text="Type" />
+                              <TableColumn fx:id="tab_sequences_time" prefWidth="84.3333740234375" text="Time" />
+                              <TableColumn fx:id="tab_sequences_value" prefWidth="91.6666259765625" text="Value" />
+                          </columns>
+                        </TableView>
+                        <TextField fx:id="textField_gp_time" layoutX="533.0" layoutY="332.0" prefHeight="25.0" prefWidth="150.0" />
+                        <ComboBox fx:id="comboBox_gp_type" layoutX="533.0" layoutY="290.0" prefWidth="150.0" />
+                        <TextField fx:id="textField_gp_value" layoutX="533.0" layoutY="373.0" prefHeight="25.0" prefWidth="149.0" />
+                        <Button fx:id="button_add_sequence" layoutX="534.0" layoutY="413.0" mnemonicParsing="false" text="Add Sequence" />
+                        <Label layoutX="480.0" layoutY="294.0" text="Type" />
+                        <Label layoutX="479.0" layoutY="336.0" text="Time" />
+                        <Label layoutX="479.0" layoutY="377.0" text="Value" />
+                        <Label layoutX="534.0" layoutY="629.0" text="Selected:" />
+                        <Button fx:id="button_sequence_delete" layoutX="728.0" layoutY="625.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="152.0" text="Delete" />
+                        <Label fx:id="label_sequence_selected" layoutX="594.0" layoutY="629.0" text="-" />
+                        <Label layoutX="694.0" layoutY="145.0" text="degrees" />
+                        <Label layoutX="694.0" layoutY="187.0" text="\%" />
+                        <Label layoutX="694.0" layoutY="230.0" text="\%" />
+                        <Label layoutX="696.0" layoutY="336.0" text="sec" />
+                        <Label layoutX="694.0" layoutY="377.0" text="\%" />
+                        <Button layoutX="405.0" layoutY="680.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="615.0" text="Save" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="tab_statistics" closable="false" disable="true" text="Statistics">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
