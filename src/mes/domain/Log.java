@@ -5,16 +5,15 @@
  */
 package mes.domain;
 
-import java.util.*;
-
 /**
  *
- * @author chris
+ * @author AKT
  */
-public class Mes implements IMes{
-    private List orders;
-    private List growthProfiles;
-    private List retrievedLogs;
-    private Queue orderQueue;
-    
+public class Log {
+    private int id;
+    private int block;
+    private String type;
+    private String timestamp;
+    private String cmd;
+    private String value;
 }

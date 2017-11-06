@@ -9,12 +9,8 @@ import java.util.*;
 
 /**
  *
- * @author chris
+ * @author AKT
  */
-public class Mes implements IMes{
-    private List orders;
-    private List growthProfiles;
-    private List retrievedLogs;
-    private Queue orderQueue;
-    
+public class AllocationController {
+    private List productionBlocks;
 }
