@@ -5,11 +5,22 @@
  */
 package main.java;
 
+import API.IMesFacade;
+import shared.ProductionBlock;
+
 import mes.api.Greeting;
 import java.util.concurrent.atomic.AtomicLong;
+import mes.api.Json;
+import mes.api.Test;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  *
@@ -21,10 +32,22 @@ public class GreetingController {
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
-    @RequestMapping("/greeting")
-    public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
-        return new Greeting(counter.incrementAndGet(),
-                            String.format(template, name));
+    /*@RequestMapping(value = "/log", method = RequestMethod.POST)
+    public String saveLog(@RequestBody Log log) {
+        mes.saveLog(log);
+        return "lblSucccess";
+    }*/
+    
+    @RequestMapping(value = "/user/", method = RequestMethod.POST)
+    public ResponseEntity<Test> createUser(@RequestBody Greeting greeting, UriComponentsBuilder ucBuilder) {
+        return new ResponseEntity<Test>(greeting.getTest(), HttpStatus.CREATED);
     }
     
+    @RequestMapping(value = "/prod_block/", method = RequestMethod.GET)
+    public ResponseEntity<ProductionBlock> getAllProductionBlocks() {
+        ProductionBlock prod_block = new ProductionBlock();
+        prod_block.setName("hej");
+        prod_block.setPort(2000);
+        return new ResponseEntity<ProductionBlock>(prod_block, HttpStatus.OK);
+    }
 }

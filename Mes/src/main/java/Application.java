@@ -5,10 +5,15 @@
  */
 package main.java;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import mes.api.HttpOkhttpPostSend;
 import mes.gui.Main;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+// mvn spring-boot:run
 // mvn install:install-file -Dfile={dir}.jar -DgroupId=API -DartifactId=api -Dversion=1.0 -Dpackaging=jar
 
 /**
@@ -24,6 +29,7 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
         Main.mainMethod(args);
+        
     }
     
 }
