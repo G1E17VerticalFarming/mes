@@ -35,7 +35,7 @@
                   </AnchorPane>
               </content>
             </Tab>
-          <Tab fx:id="tab_orders" closable="false" disable="true" text="Orders">
+          <Tab fx:id="tabOrders" closable="false" disable="true" text="Orders">
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
@@ -56,7 +56,7 @@
                                                 <TableColumn fx:id="tab_order_prod_end" prefWidth="74.0" text="prod_end" />
                                             </columns>
                                           </TableView>
-                                          <DatePicker fx:id="datePickerOrderDate" layoutX="48.0" layoutY="10.0" />
+                                          <DatePicker fx:id="datePickerOrderDate" editable="false" layoutX="48.0" layoutY="10.0" />
                                           <Label layoutX="16.0" layoutY="14.0" text="Date:" />
                                           <Button fx:id="btnFetchOrders" layoutX="237.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleFetchOrdersFromDate" text="Fetch Orders" />
                                        </children>
@@ -93,7 +93,7 @@
                   </AnchorPane>
                </content>
           </Tab>
-          <Tab fx:id="tab_scada" closable="false" disable="true" text="SCADA">
+          <Tab fx:id="tabScada" closable="false" disable="true" text="SCADA">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -102,7 +102,7 @@
                   </AnchorPane>
             </content>
           </Tab>
-            <Tab fx:id="tab_growth_profiles" closable="false" disable="true" text="Growth Profiles">
+            <Tab fx:id="tabGrowthProfiles" closable="false" disable="true" text="Growth Profiles">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -168,7 +168,7 @@
                   </AnchorPane>
               </content>
             </Tab>
-            <Tab fx:id="tab_statistics" closable="false" disable="true" text="Statistics">
+            <Tab fx:id="tabStatistics" closable="false" disable="true" text="Statistics">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
               </content>

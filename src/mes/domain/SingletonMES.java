@@ -52,7 +52,15 @@ public class SingletonMES implements IMes {
     public void setDate(LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-LLLL-YYYY");
         
-        this.date = date.format(formatter);
+        // Just some error handling, to prevent a date being null
+        if (date != null) {
+            this.date = date.format(formatter);
+            System.out.println(this.date);
+        } else {
+            LocalDate defaultDate = LocalDate.now();
+            this.date = defaultDate.format(formatter);
+            System.out.println(this.date);
+        }
     }
 
 }

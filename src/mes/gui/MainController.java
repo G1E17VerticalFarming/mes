@@ -7,7 +7,7 @@ package mes.gui;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ResourceBundle;
+import java.util.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -103,38 +103,42 @@ public class MainController implements Initializable {
     @FXML
     private Button button_login;
     @FXML
-    private Tab tab_orders;
-    @FXML
-    private Tab tab_scada;
-    @FXML
-    private Tab tab_growth_profiles;
-    @FXML
-    private Tab tab_statistics;
-    @FXML
     private Button btnFetchOrders;
     @FXML
     private DatePicker datePickerOrderDate;
     
     private IMes MES = SingletonMES.getInstance();
+    @FXML
+    private Tab tabOrders;
+    @FXML
+    private Tab tabScada;
+    @FXML
+    private Tab tabGrowthProfiles;
+    @FXML
+    private Tab tabStatistics;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        datePickerOrderDate.setValue(LocalDate.now());
     }    
 
     @FXML
     private void handleMESLogin(ActionEvent event) {
-        tab_orders.setDisable(false);
-        tab_scada.setDisable(false);
-        tab_growth_profiles.setDisable(false);
-        tab_statistics.setDisable(false);
+        tabOrders.setDisable(false);
+        tabScada.setDisable(false);
+        tabGrowthProfiles.setDisable(false);
+        tabStatistics.setDisable(false);
     }
 
     @FXML
     private void handleFetchOrdersFromDate(ActionEvent event) {
         LocalDate date = datePickerOrderDate.getValue(); 
         MES.setDate(date);
-        MES.fetchOrders();
+        this.setOrderTableView(MES.fetchOrders());
+    }
+    
+    private void setOrderTableView(List orders) {
+        
     }
     
 }
