@@ -9,7 +9,7 @@ import API.IMesFacade;
 import shared.ProductionBlock;
 import shared.GrowthProfile;
 import shared.Log;
-import mes.api.ApiController;
+import mes.api.ApiReceiveController;
 
 //import mes.api.Greeting;
 import java.util.concurrent.atomic.AtomicLong;
@@ -33,10 +33,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 public class ApiFacade {
     
-    ApiController apiController;
+    ApiReceiveController apiReceiveController;
     
     public ApiFacade() {
-        this.apiController = new ApiController();
+        this.apiReceiveController = new ApiReceiveController();
     }
     
     // Get the MES singleton class
@@ -55,7 +55,7 @@ public class ApiFacade {
     @RequestMapping(value = "/production_block/", method = RequestMethod.GET)
     public ResponseEntity<ProductionBlock[]> getAllProductionBlocks() {
         // Fetch all production blocks from
-        ResponseEntity<ProductionBlock[]> returnResp = this.apiController.getAllProductionBlocks();
+        ResponseEntity<ProductionBlock[]> returnResp = this.apiReceiveController.getAllProductionBlocks();
         return returnResp;
     }
     
@@ -63,26 +63,26 @@ public class ApiFacade {
     @RequestMapping(value = "/production_block/{id}", method = RequestMethod.GET)
     public ResponseEntity<ProductionBlock> getAllProductionBlocks(@PathVariable int id) {
         // Fetch all production blocks from
-        ResponseEntity<ProductionBlock> returnResp = this.apiController.getSpecificProductionBlock(id);
+        ResponseEntity<ProductionBlock> returnResp = this.apiReceiveController.getSpecificProductionBlock(id);
         return returnResp;
     }
     
     @RequestMapping(value = "/production_block/", method = RequestMethod.POST)
     public ResponseEntity<String> postLog(@RequestBody ProductionBlock pb) {
-        ResponseEntity<String> returnResp = this.apiController.saveProductionBlock(pb);
+        ResponseEntity<String> returnResp = this.apiReceiveController.saveProductionBlock(pb);
         return returnResp;
     }
     
     @RequestMapping(value = "/growth_profile/{id}", method = RequestMethod.GET)
     public ResponseEntity<GrowthProfile> getSpecificGrowthProfile(@PathVariable int id) {
         // Fetch all production blocks from
-        ResponseEntity<GrowthProfile> returnResp = this.apiController.getSpecificGrowthProfile(id);
+        ResponseEntity<GrowthProfile> returnResp = this.apiReceiveController.getSpecificGrowthProfile(id);
         return returnResp;
     }
     
     @RequestMapping(value = "/log/", method = RequestMethod.POST)
     public ResponseEntity<String> postLog(@RequestBody Log log) {
-        ResponseEntity<String> returnResp = this.apiController.saveLog(log);
+        ResponseEntity<String> returnResp = this.apiReceiveController.saveLog(log);
         return returnResp;
     }
     

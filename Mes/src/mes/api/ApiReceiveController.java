@@ -19,11 +19,11 @@ import org.springframework.http.ResponseEntity;
  *
  * @author DanielToft
  */
-public class ApiController {
+public class ApiReceiveController {
     
     //private IMes mes;
     
-    public ApiController() {
+    public ApiReceiveController() {
         //this.mes = Mes.getInstance();
     }
     
