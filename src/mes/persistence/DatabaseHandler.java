@@ -7,6 +7,7 @@ package mes.persistence;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -48,40 +49,102 @@ public class DatabaseHandler implements IMesDatabaseFacade {
      * @param args 
      */
     public static void main(String[] args){
-        Statement st = null;
-        try {
-            DatabaseHandler db = new DatabaseHandler();
-            st = db.conn.createStatement();
-            ResultSet rs = st.executeQuery("select prosrc from pg_trigger,pg_proc where pg_proc.oid=pg_trigger.tgfoid;");
-            while(rs.next()){
-                System.out.println(rs.getString("prosrc"));
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(DatabaseHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        DatabaseHandler db = new DatabaseHandler();
+        
+        System.out.println(db.getProductionBlocks());
+        
+        System.out.println(db.getProductionBlock(1));
     }
 
     @Override
     public List<ProductionBlock> getProductionBlocks() {
         List<ProductionBlock> prodBlocks = new ArrayList<>();
         
+        Statement getProdBlocksSt;
+        ResultSet getProdBlocksRs;
         try {
-            Statement st = this.conn.createStatement();
-            
-            
+            getProdBlocksSt = this.conn.createStatement();
+            getProdBlocksRs = getProdBlocksSt.executeQuery("SELECT DISTINCT id,ip,port,name,growth_id FROM plc_conn NATURAL JOIN handles NATURAL JOIN production NATURAL JOIN requires;");
+            while(getProdBlocksRs.next()){
+                ProductionBlock localProdBlock = new ProductionBlock();
+                localProdBlock.setId(getProdBlocksRs.getInt("id"));
+                localProdBlock.setIpaddress(getProdBlocksRs.getString("ip"));
+                localProdBlock.setPort(getProdBlocksRs.getInt("port"));
+                localProdBlock.setName(getProdBlocksRs.getString("name"));
+                localProdBlock.setGrowthConfigId(getProdBlocksRs.getInt("growth_id"));
+                prodBlocks.add(localProdBlock);
+            }
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return prodBlocks;
     }
-
-    @Override
-    public GrowthProfile getGrowthProfile(int profileId) {
-        return null;
+    
+        @Override
+    public ProductionBlock getProductionBlock(int productionBlockId) {
+        ProductionBlock prodBlockToReturn = new ProductionBlock();
+        PreparedStatement getProdBlockSt;
+        ResultSet getProdBlockRs;
+        String getProdBlockQuery = "SELECT ip,port,name FROM plc_conn WHERE id = ?";
+        try{
+            if(productionBlockId < 0){
+                throw new IllegalArgumentException("Production block ID can only be positive!");
+            }
+            getProdBlockSt = this.conn.prepareStatement(getProdBlockQuery);
+            getProdBlockSt.setInt(1, productionBlockId);
+            getProdBlockRs = getProdBlockSt.executeQuery();
+            getProdBlockRs.next();
+            prodBlockToReturn.setId(productionBlockId);
+            prodBlockToReturn.setIpaddress(getProdBlockRs.getString("ip"));
+            prodBlockToReturn.setName(getProdBlockRs.getString("name"));
+            prodBlockToReturn.setPort(getProdBlockRs.getInt("port"));
+        } catch (SQLException ex) {
+            System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
+            return null;
+        } catch(IllegalArgumentException ex) {
+            System.out.println("Invalid input: " + ex.getMessage());
+            return null;
+        }
+        return prodBlockToReturn;
     }
 
     @Override
-    public ProductionBlock getProductionBlock(int productionBlockId) {
+    public GrowthProfile getGrowthProfile(int profileId) {
+        GrowthProfile profToReturn = new GrowthProfile();
+        PreparedStatement getGrProfSt;
+        ResultSet getGrProfRs;
+        String getGrProfQuery = "SELECT celcius,water_lvl,moist,night_celcius,name FROM growthprofile WHERE growth_id = ?";
+        try{
+            if(profileId < 0){
+                throw new IllegalArgumentException("Growth Profile ID can only be positive!");
+            }
+            getGrProfSt = this.conn.prepareStatement(getGrProfQuery);
+            getGrProfSt.setInt(1, profileId);
+            getGrProfRs = getGrProfSt.executeQuery();
+            profToReturn.setId(profileId);
+            profToReturn.setMoisture(getGrProfRs.getInt("moist"));
+            profToReturn.setName(getGrProfRs.getString("name"));
+            profToReturn.setTemperature(getGrProfRs.getInt("celcius"));
+            profToReturn.setWaterLevel(getGrProfRs.getInt("water_lvl"));
+            // Missing attribute night temperature on growthprofile in FLIB
+            //profToReturn.setNightTemperature(getGrProfRs.getInt("night_celcius"));
+            // Missing fetch light from DB too and assign variable profToReturn.lightSequence
+        } catch (SQLException ex) {
+            System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
+            return null;
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Invalid input: " + ex.getMessage());
+            return null;
+        }
+        return profToReturn;
+    }
+    
+    /**
+     * Internal method to fetch the Light objects from DB to be used in a growthProfile
+     * @param growthProfileId
+     * @return 
+     */
+    private Light getLightSchedule(int growthProfileId){
         return null;
     }
 
