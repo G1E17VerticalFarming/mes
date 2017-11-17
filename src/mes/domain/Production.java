@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 package mes.domain;
+import shared.GrowthProfile;
+import shared.ProductionBlock;
 
 /**
  *
