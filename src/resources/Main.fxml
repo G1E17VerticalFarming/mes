@@ -56,13 +56,14 @@
                                                 <TableColumn fx:id="tab_order_prod_end" prefWidth="74.0" text="prod_end" />
                                             </columns>
                                           </TableView>
-                                          <DatePicker fx:id="datePicker_order_date" layoutX="48.0" layoutY="10.0" />
+                                          <DatePicker fx:id="datePickerOrderDate" layoutX="48.0" layoutY="10.0" />
                                           <Label layoutX="16.0" layoutY="14.0" text="Date:" />
+                                          <Button fx:id="btnFetchOrders" layoutX="237.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleFetchOrdersFromDate" text="Fetch Orders" />
                                        </children>
                                     </AnchorPane>
                               </content>
                             </Tab>
-                            <Tab closable="false" disable="true" text="order_name">
+                            <Tab closable="false" text="order_name">
                               <content>
                                 <AnchorPane fx:id="tab_order_name" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>

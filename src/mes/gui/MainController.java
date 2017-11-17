@@ -6,6 +6,7 @@
 package mes.gui;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,6 +21,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import mes.domain.IMes;
+import mes.domain.SingletonMES;
 
 /**
  *
@@ -43,8 +46,6 @@ public class MainController implements Initializable {
     private TableColumn<?, ?> tab_order_prod_begin;
     @FXML
     private TableColumn<?, ?> tab_order_prod_end;
-    @FXML
-    private DatePicker datePicker_order_date;
     @FXML
     private AnchorPane tab_order_name;
     @FXML
@@ -109,6 +110,12 @@ public class MainController implements Initializable {
     private Tab tab_growth_profiles;
     @FXML
     private Tab tab_statistics;
+    @FXML
+    private Button btnFetchOrders;
+    @FXML
+    private DatePicker datePickerOrderDate;
+    
+    private IMes MES = SingletonMES.getInstance();
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -117,7 +124,17 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleMESLogin(ActionEvent event) {
-        
+        tab_orders.setDisable(false);
+        tab_scada.setDisable(false);
+        tab_growth_profiles.setDisable(false);
+        tab_statistics.setDisable(false);
+    }
+
+    @FXML
+    private void handleFetchOrdersFromDate(ActionEvent event) {
+        LocalDate date = datePickerOrderDate.getValue(); 
+        MES.setDate(date);
+        MES.fetchOrders();
     }
     
 }

@@ -5,10 +5,17 @@
  */
 package mes.domain;
 
+import java.time.LocalDate;
+import java.util.*;
+
 /**
  *
  * @author chris
  */
 public interface IMes {
+    
+    public void setDate(LocalDate date);
+    public List fetchOrders();
+    
     
 }
