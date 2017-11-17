@@ -14,16 +14,16 @@ import shared.*;          // Required when removing the dummy classes: Productio
  */
 public interface IMesDatabaseFacade {
     
-    public List<ProductionBlock> getProductionBlocks();
-    public List<Order> fetchOrders(String dateStringRepresentation);
-    public ProductionBlock getProductionBlock(int productionBlockId);
-    public GrowthProfile getGrowthProfile(int growthProfileId);
+    public abstract List<ProductionBlock> getProductionBlocks();
+    public abstract List<Order> fetchOrders(String dateStringRepresentation);
+    public abstract ProductionBlock getProductionBlock(int productionBlockId);
+    public abstract GrowthProfile getGrowthProfile(int growthProfileId);
     
-    public boolean saveDataLog(Log dataObjectToSave);
-    public boolean saveGrowthProfile(GrowthProfile profileToSave);
-    public boolean saveOrders(List<Order> orderObjectsToSave);
-    public boolean saveOrder(Order orderObjectToSave);
-    public boolean saveProduction(Production prodObjectToSave);
+    public abstract boolean saveDataLog(Log dataObjectToSave);
+    public abstract boolean saveGrowthProfile(GrowthProfile profileToSave);
+    public abstract boolean saveOrders(List<Order> orderObjectsToSave);
+    public abstract boolean saveOrder(Order orderObjectToSave);
+    public abstract boolean saveProduction(Production prodObjectToSave);
     
-    public boolean deleteDataLog(int dataLogIdToDelete);
+    public abstract boolean deleteDataLog(int dataLogIdToDelete);
 }

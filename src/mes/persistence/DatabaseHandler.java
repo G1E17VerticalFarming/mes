@@ -77,27 +77,27 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     @Override
     public GrowthProfile getGrowthProfile(int profileId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
 
     @Override
     public ProductionBlock getProductionBlock(int productionBlockId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
 
     @Override
     public boolean saveDataLog(Log dataObjectToSave) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
     
     @Override
     public boolean saveGrowthProfile(GrowthProfile profileToSave) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
 
     @Override
     public boolean deleteDataLog(int dataLogIdToDelete) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
     
     
@@ -113,17 +113,17 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     @Override
     public boolean saveOrders(List<Order> orderObjectsToSave) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
 
     @Override
     public boolean saveOrder(Order orderObjectToSave) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
 
     @Override
     public boolean saveProduction(Production prodObjectToSave) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
 
     @Override
