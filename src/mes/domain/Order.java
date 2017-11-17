@@ -17,4 +17,60 @@ public class Order {
     private String productionName;
     private String productionBegin;
     private String productionEnd;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setFetchedTime(String fetchedTime) {
+        this.fetchedTime = fetchedTime;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setProductionName(String productionName) {
+        this.productionName = productionName;
+    }
+
+    public void setProductionBegin(String productionBegin) {
+        this.productionBegin = productionBegin;
+    }
+
+    public void setProductionEnd(String productionEnd) {
+        this.productionEnd = productionEnd;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getFetchedTime() {
+        return fetchedTime;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getProductionName() {
+        return productionName;
+    }
+
+    public String getProductionBegin() {
+        return productionBegin;
+    }
+
+    public String getProductionEnd() {
+        return productionEnd;
+    }
 }
