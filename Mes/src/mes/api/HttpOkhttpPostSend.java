@@ -51,7 +51,20 @@ public class HttpOkhttpPostSend {
                 .post(body)
                 .build();
         Response response = client.newCall(request).execute();
-        return response.body().string();
+        return response.code() + ": " + response.body().string();
+    }
+    
+    public static <T> T doGetRequest(String url, Class<T> classType) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        Response response = client.newCall(request).execute();
+        if(response.code() == 200) {
+            return Json.getJSON(response.body().string(), classType);
+        }
+        System.out.println("Error: " + response.body().string());
+        return null;
     }
 
 }

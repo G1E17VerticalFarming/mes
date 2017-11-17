@@ -5,6 +5,10 @@
  */
 package mes.gui;
 
+import shared.ProductionBlock;
+import shared.GrowthProfile;
+import shared.Log;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -16,7 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import main.java.Application;
-import mes.api.Greeting;
+//import mes.api.Greeting;
 import mes.api.HttpOkhttpPostSend;
 
 /**
@@ -39,8 +43,16 @@ public class MainController implements Initializable {
     private void test(ActionEvent event) {
         try {
             //Greeting greeting = new Greeting(2132, "dsadsaww");
+            ProductionBlock pb = new ProductionBlock();
+            pb.setName("hej123");
+            testTa.appendText(HttpOkhttpPostSend.doPostRequest("http://localhost:8080/production_block/", pb));
+            //ProductionBlock[] pbArr = HttpOkhttpPostSend.doGetRequest("http://localhost:8080/production_block/", ProductionBlock[].class);
+            //testTa.appendText(pbArr[0].toString());
+            //testTa.appendText(pbArr[1].toString());
+            Log log = new Log();
+            log.setType("hejejeje");
+            //testTa.appendText(HttpOkhttpPostSend.doPostRequest("http://localhost:8080/log/", log));
             
-            testTa.appendText(HttpOkhttpPostSend.doPostRequest("http://localhost:8080/user/", new Greeting(123, "dsawwwwda")));   
         } catch (IOException ex) {
             Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
         }
