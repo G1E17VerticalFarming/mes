@@ -45,15 +45,15 @@
                               <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>
-                                          <TableView fx:id="tableView_order_picker" layoutX="18.0" layoutY="45.0" prefHeight="635.0" prefWidth="988.0">
+                                          <TableView fx:id="tableViewOrderPicker" layoutX="18.0" layoutY="45.0" prefHeight="635.0" prefWidth="988.0">
                                             <columns>
-                                              <TableColumn fx:id="tab_order_id" prefWidth="75.0" text="order_id" />
-                                              <TableColumn fx:id="tab_order_fetched_time" prefWidth="92.33331298828125" text="fetched_time" />
-                                                <TableColumn fx:id="tab_order_qty" prefWidth="57.66668701171875" text="qty" />
-                                                <TableColumn fx:id="tab_order_status" prefWidth="57.66668701171875" text="status" />
-                                                <TableColumn fx:id="tab_order_prod_name" prefWidth="74.0" text="prod_name" />
-                                                <TableColumn fx:id="tab_order_prod_begin" prefWidth="74.0" text="prod_begin" />
-                                                <TableColumn fx:id="tab_order_prod_end" prefWidth="74.0" text="prod_end" />
+                                              <TableColumn fx:id="tabOrderId" prefWidth="75.0" text="order_id" />
+                                              <TableColumn fx:id="tabOrderFetchedTime" prefWidth="92.33331298828125" text="fetched_time" />
+                                                <TableColumn fx:id="tabOrderQty" prefWidth="57.66668701171875" text="qty" />
+                                                <TableColumn fx:id="tabOrderStatus" prefWidth="57.66668701171875" text="status" />
+                                                <TableColumn fx:id="tabOrderProdName" prefWidth="74.0" text="prod_name" />
+                                                <TableColumn fx:id="tabOrderProdBegin" prefWidth="74.0" text="prod_begin" />
+                                                <TableColumn fx:id="tabOrderProdEnd" prefWidth="74.0" text="prod_end" />
                                             </columns>
                                           </TableView>
                                           <DatePicker fx:id="datePickerOrderDate" editable="false" layoutX="48.0" layoutY="10.0" />

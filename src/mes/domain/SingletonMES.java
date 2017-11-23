@@ -8,6 +8,7 @@ package mes.domain;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import mes.persistence.DatabaseHandler;
 
 /**
  *
@@ -21,6 +22,7 @@ public class SingletonMES implements IMes {
     private Queue orderQueue;
 
     private String date;
+    private IMesDatabaseFacade dbHandler = new DatabaseHandler();
 
     private static SingletonMES instance = null;
 
@@ -36,7 +38,7 @@ public class SingletonMES implements IMes {
     }
 
     public List fetchOrders() {
-        // Call DB handler and fetch orders using this.date
+        this.orders = dbHandler.fetchOrders(date);
         return orders;
     }
 
@@ -55,11 +57,9 @@ public class SingletonMES implements IMes {
         // Just some error handling, to prevent a date being null
         if (date != null) {
             this.date = date.format(formatter);
-            System.out.println(this.date);
         } else {
             LocalDate defaultDate = LocalDate.now();
             this.date = defaultDate.format(formatter);
-            System.out.println(this.date);
         }
     }
 

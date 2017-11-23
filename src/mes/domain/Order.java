@@ -5,72 +5,74 @@
  */
 package mes.domain;
 
+import javafx.beans.property.*;
+
 /**
  *
  * @author AKT
  */
 public class Order {
-    private int id;
-    private String fetchedTime;
-    private int quantity;
-    private String status;
-    private String productionName;
-    private String productionBegin;
-    private String productionEnd;
+    private SimpleIntegerProperty id = new SimpleIntegerProperty();
+    private SimpleStringProperty fetchedTime = new SimpleStringProperty();
+    private SimpleIntegerProperty quantity = new SimpleIntegerProperty();
+    private SimpleStringProperty status = new SimpleStringProperty();
+    private SimpleStringProperty productionName = new SimpleStringProperty();
+    private SimpleStringProperty productionBegin = new SimpleStringProperty();
+    private SimpleStringProperty productionEnd = new SimpleStringProperty();
 
     public void setId(int id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     public void setFetchedTime(String fetchedTime) {
-        this.fetchedTime = fetchedTime;
+        this.fetchedTime.set(fetchedTime);
     }
 
     public void setQuantity(int quantity) {
-        this.quantity = quantity;
+        this.quantity.set(quantity);
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status.set(status);
     }
 
     public void setProductionName(String productionName) {
-        this.productionName = productionName;
+        this.productionName.set(productionName);
     }
 
     public void setProductionBegin(String productionBegin) {
-        this.productionBegin = productionBegin;
+        this.productionBegin.set(productionBegin);
     }
 
     public void setProductionEnd(String productionEnd) {
-        this.productionEnd = productionEnd;
+        this.productionEnd.set(productionEnd);
     }
 
     public int getId() {
-        return id;
+        return id.get();
     }
 
     public String getFetchedTime() {
-        return fetchedTime;
+        return fetchedTime.get();
     }
 
     public int getQuantity() {
-        return quantity;
+        return quantity.get();
     }
 
     public String getStatus() {
-        return status;
+        return status.get();
     }
 
     public String getProductionName() {
-        return productionName;
+        return productionName.get();
     }
 
     public String getProductionBegin() {
-        return productionBegin;
+        return productionBegin.get();
     }
 
     public String getProductionEnd() {
-        return productionEnd;
+        return productionEnd.get();
     }
 }

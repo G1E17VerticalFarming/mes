@@ -8,6 +8,8 @@ package mes.gui;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,8 +22,10 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import mes.domain.IMes;
+import mes.domain.Order;
 import mes.domain.SingletonMES;
 
 /**
@@ -30,22 +34,6 @@ import mes.domain.SingletonMES;
  */
 public class MainController implements Initializable {
 
-    @FXML
-    private TableView<?> tableView_order_picker;
-    @FXML
-    private TableColumn<?, ?> tab_order_id;
-    @FXML
-    private TableColumn<?, ?> tab_order_fetched_time;
-    @FXML
-    private TableColumn<?, ?> tab_order_qty;
-    @FXML
-    private TableColumn<?, ?> tab_order_status;
-    @FXML
-    private TableColumn<?, ?> tab_order_prod_name;
-    @FXML
-    private TableColumn<?, ?> tab_order_prod_begin;
-    @FXML
-    private TableColumn<?, ?> tab_order_prod_end;
     @FXML
     private AnchorPane tab_order_name;
     @FXML
@@ -116,6 +104,22 @@ public class MainController implements Initializable {
     private Tab tabGrowthProfiles;
     @FXML
     private Tab tabStatistics;
+    @FXML
+    private TableColumn<Order, Integer> tabOrderId;
+    @FXML
+    private TableColumn<Order, String> tabOrderFetchedTime;
+    @FXML
+    private TableColumn<Order, Integer> tabOrderQty;
+    @FXML
+    private TableColumn<Order, String> tabOrderStatus;
+    @FXML
+    private TableColumn<Order, String> tabOrderProdName;
+    @FXML
+    private TableColumn<Order, String> tabOrderProdBegin;
+    @FXML
+    private TableColumn<Order, String> tabOrderProdEnd;
+    @FXML
+    private TableView tableViewOrderPicker;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -138,6 +142,18 @@ public class MainController implements Initializable {
     }
     
     private void setOrderTableView(List orders) {
+        ObservableList<Order> orderList = FXCollections.observableArrayList(orders);
+        tableViewOrderPicker.setItems(orderList);
+        
+        tabOrderId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        tabOrderFetchedTime.setCellValueFactory(new PropertyValueFactory<>("fetchedTime"));
+        tabOrderQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        tabOrderStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        tabOrderProdName.setCellValueFactory(new PropertyValueFactory<>("productionName"));
+        tabOrderProdBegin.setCellValueFactory(new PropertyValueFactory<>("productionBegin"));
+        tabOrderProdEnd.setCellValueFactory(new PropertyValueFactory<>("productionEnd"));
+        
+        
         
     }
     
