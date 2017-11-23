@@ -40,7 +40,8 @@ public class DatabaseHandler implements IMesDatabaseFacade {
             this.conn = DriverManager.getConnection(this.url + this.host + ":" + this.port + "/" + this.databaseName, this.username, this.password);
         } catch (SQLException ex) {
             System.out.println("Error connecting to database, please check credentials listed in DatabaseHandler.java !");
-            Logger.getLogger(DatabaseHandler.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error Message: " + ex);
+            System.exit(1);
         }
     }
     
@@ -54,6 +55,10 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         System.out.println(db.getProductionBlocks());
         
         System.out.println(db.getProductionBlock(1));
+        
+        System.out.println(db.getGrowthProfile(2).getLightSequence());
+        
+        System.out.println(db.deleteDataLog(9));
     }
 
     @Override
@@ -64,10 +69,10 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         ResultSet getProdBlocksRs;
         try {
             getProdBlocksSt = this.conn.createStatement();
-            getProdBlocksRs = getProdBlocksSt.executeQuery("SELECT DISTINCT id,ip,port,name,growth_id FROM plc_conn NATURAL JOIN handles NATURAL JOIN production NATURAL JOIN requires;");
+            getProdBlocksRs = getProdBlocksSt.executeQuery("SELECT DISTINCT plc_id,ip,port,name,growth_id FROM plc_conn NATURAL JOIN handles NATURAL JOIN production NATURAL JOIN requires;");
             while(getProdBlocksRs.next()){
                 ProductionBlock localProdBlock = new ProductionBlock();
-                localProdBlock.setId(getProdBlocksRs.getInt("id"));
+                localProdBlock.setId(getProdBlocksRs.getInt("plc_id"));
                 localProdBlock.setIpaddress(getProdBlocksRs.getString("ip"));
                 localProdBlock.setPort(getProdBlocksRs.getInt("port"));
                 localProdBlock.setName(getProdBlocksRs.getString("name"));
@@ -85,7 +90,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         ProductionBlock prodBlockToReturn = new ProductionBlock();
         PreparedStatement getProdBlockSt;
         ResultSet getProdBlockRs;
-        String getProdBlockQuery = "SELECT ip,port,name FROM plc_conn WHERE id = ?";
+        String getProdBlockQuery = "SELECT ip,port,name FROM plc_conn WHERE plc_id = ?";
         try{
             if(productionBlockId < 0){
                 throw new IllegalArgumentException("Production block ID can only be positive!");
@@ -121,14 +126,14 @@ public class DatabaseHandler implements IMesDatabaseFacade {
             getGrProfSt = this.conn.prepareStatement(getGrProfQuery);
             getGrProfSt.setInt(1, profileId);
             getGrProfRs = getGrProfSt.executeQuery();
+            getGrProfRs.next();
             profToReturn.setId(profileId);
             profToReturn.setMoisture(getGrProfRs.getInt("moist"));
             profToReturn.setName(getGrProfRs.getString("name"));
             profToReturn.setTemperature(getGrProfRs.getInt("celcius"));
             profToReturn.setWaterLevel(getGrProfRs.getInt("water_lvl"));
-            // Missing attribute night temperature on growthprofile in FLIB
-            //profToReturn.setNightTemperature(getGrProfRs.getInt("night_celcius"));
-            // Missing fetch light from DB too and assign variable profToReturn.lightSequence
+            profToReturn.setNightTemperature(getGrProfRs.getInt("night_celcius"));
+            profToReturn.setLightSequence(this.getLightSchedule(profileId));
         } catch (SQLException ex) {
             System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
             return null;
@@ -141,15 +146,40 @@ public class DatabaseHandler implements IMesDatabaseFacade {
     
     /**
      * Internal method to fetch the Light objects from DB to be used in a growthProfile
-     * @param growthProfileId
-     * @return 
+     * @param growthProfileId growth profile ID to fetch Light objects with
+     * @return ArrayList containing all Light objects corresponding to growthProfileId
+     * @throws SQLException
      */
-    private Light getLightSchedule(int growthProfileId){
-        return null;
+    private ArrayList<Light> getLightSchedule(int growthProfileId) throws SQLException{
+        PreparedStatement getLightSt;
+        ResultSet getLightRs;
+        String getLightQuery = "SELECT light_id,type,time,value FROM growthlight_view WHERE growth_id = ?;";
+        ArrayList<Light> lightSeq = new ArrayList<>();
+        getLightSt = this.conn.prepareStatement(getLightQuery);
+        getLightSt.setInt(1, growthProfileId);
+        getLightRs = getLightSt.executeQuery();
+        while(getLightRs.next()){
+            Light lightToAdd = new Light();
+            lightToAdd.setId(getLightRs.getInt("light_id"));
+            lightToAdd.setType(getLightRs.getInt("type"));
+            lightToAdd.setRunTimeUnix(getLightRs.getInt("time"));
+            lightToAdd.setPowerLevel(getLightRs.getInt("value"));
+            lightSeq.add(lightToAdd);
+        }
+        return lightSeq;
     }
 
     @Override
     public boolean saveDataLog(Log dataObjectToSave) {
+        PreparedStatement saveDatSt;
+        ResultSet saveDatRs;
+        String saveDatQuery = "INSERT INTO datalogs_view () VALUES ();";
+        try{
+            saveDatSt = this.conn.prepareStatement(saveDatQuery);
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return false;
     }
     
@@ -160,17 +190,33 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     @Override
     public boolean deleteDataLog(int dataLogIdToDelete) {
+        PreparedStatement delDatSt;
+        String delDatQuery = "DELETE FROM datalogs_view WHERE data_id = ?";
+        try{
+            if(dataLogIdToDelete < 0){
+                throw new IllegalArgumentException("Data ID can only be positive!");
+            }
+            delDatSt = this.conn.prepareStatement(delDatQuery);
+            delDatSt.setInt(1, dataLogIdToDelete);
+            if(delDatSt.executeUpdate() > 0){
+                System.out.println("No rows deleted. ID may not exist in database.");
+                return true;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
+            return false;
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Invalid input: " + ex.getMessage());
+            return false;
+        }
         return false;
     }
     
-    
-    
-    
     /**
      * Method for saving internal light schedules for a given growthProfile object
-     * @return 
+     * @return True on succesful save in database, false otherwise
      */
-    private boolean saveLightSchedule(GrowthProfile objToSave){
+    private boolean saveLightSchedule(List<Light> lightObjectsToSave){
         return true;
     }
 
@@ -186,6 +232,9 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     @Override
     public boolean saveProduction(Production prodObjectToSave) {
+        PreparedStatement saveProdSt;
+        String saveProdQuery = "INSERT INTO prod_overview VALUES (?,?)";
+        
         return false;
     }
 
