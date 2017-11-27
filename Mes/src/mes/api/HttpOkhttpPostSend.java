@@ -51,7 +51,13 @@ public class HttpOkhttpPostSend {
                 .post(body)
                 .build();
         Response response = client.newCall(request).execute();
-        return response.code() + ": " + response.body().string();
+        if(response.body() == null) {
+            throw new IOException("Error[" + response.code() + "]: NullPointerException on response.body()");
+        }
+        if(response.code() == 200) {
+            return response.code() + ": " + response.body().string();
+        }
+        throw new IOException("Error[" + response.code() + "]: " + response.body().string());
     }
     
     public static <T> T doGetRequest(String url, Class<T> classType) throws IOException {
@@ -60,11 +66,13 @@ public class HttpOkhttpPostSend {
                 .url(url)
                 .build();
         Response response = client.newCall(request).execute();
+        if(response.body() == null) {
+            throw new IOException("Error[" + response.code() + "]: NullPointerException on response.body()");
+        }
         if(response.code() == 200) {
             return Json.getJSON(response.body().string(), classType);
         }
-        System.out.println("Error: " + response.body().string());
-        return null;
+        throw new IOException("Error[" + response.code() + "]: " + response.body().string());
     }
 
 }

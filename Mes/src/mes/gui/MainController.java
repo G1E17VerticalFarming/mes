@@ -45,7 +45,8 @@ public class MainController implements Initializable {
             //Greeting greeting = new Greeting(2132, "dsadsaww");
             ProductionBlock pb = new ProductionBlock();
             pb.setName("hej123");
-            testTa.appendText(HttpOkhttpPostSend.doPostRequest("http://localhost:8080/production_block/", pb));
+            //testTa.appendText(HttpOkhttpPostSend.doPostRequest("http://localhost:8080/production_block/", pb));
+            testTa.appendText(HttpOkhttpPostSend.doGetRequest("http://localhost:8080/ping/", Boolean.class).toString());
             //ProductionBlock[] pbArr = HttpOkhttpPostSend.doGetRequest("http://localhost:8080/production_block/", ProductionBlock[].class);
             //testTa.appendText(pbArr[0].toString());
             //testTa.appendText(pbArr[1].toString());

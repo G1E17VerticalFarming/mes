@@ -61,4 +61,8 @@ public class ApiReceiveController {
         return new ResponseEntity<String>("success", HttpStatus.OK);
     }
     
+    public ResponseEntity<Boolean> ping() {
+        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+        //return new ResponseEntity<Boolean>(this.mes != null, HttpStatus.OK);
+    }
 }

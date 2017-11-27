@@ -86,5 +86,10 @@ public class ApiFacade {
         return returnResp;
     }
     
+    @RequestMapping(value = "/ping/", method = RequestMethod.GET)
+    public ResponseEntity<Boolean> postLog() {
+        ResponseEntity<Boolean> returnResp = this.apiReceiveController.ping();
+        return returnResp;
+    }
     
 }
