@@ -24,6 +24,10 @@ public interface IMesDatabaseFacade {
     public abstract boolean saveOrders(List<Order> orderObjectsToSave);
     public abstract boolean saveOrder(Order orderObjectToSave);
     public abstract boolean saveProduction(Production prodObjectToSave);
+    public abstract boolean saveProductionBlock(ProductionBlock prodBlockToSave);
+    
+    public abstract boolean updateProductionLot(Production prodObjectToUpd);
+    public abstract boolean updateOrderEndDate(Order orderObjectToUpd);
     
     public abstract boolean deleteDataLog(int dataLogIdToDelete);
 }
