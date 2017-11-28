@@ -11,7 +11,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,12 +28,12 @@ import shared.*;
  */
 public class DatabaseHandler implements IMesDatabaseFacade {
 
-    private int port = 5432;
-    private String url = "jdbc:postgresql://";
-    private String host = "tek-mmmi-db0a.tek.c.sdu.dk";
-    private String databaseName = "si3_2017_group_21_db";
-    private String username = "si3_2017_group_21";
-    private String password = "ear70.doling";
+    private final int port = 5432;
+    private final String url = "jdbc:postgresql://";
+    private final String host = "tek-mmmi-db0a.tek.c.sdu.dk";
+    private final String databaseName = "si3_2017_group_21_db";
+    private final String username = "si3_2017_group_21";
+    private final String password = "ear70.doling";
 
     private Connection conn = null;
 
@@ -46,7 +48,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
     }
 
     /**
-     * Connection test. Selects the definition of all triggers in postgresql.
+     * Used for test
      *
      * @param args
      */
@@ -62,12 +64,17 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         System.out.println(db.deleteDataLog(9));
     }
 
+    /**
+     * Implemented fully
+     * 
+     * @return 
+     */
     @Override
     public List<ProductionBlock> getProductionBlocks() {
         List<ProductionBlock> prodBlocks = new ArrayList<>();
         String getProdBlockQuery = "SELECT DISTINCT plc_id,ip,port,name,growth_id FROM plc_conn NATURAL JOIN handles NATURAL JOIN production NATURAL JOIN requires;";
         try (Statement getProdBlocksSt = this.conn.createStatement();
-            ResultSet getProdBlocksRs = getProdBlocksSt.executeQuery(getProdBlockQuery)) {
+                ResultSet getProdBlocksRs = getProdBlocksSt.executeQuery(getProdBlockQuery)) {
             while (getProdBlocksRs.next()) {
                 ProductionBlock localProdBlock = new ProductionBlock();
                 localProdBlock.setId(getProdBlocksRs.getInt("plc_id"));
@@ -84,6 +91,12 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return prodBlocks;
     }
 
+    /**
+     * Implemented fully
+     * 
+     * @param productionBlockId
+     * @return 
+     */
     @Override
     public ProductionBlock getProductionBlock(int productionBlockId) {
         ProductionBlock prodBlockToReturn = new ProductionBlock();
@@ -110,6 +123,12 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return prodBlockToReturn;
     }
 
+    /**
+     * Implemented fully
+     * 
+     * @param profileId
+     * @return 
+     */
     @Override
     public GrowthProfile getGrowthProfile(int profileId) {
         GrowthProfile profToReturn = new GrowthProfile();
@@ -140,11 +159,13 @@ public class DatabaseHandler implements IMesDatabaseFacade {
     }
 
     /**
+     * Implemented fully
+     * 
      * Internal method to fetch the Light objects from DB to be used in a growthProfile
      *
      * @param growthProfileId growth profile ID to fetch Light objects with
      * @return ArrayList containing all Light objects corresponding to growthProfileId
-     * @throws SQLException
+     * @throws SQLException Possibility to throw SQLException within this method body. Exception handling to be done where this is called
      */
     private ArrayList<Light> getLightSchedule(int growthProfileId) throws SQLException {
         String getLightQuery = "SELECT light_id,type,time,value FROM growthlight_view WHERE growth_id = ?;";
@@ -165,27 +186,79 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         }
     }
 
+    /**
+     * Not implemented
+     * 
+     * Will fetch all data a Production object requires to be completely filled
+     * @param productionId
+     * @return Full Production object
+     */
+    @Override
+    public Production getProduction(int productionId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * Not implemented fully!
+     *
+     * @param dataObjectToSave
+     * @return
+     */
     @Override
     public boolean saveDataLog(Log dataObjectToSave) {
-        ResultSet saveDatRs;
-        String saveDatQuery = "INSERT INTO datalogs_view () VALUES ();";
+        String saveDatQuery = "INSERT INTO datalogs_view (prod_block,type,timestamp,cmd,value,prod_id) VALUES (?,?,?,?,?,?);";
         try (PreparedStatement saveDatSt = this.conn.prepareStatement(saveDatQuery)) {
-            saveDatRs = saveDatSt.executeQuery();
+            saveDatSt.setInt(1, dataObjectToSave.getBlock());
+            //saveDatSt.setInt(2, dataObjectToSave.getType());      -- Wrong datatype on Log.type
+            saveDatSt.setInt(3, dataObjectToSave.getUnixTimestamp());
+            //saveDatSt.setInt(4, dataObjectToSave.getCmd());       -- Wrong datatype on Log.cmd
+            //saveDatSt.setInt(5, dataObjectToSave.getValue());     -- Wrong datatype on Log.value
+            //saveDatSt.setInt(6, dataObjectToSave.getProdId());    -- Missing attribute on Log.prodId
+            saveDatSt.executeUpdate();
         } catch (SQLException ex) {
-            System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
+            System.out.println("Error inserting into database: (Code) " + ex.getErrorCode());
             return false;
         }
-        return false;
+        return true;
     }
 
+    /**
+     * Implemented fully
+     * 
+     * @param profileToSave GrowthProfile object to split apart and save in Database
+     * @return True on succesful save in database, false otherwise
+     */
     @Override
     public boolean saveGrowthProfile(GrowthProfile profileToSave) {
-        return false;
+        ResultSet saveProfRs;
+        String saveProfQuery = "INSERT INTO growthprofile (celcius,water_lvl,moist,night_celcius,name) VALUES (?,?,?,?,?) RETURNING growth_id;";
+        try (PreparedStatement saveProfSt = this.conn.prepareStatement(saveProfQuery)) {
+            saveProfSt.setInt(1, profileToSave.getTemperature());
+            saveProfSt.setInt(2, profileToSave.getWaterLevel());
+            saveProfSt.setInt(3, profileToSave.getMoisture());
+            saveProfSt.setInt(4, profileToSave.getNightTemperature());
+            saveProfSt.setString(5, profileToSave.getName());
+            saveProfRs = saveProfSt.executeQuery();
+            saveProfRs.next();
+            profileToSave.setId(saveProfRs.getInt("growth_id"));
+            for (Light light : profileToSave.getLightSequence()) {
+                this.saveLightSchedule(profileToSave.getId(), light);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error inserting into database: (Code) " + ex.getErrorCode());
+            return false;
+        }
+        return true;
     }
 
+    /**
+     * Implemented fully
+     * 
+     * @param dataLogIdToDelete
+     * @return 
+     */
     @Override
     public boolean deleteDataLog(int dataLogIdToDelete) {
-
         String delDatQuery = "DELETE FROM datalogs_view WHERE data_id = ?";
         try (PreparedStatement delDatSt = this.conn.prepareStatement(delDatQuery)) {
             if (dataLogIdToDelete < 0) {
@@ -211,27 +284,69 @@ public class DatabaseHandler implements IMesDatabaseFacade {
      *
      * @return True on succesful save in database, false otherwise
      */
-    private boolean saveLightSchedule(List<Light> lightObjectsToSave) {
+    private boolean saveLightSchedule(int growthProfile, Light lightObjectToSave) throws SQLException {
+        String saveLightQuery = "INSERT INTO growthlight_view (growth_id,type,time,value) VALUES (?,?,?,?,?);";
+        try (PreparedStatement saveLightSt = this.conn.prepareStatement(saveLightQuery)) {
+            saveLightSt.setInt(1, growthProfile);
+            saveLightSt.setInt(2, lightObjectToSave.getType());
+            saveLightSt.setInt(3, lightObjectToSave.getRunTimeUnix());
+            saveLightSt.setInt(4, lightObjectToSave.getPowerLevel());
+            saveLightSt.executeUpdate();
+        }
         return true;
     }
 
+    /**
+     * Implemented fully
+     * 
+     * @param orderObjectsToSave
+     * @return 
+     */
     @Override
     public boolean saveOrders(List<Order> orderObjectsToSave) {
-        return false;
+        for(Order order : orderObjectsToSave){
+            if(!this.saveOrder(order)){
+                return false;
+            }
+        }
+        return true;
     }
 
-    @Override
-    public boolean saveOrder(Order orderObjectToSave) {
-        return false;
+    /**
+     * Implemented fully
+     * 
+     * @param orderObjectToSave
+     * @return 
+     */
+    private boolean saveOrder(Order orderObjectToSave) {
+        String saveOrderQuery = "INSERT INTO \"order\" (fetched_time,prod_name,qty,status) VALUES (?,?,?,?);";
+        try (PreparedStatement saveOrderSt = this.conn.prepareStatement(saveOrderQuery)) {
+            saveOrderSt.setString(1, orderObjectToSave.getFetchedTime());
+            saveOrderSt.setString(2, orderObjectToSave.getProductionName());
+            saveOrderSt.setInt(3, orderObjectToSave.getQuantity());
+            saveOrderSt.setInt(4, orderObjectToSave.getStatus());
+            saveOrderSt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("Error inserting into database: (Code) " + ex.getErrorCode());
+            return false;
+        }
+        return true;
     }
 
+    /**
+     * Implemented fully
+     * 
+     * @param prodObjectToSave
+     * @return 
+     */
     @Override
     public boolean saveProduction(Production prodObjectToSave) {
-        String saveProdQuery = "INSERT INTO prod_overview (plc_id,growth_id,order_id) VALUES (?,?,?)";
+        String saveProdQuery = "INSERT INTO prod_overview (plc_id,growth_id,order_id,prod_begin) VALUES (?,?,?,?)";
         try (PreparedStatement saveProdSt = this.conn.prepareStatement(saveProdQuery)) {
             saveProdSt.setInt(1, prodObjectToSave.getBlock().getId());
             saveProdSt.setInt(2, prodObjectToSave.getGrowthProfile().getId());
             saveProdSt.setInt(3, prodObjectToSave.getOrder().getId());
+            saveProdSt.setString(4, new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
             saveProdSt.executeQuery();
         } catch (SQLException ex) {
             System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
@@ -240,6 +355,12 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return true;
     }
 
+    /**
+     * Implemented as dummy
+     * 
+     * @param dateStringRepresentation
+     * @return 
+     */
     @Override
     public List<Order> fetchOrders(String dateStringRepresentation) {
         /*
@@ -254,7 +375,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         testOrder.setProductionBegin("18-11-2017");
         testOrder.setProductionEnd("19-11-2017");
         testOrder.setQuantity(10);
-        testOrder.setStatus("Fetched");
+        testOrder.setStatus(0);
 
         ordersToReturn.add(testOrder);
 
@@ -264,6 +385,12 @@ public class DatabaseHandler implements IMesDatabaseFacade {
          */
     }
 
+    /**
+     * Implemented fully
+     * 
+     * @param prodBlockToSave
+     * @return 
+     */
     @Override
     public boolean saveProductionBlock(ProductionBlock prodBlockToSave) {
         String saveProdBlockQuery = "INSERT INTO plc_conn (ip,port,name) VALUES (?,?,?);";
@@ -279,13 +406,41 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return true;
     }
 
+    /**
+     * Not implemented
+     * 
+     * @param prodObjectToUpd
+     * @return 
+     */
     @Override
     public boolean updateProductionLot(Production prodObjectToUpd) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * Not implemented
+     * 
+     * Will only update End Date for the given Order object.
+     * Will fail if ID or productionEnd is not set on given Order object.
+     * @param orderObjectToUpd Order object to update in database. Must have valid ID and productionEnd set to be eligible
+     * @return If orderObjectToUpd.productionEnd == null this returns false, true on successful update in database
+     */
     @Override
     public boolean updateOrderEndDate(Order orderObjectToUpd) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if((orderObjectToUpd.getId() < 0) || (orderObjectToUpd.getProductionEnd() == null)){
+            return false;
+        }
+        String updOrderEndQuery = "UPDATE \"order\" SET production_end = ? WHERE order_id = ?;";
+        try(PreparedStatement updOrderEndSt = this.conn.prepareStatement(updOrderEndQuery)){
+            updOrderEndSt.setString(1, orderObjectToUpd.getProductionEnd());
+            updOrderEndSt.setInt(2, orderObjectToUpd.getId());
+            if(updOrderEndSt.executeUpdate() <= 0){
+                return false;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error updating order in database: (Code) " + ex.getErrorCode());
+            return false;
+        }
+        return true;
     }
 }
