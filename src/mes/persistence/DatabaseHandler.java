@@ -11,12 +11,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mes.domain.IMesDatabaseFacade;
 import mes.domain.Order;
 import mes.domain.Production;
@@ -53,7 +52,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
      * @param args
      */
     public static void main(String[] args) {
-        DatabaseHandler db = new DatabaseHandler();
+        IMesDatabaseFacade db = new DatabaseHandler();
 
         System.out.println(db.getProductionBlocks());
 
@@ -62,12 +61,19 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         System.out.println(db.getGrowthProfile(2).getLightSequence());
 
         System.out.println(db.deleteDataLog(9));
+
+        System.out.println(db.fetchOrders("22-11-2017"));
+
+        Order ord = new Order();
+        ord.setId(1);
+        ord.setProductionEnd("23-11-2017");
+        System.out.println(db.updateOrderEndDate(ord));
     }
 
     /**
      * Implemented fully
-     * 
-     * @return 
+     *
+     * @return
      */
     @Override
     public List<ProductionBlock> getProductionBlocks() {
@@ -85,7 +91,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
                 prodBlocks.add(localProdBlock);
             }
         } catch (SQLException ex) {
-            System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
+            System.out.println("Error fetching from database:\n" + ex);
             return null;
         }
         return prodBlocks;
@@ -93,9 +99,9 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     /**
      * Implemented fully
-     * 
+     *
      * @param productionBlockId
-     * @return 
+     * @return
      */
     @Override
     public ProductionBlock getProductionBlock(int productionBlockId) {
@@ -114,7 +120,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
             prodBlockToReturn.setName(getProdBlockRs.getString("name"));
             prodBlockToReturn.setPort(getProdBlockRs.getInt("port"));
         } catch (SQLException ex) {
-            System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
+            System.out.println("Error fetching from database:\n" + ex);
             return null;
         } catch (IllegalArgumentException ex) {
             System.out.println("Invalid input: " + ex.getMessage());
@@ -125,9 +131,9 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     /**
      * Implemented fully
-     * 
+     *
      * @param profileId
-     * @return 
+     * @return
      */
     @Override
     public GrowthProfile getGrowthProfile(int profileId) {
@@ -149,7 +155,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
             profToReturn.setNightTemperature(getGrProfRs.getInt("night_celcius"));
             profToReturn.setLightSequence(this.getLightSchedule(profileId));
         } catch (SQLException ex) {
-            System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
+            System.out.println("Error fetching from database:\n" + ex);
             return null;
         } catch (IllegalArgumentException ex) {
             System.out.println("Invalid input: " + ex.getMessage());
@@ -160,7 +166,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     /**
      * Implemented fully
-     * 
+     *
      * Internal method to fetch the Light objects from DB to be used in a growthProfile
      *
      * @param growthProfileId growth profile ID to fetch Light objects with
@@ -188,8 +194,9 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     /**
      * Not implemented
-     * 
+     *
      * Will fetch all data a Production object requires to be completely filled
+     *
      * @param productionId
      * @return Full Production object
      */
@@ -216,7 +223,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
             //saveDatSt.setInt(6, dataObjectToSave.getProdId());    -- Missing attribute on Log.prodId
             saveDatSt.executeUpdate();
         } catch (SQLException ex) {
-            System.out.println("Error inserting into database: (Code) " + ex.getErrorCode());
+            System.out.println("Error inserting into database:\n" + ex);
             return false;
         }
         return true;
@@ -224,7 +231,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     /**
      * Implemented fully
-     * 
+     *
      * @param profileToSave GrowthProfile object to split apart and save in Database
      * @return True on succesful save in database, false otherwise
      */
@@ -245,7 +252,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
                 this.saveLightSchedule(profileToSave.getId(), light);
             }
         } catch (SQLException ex) {
-            System.out.println("Error inserting into database: (Code) " + ex.getErrorCode());
+            System.out.println("Error inserting into database:\n" + ex);
             return false;
         }
         return true;
@@ -253,9 +260,9 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     /**
      * Implemented fully
-     * 
+     *
      * @param dataLogIdToDelete
-     * @return 
+     * @return
      */
     @Override
     public boolean deleteDataLog(int dataLogIdToDelete) {
@@ -270,7 +277,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
                 return true;
             }
         } catch (SQLException ex) {
-            System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
+            System.out.println("Error fetching from database:\n" + ex);
             return false;
         } catch (IllegalArgumentException ex) {
             System.out.println("Invalid input: " + ex.getMessage());
@@ -280,11 +287,13 @@ public class DatabaseHandler implements IMesDatabaseFacade {
     }
 
     /**
+     * Implemented fully
+     *
      * Method for saving internal light schedules for a given growthProfile object
      *
      * @return True on succesful save in database, false otherwise
      */
-    private boolean saveLightSchedule(int growthProfile, Light lightObjectToSave) throws SQLException {
+    private boolean saveLightSchedule(int growthProfile, Light lightObjectToSave) {
         String saveLightQuery = "INSERT INTO growthlight_view (growth_id,type,time,value) VALUES (?,?,?,?,?);";
         try (PreparedStatement saveLightSt = this.conn.prepareStatement(saveLightQuery)) {
             saveLightSt.setInt(1, growthProfile);
@@ -292,20 +301,23 @@ public class DatabaseHandler implements IMesDatabaseFacade {
             saveLightSt.setInt(3, lightObjectToSave.getRunTimeUnix());
             saveLightSt.setInt(4, lightObjectToSave.getPowerLevel());
             saveLightSt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("Error inserting into database:\n" + ex);
+            return false;
         }
         return true;
     }
 
     /**
      * Implemented fully
-     * 
+     *
      * @param orderObjectsToSave
-     * @return 
+     * @return
      */
     @Override
     public boolean saveOrders(List<Order> orderObjectsToSave) {
-        for(Order order : orderObjectsToSave){
-            if(!this.saveOrder(order)){
+        for (Order order : orderObjectsToSave) {
+            if (!this.saveOrder(order)) {
                 return false;
             }
         }
@@ -314,9 +326,9 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     /**
      * Implemented fully
-     * 
+     *
      * @param orderObjectToSave
-     * @return 
+     * @return
      */
     private boolean saveOrder(Order orderObjectToSave) {
         String saveOrderQuery = "INSERT INTO \"order\" (fetched_time,prod_name,qty,status) VALUES (?,?,?,?);";
@@ -327,7 +339,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
             saveOrderSt.setInt(4, orderObjectToSave.getStatus());
             saveOrderSt.executeUpdate();
         } catch (SQLException ex) {
-            System.out.println("Error inserting into database: (Code) " + ex.getErrorCode());
+            System.out.println("Error inserting into database:\n" + ex);
             return false;
         }
         return true;
@@ -335,9 +347,9 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     /**
      * Implemented fully
-     * 
+     *
      * @param prodObjectToSave
-     * @return 
+     * @return
      */
     @Override
     public boolean saveProduction(Production prodObjectToSave) {
@@ -349,47 +361,52 @@ public class DatabaseHandler implements IMesDatabaseFacade {
             saveProdSt.setString(4, new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
             saveProdSt.executeQuery();
         } catch (SQLException ex) {
-            System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
+            System.out.println("Error fetching from database:\n" + ex);
             return false;
         }
         return true;
     }
 
     /**
-     * Implemented as dummy
-     * 
+     * Implemented fully
+     *
      * @param dateStringRepresentation
-     * @return 
+     * @return
      */
     @Override
     public List<Order> fetchOrders(String dateStringRepresentation) {
-        /*
-            Dummy data begin
-         */
         List<Order> ordersToReturn = new ArrayList<>();
-
-        Order testOrder = new Order();
-        testOrder.setId(1);
-        testOrder.setFetchedTime(dateStringRepresentation);
-        testOrder.setProductionName("Test objekt græskar");
-        testOrder.setProductionBegin("18-11-2017");
-        testOrder.setProductionEnd("19-11-2017");
-        testOrder.setQuantity(10);
-        testOrder.setStatus(0);
-
-        ordersToReturn.add(testOrder);
-
+        ResultSet fetchOrdersRs;
+        String fetchOrdersQuery = "SELECT order_id,prod_begin,prod_end,prod_name,qty,status FROM \"order\" WHERE fetched_time = ?;";
+        try (PreparedStatement fetchOrdersSt = this.conn.prepareStatement(fetchOrdersQuery)) {
+            if(!isDateCorrectFormat(dateStringRepresentation)){
+                return null;
+            }
+            fetchOrdersSt.setString(1, dateStringRepresentation);
+            fetchOrdersRs = fetchOrdersSt.executeQuery();
+            while (fetchOrdersRs.next()) {
+                Order localOrder = new Order();
+                localOrder.setId(fetchOrdersRs.getInt("order_id"));
+                localOrder.setFetchedTime(dateStringRepresentation);
+                localOrder.setProductionBegin(fetchOrdersRs.getString("prod_begin"));
+                localOrder.setProductionEnd(fetchOrdersRs.getString("prod_end"));
+                localOrder.setProductionName(fetchOrdersRs.getString("prod_name"));
+                localOrder.setQuantity(fetchOrdersRs.getInt("qty"));
+                localOrder.setStatus(fetchOrdersRs.getInt("status"));
+                ordersToReturn.add(localOrder);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error fetching from database:\n" + ex);
+            return null;
+        }
         return ordersToReturn;
-        /*
-            Dummy data end
-         */
     }
 
     /**
      * Implemented fully
-     * 
+     *
      * @param prodBlockToSave
-     * @return 
+     * @return
      */
     @Override
     public boolean saveProductionBlock(ProductionBlock prodBlockToSave) {
@@ -400,7 +417,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
             saveProdBlockSt.setString(3, prodBlockToSave.getName());
             saveProdBlockSt.execute();
         } catch (SQLException ex) {
-            System.out.println("Error fetching from database: (Code) " + ex.getErrorCode());
+            System.out.println("Error fetching from database:\n" + ex);
             return false;
         }
         return true;
@@ -408,9 +425,9 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     /**
      * Not implemented
-     * 
+     *
      * @param prodObjectToUpd
-     * @return 
+     * @return
      */
     @Override
     public boolean updateProductionLot(Production prodObjectToUpd) {
@@ -418,27 +435,49 @@ public class DatabaseHandler implements IMesDatabaseFacade {
     }
 
     /**
-     * Not implemented
-     * 
-     * Will only update End Date for the given Order object.
-     * Will fail if ID or productionEnd is not set on given Order object.
+     * Implemented Fully
+     *
+     * Will only update End Date for the given Order object. Will fail if ID or productionEnd is not set on given Order object.
+     *
      * @param orderObjectToUpd Order object to update in database. Must have valid ID and productionEnd set to be eligible
      * @return If orderObjectToUpd.productionEnd == null this returns false, true on successful update in database
      */
     @Override
     public boolean updateOrderEndDate(Order orderObjectToUpd) {
-        if((orderObjectToUpd.getId() < 0) || (orderObjectToUpd.getProductionEnd() == null)){
+        if ((orderObjectToUpd.getId() < 0) || (orderObjectToUpd.getProductionEnd() == null)) {
             return false;
         }
-        String updOrderEndQuery = "UPDATE \"order\" SET production_end = ? WHERE order_id = ?;";
-        try(PreparedStatement updOrderEndSt = this.conn.prepareStatement(updOrderEndQuery)){
+        String updOrderEndQuery = "UPDATE \"order\" SET prod_end = ? WHERE order_id = ?;";
+        try (PreparedStatement updOrderEndSt = this.conn.prepareStatement(updOrderEndQuery)) {
+            if(!isDateCorrectFormat(orderObjectToUpd.getProductionEnd())){
+                return false;
+            }
             updOrderEndSt.setString(1, orderObjectToUpd.getProductionEnd());
             updOrderEndSt.setInt(2, orderObjectToUpd.getId());
-            if(updOrderEndSt.executeUpdate() <= 0){
+            if (updOrderEndSt.executeUpdate() <= 0) {
                 return false;
             }
         } catch (SQLException ex) {
-            System.out.println("Error updating order in database: (Code) " + ex.getErrorCode());
+            System.out.println("Error updating order in database:\n" + ex);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Internal method to check if the required format for string dates is valid
+     * @param dateToCheck
+     * @return 
+     */
+    private boolean isDateCorrectFormat(String dateToCheck) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+            Date dateString = format.parse(dateToCheck);
+            if (!dateToCheck.equals(format.format(dateString))) {
+                return false;            // Illegal date from parameter
+            }
+        } catch (ParseException ex) {
+            System.out.println("Illegal date input! Required format violated.");
             return false;
         }
         return true;
