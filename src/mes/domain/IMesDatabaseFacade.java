@@ -18,7 +18,6 @@ public interface IMesDatabaseFacade {
     public abstract List<Order> fetchOrders(String dateStringRepresentation);
     public abstract ProductionBlock getProductionBlock(int productionBlockId);
     public abstract GrowthProfile getGrowthProfile(int growthProfileId);
-    public abstract Production getProduction(int productionId);
     
     public abstract boolean saveDataLog(Log dataObjectToSave);
     public abstract boolean saveGrowthProfile(GrowthProfile profileToSave);
@@ -26,7 +25,6 @@ public interface IMesDatabaseFacade {
     public abstract boolean saveProduction(Production prodObjectToSave);
     public abstract boolean saveProductionBlock(ProductionBlock prodBlockToSave);
     
-    public abstract boolean updateProductionLot(Production prodObjectToUpd);
     public abstract boolean updateOrderEndDate(Order orderObjectToUpd);
     
     public abstract boolean deleteDataLog(int dataLogIdToDelete);
