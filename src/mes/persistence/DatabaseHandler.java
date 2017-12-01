@@ -16,16 +16,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import mes.domain.IMesDatabaseFacade;
 import mes.domain.Order;
 import mes.domain.Production;
 import shared.*;
+import mes.domain.IMesDatabase;
 
 /**
  *
  * @author chris
  */
-public class DatabaseHandler implements IMesDatabaseFacade {
+public class DatabaseHandler implements IMesDatabase {
 
     private final int port = 5432;
     private final String url = "jdbc:postgresql://";
@@ -52,7 +52,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
      * @param args
      */
     public static void main(String[] args) {
-        IMesDatabaseFacade db = new DatabaseHandler();
+        IMesDatabase db = new DatabaseHandler();
 
         System.out.println(db.getProductionBlocks());
 
@@ -72,12 +72,6 @@ public class DatabaseHandler implements IMesDatabaseFacade {
 
     }
 
-    /**
-     * Implemented fully
-     *
-     * Method to get a list of all active production blocks in database
-     * @return List of productionblocks
-     */
     @Override
     public List<ProductionBlock> getProductionBlocks() {
         List<ProductionBlock> prodBlocks = new ArrayList<>();
@@ -100,13 +94,6 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return prodBlocks;
     }
 
-    /**
-     * Implemented fully
-     *
-     * Method to fetch a production block from database.
-     * @param productionBlockId ID for production block to be fetched from database
-     * @return Full ProductionBlock object
-     */
     @Override
     public ProductionBlock getProductionBlock(int productionBlockId) {
         ProductionBlock prodBlockToReturn = new ProductionBlock();
@@ -133,33 +120,25 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return prodBlockToReturn;
     }
 
-    /**
-     * Implemented fully
-     *
-     * Method to fetch a growthprofile.
-     * This method will invoke getLightSchedule(), which will fill up a list of Light objects.
-     * @param profileId ID for growthprofile to be fetched from database
-     * @return A complete GrowthProfile object, with Light sequence.
-     */
     @Override
-    public GrowthProfile getGrowthProfile(int profileId) {
+    public GrowthProfile getGrowthProfile(int growthProfileId) {
         GrowthProfile profToReturn = new GrowthProfile();
         ResultSet getGrProfRs;
         String getGrProfQuery = "SELECT celcius,water_lvl,moist,night_celcius,name FROM growthprofile WHERE growth_id = ?";
         try (PreparedStatement getGrProfSt = this.conn.prepareStatement(getGrProfQuery)) {
-            if (profileId < 0) {
+            if (growthProfileId < 0) {
                 throw new IllegalArgumentException("Growth Profile ID can only be positive!");
             }
-            getGrProfSt.setInt(1, profileId);
+            getGrProfSt.setInt(1, growthProfileId);
             getGrProfRs = getGrProfSt.executeQuery();
             getGrProfRs.next();
-            profToReturn.setId(profileId);
+            profToReturn.setId(growthProfileId);
             profToReturn.setMoisture(getGrProfRs.getInt("moist"));
             profToReturn.setName(getGrProfRs.getString("name"));
             profToReturn.setTemperature(getGrProfRs.getInt("celcius"));
             profToReturn.setWaterLevel(getGrProfRs.getInt("water_lvl"));
             profToReturn.setNightTemperature(getGrProfRs.getInt("night_celcius"));
-            profToReturn.setLightSequence(this.getLightSchedule(profileId));
+            profToReturn.setLightSequence(this.getLightSchedule(growthProfileId));
         } catch (SQLException ex) {
             System.out.println("Error fetching from database:\n" + ex);
             return null;
@@ -198,13 +177,6 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         }
     }
 
-    /**
-     * Implemented fully!
-     *
-     * Method to save a data log.
-     * @param dataObjectToSave Log object to store in the database
-     * @return True if dataObjectToSave is stored succesfully in database
-     */
     @Override
     public boolean saveDataLog(Log dataObjectToSave) {
         String saveDatQuery = "INSERT INTO datalogs_view (prod_block,type,timestamp,cmd,value,prod_id) VALUES (?,?,?,?,?,?);";
@@ -223,15 +195,6 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return true;
     }
 
-    /**
-     * Implemented fully
-     *
-     * Method to store a new growthProfile to the database.
-     * Whenever a growthprofile is fetched and edited in the GUI layer, it will be treated as a new growthprofile.
-     * Therefore there are no UPDATE procedure for growthprofiles, only ability to insert a new one.
-     * @param profileToSave GrowthProfile object to split apart and save in Database
-     * @return True on succesful save in database, false otherwise
-     */
     @Override
     public boolean saveGrowthProfile(GrowthProfile profileToSave) {
         ResultSet saveProfRs;
@@ -255,15 +218,6 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return true;
     }
 
-    /**
-     * Implemented fully
-     *
-     * Method to delete a dataLog from the database.
-     * 
-     * Method will fail if dataLogIdToDelete is not greater than 0
-     * @param dataLogIdToDelete Data log ID to delete from database
-     * @return 
-     */
     @Override
     public boolean deleteDataLog(int dataLogIdToDelete) {
         String delDatQuery = "DELETE FROM datalogs_view WHERE data_id = ?";
@@ -309,14 +263,6 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return true;
     }
 
-    /**
-     * Implemented fully
-     *
-     * Method to store a list of Order objects.
-     * This method will primarily be called when new orders from ERP needs to be stored locally.
-     * @param orderObjectsToSave List of Order objects to store in database
-     * @return True if the entire list has been succesfully saved, false otherwise
-     */
     @Override
     public boolean saveOrders(List<Order> orderObjectsToSave) {
         for (Order order : orderObjectsToSave) {
@@ -350,15 +296,6 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return true;
     }
 
-    /**
-     * Implemented fully
-     *
-     * This method will query the database and insert a new row into prod_overview.
-     * This means that a production for a given order has begun. 
-     * Method will fail if the attributes on prodObjectToSave are null
-     * @param prodObjectToSave Production object to store in the database
-     * @return True if stored succesfully in the database, false otherwise
-     */
     @Override
     public boolean saveProduction(Production prodObjectToSave) {
         if (prodObjectToSave.getBlock() == null || prodObjectToSave.getDataLogs() == null || prodObjectToSave.getGrowthProfile() == null || prodObjectToSave.getOrder() == null) {
@@ -379,15 +316,6 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return true;
     }
 
-    /**
-     * Implemented fully
-     *
-     * Will query the database for all Orders with the given parameter as their fetched_time.
-     * 
-     * Method will fail if dateStringRepresentation is not a valid string date (See method: isDateCorrectFormat(String dateToCheck))
-     * @param dateStringRepresentation String date used to fetch all orders from database
-     * @return List of Order objects 
-     */
     @Override
     public List<Order> fetchOrders(String dateStringRepresentation) {
         List<Order> ordersToReturn = new ArrayList<>();
@@ -417,14 +345,6 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return ordersToReturn;
     }
 
-    /**
-     * Implemented fully
-     *
-     * Inserts a new row into plc_conn.
-     * Will use all attributes in prodBlockToSave as arguments for this SQL statement.
-     * @param prodBlockToSave ProductionBlock object to save to database
-     * @return True on successful save to database
-     */
     @Override
     public boolean saveProductionBlock(ProductionBlock prodBlockToSave) {
         String saveProdBlockQuery = "INSERT INTO plc_conn (ip,port,name) VALUES (?,?,?);";
@@ -440,16 +360,6 @@ public class DatabaseHandler implements IMesDatabaseFacade {
         return true;
     }
 
-    /**
-     * Implemented Fully
-     * 
-     * This method will call to generateLot, and receive a generated lot number for this Order object.
-     * The method will then proceed to store production end date, status and the generated lot number to database.
-     * 
-     * This method will fail if orderObjectToUpd does not contain an ID greater than 0, productionEnd is not set, or if generateLot returns a null value.
-     * @param orderObjectToUpd Order object to update in database. Must have valid ID and productionEnd set to be eligible
-     * @return If orderObjectToUpd.productionEnd == null this returns false, true on successful update in database
-     */
     @Override
     public boolean updateOrderEndDate(Order orderObjectToUpd) {
         if ((orderObjectToUpd.getId() < 0) || (orderObjectToUpd.getProductionEnd() == null)) {
@@ -509,7 +419,7 @@ public class DatabaseHandler implements IMesDatabaseFacade {
      * lot number will be generated with following format:
      * PLC ID - Production ID - WeekInYear DayInWeek Year
      * Example:
-     * PLC ID: 1, Production ID: 2, Date: 23-11-2017
+     * PLC ID: 1, Production ID: 2, EndDate: 23-11-2017
      * lot = 1-2-47417
      * @param orderToCreateLotFor Order object to create lot number for
      * @return The lot number
