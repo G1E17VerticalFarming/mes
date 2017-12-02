@@ -16,6 +16,10 @@ public interface IMes {
     
     public void setDate(LocalDate date);
     public List fetchOrders();
-    
+    public List fetchStatuses();
+    public List fetchGrowthProfiles();
+    public boolean prepareOrder();
+    public List fetchDataLogs();
+    public boolean loginCertified(String username, String password);
     
 }

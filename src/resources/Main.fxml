@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -15,7 +20,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mes.gui.MainController">
+<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mes.gui.MainController">
    <children>
       <TabPane layoutX="29.0" layoutY="6.0" prefHeight="206.0" prefWidth="320.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -28,9 +33,16 @@
                               <Font name="System Bold" size="39.0" />
                            </font>
                         </Label>
-                        <PasswordField fx:id="passwordField_password" layoutX="438.0" layoutY="359.0" promptText="Password" />
-                        <TextField fx:id="textField_username" layoutX="438.0" layoutY="315.0" promptText="Username" />
-                        <Button fx:id="button_login" layoutX="489.0" layoutY="400.0" mnemonicParsing="false" onAction="#handleMESLogin" text="Login" />
+                        <PasswordField fx:id="pswdFieldPassword" layoutX="438.0" layoutY="359.0" promptText="Password" />
+                        <TextField fx:id="txtFieldUsername" layoutX="438.0" layoutY="315.0" promptText="Username" />
+                        <Button fx:id="btnLogin" layoutX="489.0" layoutY="400.0" mnemonicParsing="false" onAction="#handleMESLogin" text="Login" />
+                        <Label fx:id="lblLoginStatus" layoutX="397.0" layoutY="438.0" prefHeight="17.0" prefWidth="232.0" textAlignment="CENTER" textFill="#ff3c00">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="btnLogout" layoutX="956.0" layoutY="700.0" mnemonicParsing="false" onAction="#handleMESLogout" text="Logout" visible="false" />
+                        <TextArea editable="false" layoutX="281.0" layoutY="244.0" prefHeight="71.0" prefWidth="116.0" text="Login details:&#10;Username: admin&#10;Password: 123" />
                      </children>
                   </AnchorPane>
               </content>
@@ -39,45 +51,46 @@
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <TabPane layoutX="-24.0" layoutY="111.0" prefHeight="421.0" prefWidth="650.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TabPane fx:id="orderTabPane" layoutX="-24.0" layoutY="111.0" prefHeight="421.0" prefWidth="650.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <tabs>
                             <Tab closable="false" text="Order Picker">
                               <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>
-                                          <TableView fx:id="tableViewOrderPicker" layoutX="18.0" layoutY="45.0" prefHeight="635.0" prefWidth="988.0">
+                                          <TableView fx:id="tableViewOrderPicker" layoutX="18.0" layoutY="45.0" prefHeight="611.0" prefWidth="988.0">
                                             <columns>
                                               <TableColumn fx:id="tabOrderId" prefWidth="75.0" text="order_id" />
                                               <TableColumn fx:id="tabOrderFetchedTime" prefWidth="92.33331298828125" text="fetched_time" />
                                                 <TableColumn fx:id="tabOrderQty" prefWidth="57.66668701171875" text="qty" />
                                                 <TableColumn fx:id="tabOrderStatus" prefWidth="57.66668701171875" text="status" />
-                                                <TableColumn fx:id="tabOrderProdName" prefWidth="74.0" text="prod_name" />
-                                                <TableColumn fx:id="tabOrderProdBegin" prefWidth="74.0" text="prod_begin" />
-                                                <TableColumn fx:id="tabOrderProdEnd" prefWidth="74.0" text="prod_end" />
+                                                <TableColumn fx:id="tabOrderProdName" prefWidth="355.0" text="prod_name" />
+                                                <TableColumn fx:id="tabOrderProdBegin" minWidth="0.0" prefWidth="173.0" text="prod_begin" />
+                                                <TableColumn fx:id="tabOrderProdEnd" minWidth="8.0" prefWidth="175.0" text="prod_end" />
                                             </columns>
                                           </TableView>
                                           <DatePicker fx:id="datePickerOrderDate" editable="false" layoutX="48.0" layoutY="10.0" />
                                           <Label layoutX="16.0" layoutY="14.0" text="Date:" />
                                           <Button fx:id="btnFetchOrders" layoutX="237.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleFetchOrdersFromDate" text="Fetch Orders" />
+                                          <Button layoutX="18.0" layoutY="671.0" mnemonicParsing="false" onAction="#handleSelectOrder" prefHeight="25.0" prefWidth="988.0" text="Select" />
                                        </children>
                                     </AnchorPane>
                               </content>
                             </Tab>
-                            <Tab closable="false" text="order_name">
+                            <Tab fx:id="pickedOrderTab" disable="true" text="order_name">
                               <content>
                                 <AnchorPane fx:id="tab_order_name" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>
                                           <Label layoutX="383.0" layoutY="192.0" text="Order:" />
-                                          <TextField fx:id="textField_prep_order" layoutX="485.0" layoutY="188.0" prefHeight="25.0" prefWidth="158.0" />
+                                          <TextField fx:id="txtFieldPrepOrder" layoutX="485.0" layoutY="188.0" prefHeight="25.0" prefWidth="158.0" />
                                           <Label layoutX="384.0" layoutY="281.0" text="ID:" />
-                                          <TextField fx:id="textField_prep_id" disable="true" editable="false" layoutX="485.0" layoutY="277.0" prefHeight="25.0" prefWidth="60.0" />
+                                          <TextField fx:id="txtFieldPrepID" disable="true" editable="false" layoutX="485.0" layoutY="277.0" prefHeight="25.0" prefWidth="60.0" />
                                           <Label layoutX="382.0" layoutY="327.0" text="Order Status:" />
                                           <Label layoutX="384.0" layoutY="374.0" text="Growth Profile:" />
-                                          <ComboBox fx:id="comboBox_prep_order_status" layoutX="484.0" layoutY="323.0" prefWidth="150.0" />
-                                          <ComboBox fx:id="comboBox_prep_growth_profile" layoutX="484.0" layoutY="370.0" prefWidth="150.0" />
+                                          <ComboBox fx:id="comboBoxPrepOrderStatus" layoutX="484.0" layoutY="323.0" prefWidth="150.0" />
+                                          <ComboBox fx:id="comboBoxPrepGrowthProfile" layoutX="484.0" layoutY="370.0" prefWidth="150.0" />
                                           <Label layoutX="384.0" layoutY="236.0" text="Amount:" />
-                                          <TextField fx:id="textField_prep_amount" layoutX="485.0" layoutY="232.0" prefHeight="25.0" prefWidth="158.0" />
-                                          <Button fx:id="button_prep_prepare" layoutX="484.0" layoutY="418.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Prepare" />
+                                          <TextField fx:id="txtFieldPrepAmount" layoutX="485.0" layoutY="232.0" prefHeight="25.0" prefWidth="158.0" />
+                                          <Button layoutX="484.0" layoutY="418.0" mnemonicParsing="false" onAction="#handlePrepareOrder" prefHeight="25.0" prefWidth="150.0" text="Prepare" />
                                           <Label layoutX="426.0" layoutY="125.0" text="Prepare Order">
                                              <font>
                                                 <Font name="System Bold" size="26.0" />
@@ -107,20 +120,20 @@
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#bababa" height="643.0" layoutX="407.0" layoutY="29.0" stroke="#cccccc" strokeType="INSIDE" width="612.0" />
-                        <TableView fx:id="tableView_gp" layoutX="14.0" layoutY="30.0" prefHeight="675.0" prefWidth="386.0">
+                        <TableView fx:id="tableViewGrowthProfile" layoutX="14.0" layoutY="30.0" prefHeight="607.0" prefWidth="386.0">
                           <columns>
-                            <TableColumn fx:id="tab_gp_id" prefWidth="90.0" text="ID" />
-                            <TableColumn fx:id="tab_gp_name" prefWidth="295.0" text="Name" />
+                            <TableColumn fx:id="tabGpId" prefWidth="90.0" text="ID" />
+                            <TableColumn fx:id="tabGpName" prefWidth="295.0" text="Name" />
                           </columns>
                         </TableView>
                         <Label layoutX="14.0" layoutY="6.0" text="Growth Profiles:">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="textField_gp_celcius" layoutX="533.0" layoutY="141.0" />
-                        <TextField fx:id="textField_gp_water_level" layoutX="533.0" layoutY="183.0" />
-                        <TextField fx:id="textField_gp_moisture" layoutX="533.0" layoutY="226.0" />
-                        <TextField fx:id="textField_gp_name" layoutX="533.0" layoutY="74.0" prefHeight="25.0" prefWidth="348.0" />
+                        <TextField fx:id="txtFieldGpCelcius" layoutX="533.0" layoutY="141.0" />
+                        <TextField fx:id="txtFieldGpWaterLevel" layoutX="533.0" layoutY="183.0" />
+                        <TextField fx:id="txtFieldGpMoisture" layoutX="533.0" layoutY="226.0" />
+                        <TextField fx:id="txtFieldGpName" layoutX="533.0" layoutY="74.0" prefHeight="25.0" prefWidth="348.0" />
                         <Label layoutX="534.0" layoutY="30.0" text="Add/Edit Growth Profile:">
                            <font>
                               <Font name="System Bold" size="26.0" />
@@ -140,7 +153,7 @@
                         <Label layoutX="463.0" layoutY="187.0" text="Water level" />
                         <Label layoutX="469.0" layoutY="230.0" text="Moisture" />
                         <Label layoutX="477.0" layoutY="78.0" text="Name" />
-                        <TableView fx:id="tableView_sequences" layoutX="534.0" layoutY="454.0" prefHeight="166.0" prefWidth="347.0">
+                        <TableView fx:id="tableViewSequences" layoutX="534.0" layoutY="454.0" prefHeight="166.0" prefWidth="347.0">
                           <columns>
                             <TableColumn fx:id="tab_sequences_sequence" prefWidth="65.66668701171875" text="Sequence" />
                             <TableColumn fx:id="tab_sequences_type" prefWidth="105.6666259765625" text="Type" />
@@ -148,29 +161,81 @@
                               <TableColumn fx:id="tab_sequences_value" prefWidth="91.6666259765625" text="Value" />
                           </columns>
                         </TableView>
-                        <TextField fx:id="textField_gp_time" layoutX="533.0" layoutY="332.0" prefHeight="25.0" prefWidth="150.0" />
-                        <ComboBox fx:id="comboBox_gp_type" layoutX="533.0" layoutY="290.0" prefWidth="150.0" />
-                        <TextField fx:id="textField_gp_value" layoutX="533.0" layoutY="373.0" prefHeight="25.0" prefWidth="149.0" />
-                        <Button fx:id="button_add_sequence" layoutX="534.0" layoutY="413.0" mnemonicParsing="false" text="Add Sequence" />
+                        <TextField fx:id="txtFieldGpTime" layoutX="533.0" layoutY="332.0" prefHeight="25.0" prefWidth="150.0" />
+                        <ComboBox fx:id="comboBoxGpType" layoutX="533.0" layoutY="290.0" prefWidth="150.0" />
+                        <TextField fx:id="txtFieldGpValue" layoutX="533.0" layoutY="373.0" prefHeight="25.0" prefWidth="149.0" />
+                        <Button layoutX="534.0" layoutY="413.0" mnemonicParsing="false" onAction="#handleAddSequence" text="Add Sequence" />
                         <Label layoutX="480.0" layoutY="294.0" text="Type" />
                         <Label layoutX="479.0" layoutY="336.0" text="Time" />
                         <Label layoutX="479.0" layoutY="377.0" text="Value" />
                         <Label layoutX="534.0" layoutY="629.0" text="Selected:" />
-                        <Button fx:id="button_sequence_delete" layoutX="728.0" layoutY="625.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="152.0" text="Delete" />
-                        <Label fx:id="label_sequence_selected" layoutX="594.0" layoutY="629.0" text="-" />
+                        <Button layoutX="728.0" layoutY="625.0" mnemonicParsing="false" onAction="#handleDeleteSequence" prefHeight="25.0" prefWidth="152.0" text="Delete" />
+                        <Label fx:id="lblSequenceSelected" layoutX="594.0" layoutY="629.0" text="-" />
                         <Label layoutX="694.0" layoutY="145.0" text="degrees" />
                         <Label layoutX="694.0" layoutY="187.0" text="\%" />
                         <Label layoutX="694.0" layoutY="230.0" text="\%" />
                         <Label layoutX="696.0" layoutY="336.0" text="sec" />
                         <Label layoutX="694.0" layoutY="377.0" text="\%" />
-                        <Button layoutX="405.0" layoutY="680.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="615.0" text="Save" />
+                        <Button layoutX="407.0" layoutY="680.0" mnemonicParsing="false" onAction="#handleSaveGrowthProfile" prefHeight="25.0" prefWidth="613.0" text="Save" />
+                        <Button layoutX="14.0" layoutY="680.0" mnemonicParsing="false" onAction="#handleDeleteGrowthProfile" prefHeight="25.0" prefWidth="386.0" text="Delete" />
+                        <Button layoutX="14.0" layoutY="646.0" mnemonicParsing="false" onAction="#handleSelectGrowthProfile" prefHeight="25.0" prefWidth="386.0" text="Select" />
                      </children>
                   </AnchorPane>
               </content>
             </Tab>
             <Tab fx:id="tabStatistics" closable="false" disable="true" text="Statistics">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TabPane fx:id="statisticsTabPane" layoutX="132.0" prefHeight="739.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <tabs>
+                            <Tab text="Logs">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <TableView fx:id="tableViewDataLogs" layoutX="14.0" layoutY="53.0" prefHeight="592.0" prefWidth="996.0">
+                                            <columns>
+                                              <TableColumn fx:id="tabDataId" prefWidth="75.0" text="data_id" />
+                                              <TableColumn fx:id="tabDataProductionBlock" prefWidth="75.0" text="prod_block" />
+                                                <TableColumn fx:id="tabDataType" prefWidth="75.0" text="type" />
+                                                <TableColumn fx:id="tabDataTimestamp" prefWidth="140.0" text="timestamp" />
+                                                <TableColumn fx:id="tabDataCommand" text="cmd" />
+                                                <TableColumn fx:id="tabDataValue" prefWidth="550.0" text="value" />
+                                            </columns>
+                                          </TableView>
+                                          <Button layoutX="14.0" layoutY="666.0" mnemonicParsing="false" onAction="#handleNewDataLog" prefHeight="25.0" prefWidth="997.0" text="New Data Log" />
+                                          <ComboBox fx:id="comboBoxLogFilter" layoutX="55.0" layoutY="14.0" prefWidth="150.0" />
+                                          <Label layoutX="22.0" layoutY="18.0" prefHeight="17.0" prefWidth="33.0" text="Filter:" />
+                                       </children>
+                                    </AnchorPane>
+                              </content>
+                            </Tab>
+                            <Tab fx:id="tabNewDataLog" disable="true" text="New Log">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <ComboBox fx:id="comboBoxLogType" layoutX="204.0" layoutY="84.0" prefWidth="150.0" />
+                                          <DatePicker fx:id="datePickerLog" layoutX="38.0" layoutY="27.0" />
+                                          <ComboBox fx:id="comboBoxLogCmd" layoutX="369.0" layoutY="84.0" prefWidth="150.0" />
+                                          <TextArea fx:id="txtAreaLog" layoutX="38.0" layoutY="156.0" prefHeight="488.0" prefWidth="945.0" />
+                                          <ComboBox fx:id="comboBoxLogProdBlock" layoutX="38.0" layoutY="84.0" prefWidth="150.0" />
+                                          <Button layoutX="37.0" layoutY="663.0" mnemonicParsing="false" onAction="#handleSaveDataLog" prefHeight="25.0" prefWidth="947.0" text="Save Data Log" />
+                                          <Label layoutX="38.0" layoutY="6.0" text="Date:" />
+                                          <Label layoutX="38.0" layoutY="60.0" text="Production block:" />
+                                          <Label layoutX="204.0" layoutY="60.0" text="Type:" />
+                                          <Label layoutX="369.0" layoutY="60.0" text="Command:" />
+                                          <Label layoutX="38.0" layoutY="110.0" text="Log:">
+                                             <font>
+                                                <Font name="System Bold" size="30.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </AnchorPane>
+                              </content>
+                            </Tab>
+                          </tabs>
+                        </TabPane>
+                     </children></AnchorPane>
               </content>
             </Tab>
         </tabs>

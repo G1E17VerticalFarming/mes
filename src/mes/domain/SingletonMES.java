@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import mes.persistence.DatabaseHandler;
+import shared.*;
 
 /**
  *
@@ -17,7 +18,7 @@ import mes.persistence.DatabaseHandler;
 public class SingletonMES implements IMes {
 
     private List orders;
-    private List growthProfiles;
+    private List growthProfiles = new ArrayList<>();
     private List retrievedLogs;
     private Queue orderQueue;
 
@@ -36,21 +37,53 @@ public class SingletonMES implements IMes {
         }
         return instance;
     }
+    
+    @Override
+    public boolean loginCertified(String username, String password) {
+        // Just a dummy implementation
+        return username.equals("admin") && password.equals("123");
+    }
 
+    @Override
     public List fetchOrders() {
         this.orders = dbHandler.fetchOrders(date);
         return orders;
     }
-
-    public void sendOrderToPreparation(Order order) {
-
+    
+    @Override
+    public List fetchStatuses() {
+        return null;
+    }
+    
+    @Override
+    public List fetchGrowthProfiles() {
+        // Test implementation
+        GrowthProfile profile = new GrowthProfile();
+        profile.setId(1);
+        profile.setMoisture(20);
+        profile.setName("Grøntsager!");
+        profile.setNightTemperature(10);
+        profile.setTemperature(25);
+        profile.setWaterLevel(50);
+        profile.setLightSequence(null);
+        growthProfiles.add(profile);
+        
+        return growthProfiles;
+    }
+    
+    @Override
+    public List fetchDataLogs() {
+        return retrievedLogs;
     }
 
+    @Override
     public boolean prepareOrder() {
         // Call DB handler
+        System.out.println("Prepare order called");
         return true;
     }
 
+    @Override
     public void setDate(LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-LLLL-YYYY");
         

@@ -19,14 +19,17 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import mes.domain.IMes;
 import mes.domain.Order;
 import mes.domain.SingletonMES;
+import shared.GrowthProfile;
 
 /**
  *
@@ -37,34 +40,6 @@ public class MainController implements Initializable {
     @FXML
     private AnchorPane tab_order_name;
     @FXML
-    private TextField textField_prep_order;
-    @FXML
-    private TextField textField_prep_id;
-    @FXML
-    private ComboBox<?> comboBox_prep_order_status;
-    @FXML
-    private ComboBox<?> comboBox_prep_growth_profile;
-    @FXML
-    private TextField textField_prep_amount;
-    @FXML
-    private Button button_prep_prepare;
-    @FXML
-    private TableView<?> tableView_gp;
-    @FXML
-    private TableColumn<?, ?> tab_gp_id;
-    @FXML
-    private TableColumn<?, ?> tab_gp_name;
-    @FXML
-    private TextField textField_gp_celcius;
-    @FXML
-    private TextField textField_gp_water_level;
-    @FXML
-    private TextField textField_gp_moisture;
-    @FXML
-    private TextField textField_gp_name;
-    @FXML
-    private TableView<?> tableView_sequences;
-    @FXML
     private TableColumn<?, ?> tab_sequences_sequence;
     @FXML
     private TableColumn<?, ?> tab_sequences_type;
@@ -73,28 +48,10 @@ public class MainController implements Initializable {
     @FXML
     private TableColumn<?, ?> tab_sequences_value;
     @FXML
-    private TextField textField_gp_time;
-    @FXML
-    private ComboBox<?> comboBox_gp_type;
-    @FXML
-    private TextField textField_gp_value;
-    @FXML
-    private Button button_add_sequence;
-    @FXML
-    private Button button_sequence_delete;
-    @FXML
-    private Label label_sequence_selected;
-    @FXML
-    private PasswordField passwordField_password;
-    @FXML
-    private TextField textField_username;
-    @FXML
-    private Button button_login;
-    @FXML
     private Button btnFetchOrders;
     @FXML
     private DatePicker datePickerOrderDate;
-    
+
     private IMes MES = SingletonMES.getInstance();
     @FXML
     private Tab tabOrders;
@@ -119,32 +76,128 @@ public class MainController implements Initializable {
     @FXML
     private TableColumn<Order, String> tabOrderProdEnd;
     @FXML
-    private TableView tableViewOrderPicker;
-    
+    private TableView<Order> tableViewOrderPicker;
+    @FXML
+    private TextField txtFieldPrepOrder;
+    @FXML
+    private TextField txtFieldPrepID;
+    @FXML
+    private ComboBox<?> comboBoxPrepOrderStatus;
+    @FXML
+    private ComboBox<?> comboBoxPrepGrowthProfile;
+    @FXML
+    private TextField txtFieldPrepAmount;
+    @FXML
+    private Tab pickedOrderTab;
+    @FXML
+    private TabPane orderTabPane;
+    @FXML
+    private TableView<GrowthProfile> tableViewGrowthProfile;
+    @FXML
+    private TableColumn<GrowthProfile, Integer> tabGpId;
+    @FXML
+    private TableColumn<GrowthProfile, String> tabGpName;
+    @FXML
+    private TextField txtFieldGpCelcius;
+    @FXML
+    private TextField txtFieldGpWaterLevel;
+    @FXML
+    private TextField txtFieldGpMoisture;
+    @FXML
+    private TextField txtFieldGpName;
+    @FXML
+    private TableView<?> tableViewSequences;
+    @FXML
+    private TextField txtFieldGpTime;
+    @FXML
+    private ComboBox<?> comboBoxGpType;
+    @FXML
+    private TextField txtFieldGpValue;
+    @FXML
+    private Label lblSequenceSelected;
+    @FXML
+    private TableView<?> tableViewDataLogs;
+    @FXML
+    private TableColumn<?, ?> tabDataId;
+    @FXML
+    private TableColumn<?, ?> tabDataProductionBlock;
+    @FXML
+    private TableColumn<?, ?> tabDataType;
+    @FXML
+    private TableColumn<?, ?> tabDataTimestamp;
+    @FXML
+    private TableColumn<?, ?> tabDataCommand;
+    @FXML
+    private TableColumn<?, ?> tabDataValue;
+    @FXML
+    private ComboBox<?> comboBoxLogFilter;
+    @FXML
+    private ComboBox<?> comboBoxLogType;
+    @FXML
+    private DatePicker datePickerLog;
+    @FXML
+    private ComboBox<?> comboBoxLogCmd;
+    @FXML
+    private TextArea txtAreaLog;
+    @FXML
+    private ComboBox<?> comboBoxLogProdBlock;
+    @FXML
+    private Tab tabNewDataLog;
+    @FXML
+    private TabPane statisticsTabPane;
+    @FXML
+    private PasswordField pswdFieldPassword;
+    @FXML
+    private TextField txtFieldUsername;
+    @FXML
+    private Label lblLoginStatus;
+    @FXML
+    private Button btnLogin;
+    @FXML
+    private Button btnLogout;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         datePickerOrderDate.setValue(LocalDate.now());
-    }    
+        this.setGrowthProfileTableView(MES.fetchGrowthProfiles());
+    }
 
     @FXML
     private void handleMESLogin(ActionEvent event) {
-        tabOrders.setDisable(false);
-        tabScada.setDisable(false);
-        tabGrowthProfiles.setDisable(false);
-        tabStatistics.setDisable(false);
+        if (MES.loginCertified(txtFieldUsername.getText(), pswdFieldPassword.getText())) {
+            lblLoginStatus.setText("");
+
+            // Enable tabs
+            tabOrders.setDisable(false);
+            tabScada.setDisable(false);
+            tabGrowthProfiles.setDisable(false);
+            tabStatistics.setDisable(false);
+
+            // Enable logout button
+            btnLogout.setVisible(true);
+
+            // Hide login elements
+            btnLogin.setVisible(false);
+            lblLoginStatus.setVisible(false);
+            txtFieldUsername.setVisible(false);
+            pswdFieldPassword.setVisible(false);
+
+        } else {
+            lblLoginStatus.setText("ERROR! Wrong username or password.");
+        }
     }
 
     @FXML
     private void handleFetchOrdersFromDate(ActionEvent event) {
-        LocalDate date = datePickerOrderDate.getValue(); 
+        LocalDate date = datePickerOrderDate.getValue();
         MES.setDate(date);
         this.setOrderTableView(MES.fetchOrders());
     }
-    
+
     private void setOrderTableView(List orders) {
         ObservableList<Order> orderList = FXCollections.observableArrayList(orders);
         tableViewOrderPicker.setItems(orderList);
-        
+
         tabOrderId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tabOrderFetchedTime.setCellValueFactory(new PropertyValueFactory<>("fetchedTime"));
         tabOrderQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));
@@ -152,9 +205,95 @@ public class MainController implements Initializable {
         tabOrderProdName.setCellValueFactory(new PropertyValueFactory<>("productionName"));
         tabOrderProdBegin.setCellValueFactory(new PropertyValueFactory<>("productionBegin"));
         tabOrderProdEnd.setCellValueFactory(new PropertyValueFactory<>("productionEnd"));
-        
-        
-        
     }
-    
+
+    private void setGrowthProfileTableView(List growthProfiles) {
+        ObservableList<GrowthProfile> growthProfileList = FXCollections.observableArrayList(growthProfiles);
+        tableViewGrowthProfile.setItems(growthProfileList);
+
+        tabGpId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        tabGpName.setCellValueFactory(new PropertyValueFactory<>("name"));
+    }
+
+    @FXML
+    private void handleSelectOrder(ActionEvent event) {
+        Order currentOrder = tableViewOrderPicker.getSelectionModel().getSelectedItem();
+        
+        // Check that Order is not null, as that causes errors
+        if(currentOrder != null) {
+        pickedOrderTab.setText(currentOrder.getProductionName());
+
+        txtFieldPrepOrder.setText(currentOrder.getProductionName());
+        txtFieldPrepAmount.setText(Integer.toString(currentOrder.getQuantity()));
+        txtFieldPrepID.setText(Integer.toString(currentOrder.getId()));
+
+        pickedOrderTab.setDisable(false);
+        orderTabPane.getSelectionModel().select(pickedOrderTab);
+        }
+    }
+
+    @FXML
+    private void handlePrepareOrder(ActionEvent event) {
+        MES.prepareOrder();
+    }
+
+    @FXML
+    private void handleSelectGrowthProfile(ActionEvent event) {
+        GrowthProfile currentGrowthProfile = tableViewGrowthProfile.getSelectionModel().getSelectedItem();
+
+        txtFieldGpName.setText(currentGrowthProfile.getName());
+        txtFieldGpCelcius.setText(Integer.toString(currentGrowthProfile.getTemperature()));
+        txtFieldGpWaterLevel.setText(Integer.toString(currentGrowthProfile.getWaterLevel()));
+        txtFieldGpMoisture.setText(Integer.toString(currentGrowthProfile.getMoisture()));
+    }
+
+    @FXML
+    private void handleAddSequence(ActionEvent event) {
+    }
+
+    @FXML
+    private void handleDeleteSequence(ActionEvent event) {
+    }
+
+    @FXML
+    private void handleSaveGrowthProfile(ActionEvent event) {
+    }
+
+    @FXML
+    private void handleDeleteGrowthProfile(ActionEvent event) {
+    }
+
+    @FXML
+    private void handleNewDataLog(ActionEvent event) {
+        datePickerLog.setValue(LocalDate.now());
+        tabNewDataLog.setDisable(false);
+        statisticsTabPane.getSelectionModel().select(tabNewDataLog);
+    }
+
+    @FXML
+    private void handleSaveDataLog(ActionEvent event) {
+    }
+
+    @FXML
+    private void handleMESLogout(ActionEvent event) {
+        // Disable tabs
+        tabOrders.setDisable(true);
+        tabScada.setDisable(true);
+        tabGrowthProfiles.setDisable(true);
+        tabStatistics.setDisable(true);
+
+        // Disable logout button
+        btnLogout.setVisible(false);
+
+        // Show login elements
+        btnLogin.setVisible(true);
+        lblLoginStatus.setVisible(true);
+        txtFieldUsername.setVisible(true);
+        pswdFieldPassword.setVisible(true);
+        
+        // Reset login input fields
+        txtFieldUsername.setText("");
+        pswdFieldPassword.setText("");
+    }
+
 }
