@@ -5,22 +5,12 @@
  */
 package mes.domain;
 
-import javafx.beans.property.*;
 
 /**
  *
  * @author AKT
  */
 public class Order {
-<<<<<<< HEAD
-    private SimpleIntegerProperty id = new SimpleIntegerProperty();
-    private SimpleStringProperty fetchedTime = new SimpleStringProperty();
-    private SimpleIntegerProperty quantity = new SimpleIntegerProperty();
-    private SimpleStringProperty status = new SimpleStringProperty();
-    private SimpleStringProperty productionName = new SimpleStringProperty();
-    private SimpleStringProperty productionBegin = new SimpleStringProperty();
-    private SimpleStringProperty productionEnd = new SimpleStringProperty();
-=======
     private int id;
     private String fetchedTime;
     private int quantity;
@@ -28,71 +18,60 @@ public class Order {
     private String productionName;
     private String productionBegin;
     private String productionEnd;
->>>>>>> PersistenceLayerContinued
 
     public void setId(int id) {
-        this.id.set(id);
+        this.id = id;
     }
 
     public void setFetchedTime(String fetchedTime) {
-        this.fetchedTime.set(fetchedTime);
+        this.fetchedTime = fetchedTime;
     }
 
     public void setQuantity(int quantity) {
-        this.quantity.set(quantity);
+        this.quantity = quantity;
     }
 
-<<<<<<< HEAD
-    public void setStatus(String status) {
-        this.status.set(status);
-=======
     public void setStatus(int status) {
         this.status = status;
->>>>>>> PersistenceLayerContinued
     }
 
     public void setProductionName(String productionName) {
-        this.productionName.set(productionName);
+        this.productionName = productionName;
     }
 
     public void setProductionBegin(String productionBegin) {
-        this.productionBegin.set(productionBegin);
+        this.productionBegin = productionBegin;
     }
 
     public void setProductionEnd(String productionEnd) {
-        this.productionEnd.set(productionEnd);
+        this.productionEnd = productionEnd;
     }
 
     public int getId() {
-        return id.get();
+        return id;
     }
 
     public String getFetchedTime() {
-        return fetchedTime.get();
+        return fetchedTime;
     }
 
     public int getQuantity() {
-        return quantity.get();
+        return quantity;
     }
 
-<<<<<<< HEAD
-    public String getStatus() {
-        return status.get();
-=======
     public int getStatus() {
         return status;
->>>>>>> PersistenceLayerContinued
     }
 
     public String getProductionName() {
-        return productionName.get();
+        return productionName;
     }
 
     public String getProductionBegin() {
-        return productionBegin.get();
+        return productionBegin;
     }
 
     public String getProductionEnd() {
-        return productionEnd.get();
+        return productionEnd;
     }
 }

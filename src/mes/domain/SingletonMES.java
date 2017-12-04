@@ -23,7 +23,7 @@ public class SingletonMES implements IMes {
     private Queue orderQueue;
 
     private String date;
-    private IMesDatabaseFacade dbHandler = new DatabaseHandler();
+    private IMesDatabase dbHandler = new DatabaseHandler();
 
     private static SingletonMES instance = null;
 
