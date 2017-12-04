@@ -97,7 +97,7 @@ public class SingletonMES implements IMes {
     }
     
     @Override
-    public HashMap allocateProductionBlock() {
+    public ProductionBlock allocateProductionBlock() {
         return null;
     }
 

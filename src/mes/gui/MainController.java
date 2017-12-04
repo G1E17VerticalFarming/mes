@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -159,6 +160,20 @@ public class MainController implements Initializable {
     private ComboBox<?> comboBoxPrepProdBlock;
     @FXML
     private Label lblSuggestedBlock;
+    @FXML
+    private ListView<String> listViewScadaConnections;
+    @FXML
+    private Tab tabScadaCon;
+    @FXML
+    private Tab tabNewScadaCon;
+    @FXML
+    private TextField txtFieldScadaIP;
+    @FXML
+    private TextField txtFieldScadaPort;
+    @FXML
+    private Button btnAddScadaConnection;
+    @FXML
+    private TabPane scadaTabPane;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -217,6 +232,11 @@ public class MainController implements Initializable {
 
         tabGpId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tabGpName.setCellValueFactory(new PropertyValueFactory<>("name"));
+    }
+    
+    private void setScadaConnectionListView(List scadaConnections) {
+        ObservableList<GrowthProfile> scadaConnectionsList = FXCollections.observableArrayList(scadaConnections);
+        
     }
 
     @FXML
@@ -298,6 +318,22 @@ public class MainController implements Initializable {
         // Reset login input fields
         txtFieldUsername.setText("");
         pswdFieldPassword.setText("");
+    }
+
+    @FXML
+    private void handleAddNewScadaConnection(ActionEvent event) {
+        tabNewScadaCon.setDisable(false);
+        scadaTabPane.getSelectionModel().select(tabNewScadaCon);
+    }
+
+    @FXML
+    private void handleRemoveScadaConnection(ActionEvent event) {
+        
+    }
+
+    @FXML
+    private void handleAddScadaConnection(ActionEvent event) {
+        
     }
 
 }
