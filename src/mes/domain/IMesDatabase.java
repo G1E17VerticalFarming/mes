@@ -34,6 +34,23 @@ public interface IMesDatabase {
     public abstract List<Order> fetchOrders(String dateStringRepresentation);
     
     /**
+     * Not implemented
+     * 
+     * Method to get a map of all available orderStatuses in database
+     * @return List of Status objects containing a key-value pair of an identifier and a value
+     */
+    public abstract List<Status> getOrderStatuses();
+    
+    /**
+     * Not implemented
+     * 
+     * Method to get a list of all data logs in the database, filtered with filter parameter
+     * @param filter String filter to use as filter in database query (Will filter on data.type)
+     * @return List of all Log objects which fulfill the filter parameter
+     */
+    public abstract List<Log> getDataLogs(String filter);
+    
+    /**
      * Implemented fully
      *
      * Method to fetch a production block from database.
@@ -51,6 +68,22 @@ public interface IMesDatabase {
      * @return A complete GrowthProfile object, with Light sequence.
      */
     public abstract GrowthProfile getGrowthProfile(int growthProfileId);
+    
+    /**
+     * Implemented fully
+     * 
+     * This method will fetch all growthprofiles stored in database with associated light schedules
+     * @return A List containing GrowthProfile objects
+     */
+    public abstract List<GrowthProfile> getGrowthProfiles();
+    
+    /**
+     * Not implemented
+     * 
+     * This method will fetch current scada systems running and connected to this MES
+     * @return List of Strings with scada entries represented as ip : port
+     */
+    public abstract List<String> getScadaEntries();
     
     /**
      * Implemented fully!
@@ -71,6 +104,24 @@ public interface IMesDatabase {
      * @return True on succesful save in database, false otherwise
      */
     public abstract boolean saveGrowthProfile(GrowthProfile profileToSave);
+    
+    /**
+     * Not implemented
+     * Method to add a new SCADA entry to the database
+     * @param ip IP of the new SCADA entry
+     * @param port Port of the new SCADA entry
+     * @return True on succesful save in database, false otherwise
+     */
+    public abstract boolean saveScadaEntry(String ip, int port);
+    
+    /**
+     * Not implemented
+     * Method to remove a SCADA entry from the database
+     * @param ip IP of the SCADA to remove
+     * @param port Port of the SCADA to remove
+     * @return True on succesful removal from database, false otherwise
+     */
+    public abstract boolean deleteScadaEntry(String ip, int port);
     
     /**
      * Implemented fully
@@ -125,4 +176,11 @@ public interface IMesDatabase {
      * @return True if data log is deleted succesfully, false otherwise
      */
     public abstract boolean deleteDataLog(int dataLogIdToDelete);
+    
+    /**
+     * Not implemented
+     * @param growthProfileIdToDelete GrowthProfile ID to delete from database
+     * @return True if growth profile has been succesfully deleted
+     */
+    public abstract boolean deleteGrowthProfile(int growthProfileIdToDelete);
 }

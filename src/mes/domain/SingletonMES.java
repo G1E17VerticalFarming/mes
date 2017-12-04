@@ -23,7 +23,7 @@ public class SingletonMES implements IMes {
     private Queue orderQueue;
 
     private String date;
-    private IMesDatabase dbHandler = new DatabaseHandler();
+    private IMesDatabase dbHandler = DatabaseHandler.getInstance();
 
     private static SingletonMES instance = null;
 
@@ -95,7 +95,7 @@ public class SingletonMES implements IMes {
             this.date = defaultDate.format(formatter);
         }
     }
-    
+
     @Override
     public ProductionBlock allocateProductionBlock() {
         return null;
