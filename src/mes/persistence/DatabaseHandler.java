@@ -287,7 +287,7 @@ public class DatabaseHandler implements IMesDatabase {
             saveOrderSt.setString(1, orderObjectToSave.getFetchedTime());
             saveOrderSt.setString(2, orderObjectToSave.getProductionName());
             saveOrderSt.setInt(3, orderObjectToSave.getQuantity());
-            saveOrderSt.setInt(4, orderObjectToSave.getStatus());
+            saveOrderSt.setString(4, orderObjectToSave.getStatus());
             saveOrderSt.executeUpdate();
         } catch (SQLException ex) {
             System.out.println("Error inserting into database:\n" + ex);
@@ -307,7 +307,7 @@ public class DatabaseHandler implements IMesDatabase {
             saveProdSt.setInt(2, prodObjectToSave.getGrowthProfile().getId());
             saveProdSt.setInt(3, prodObjectToSave.getOrder().getId());
             saveProdSt.setString(4, new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
-            saveProdSt.setInt(5, prodObjectToSave.getOrder().getStatus());
+            saveProdSt.setString(5, prodObjectToSave.getOrder().getStatus());
             saveProdSt.executeQuery();
         } catch (SQLException ex) {
             System.out.println("Error fetching from database:\n" + ex);
@@ -335,7 +335,7 @@ public class DatabaseHandler implements IMesDatabase {
                 localOrder.setProductionEnd(fetchOrdersRs.getString("prod_end"));
                 localOrder.setProductionName(fetchOrdersRs.getString("prod_name"));
                 localOrder.setQuantity(fetchOrdersRs.getInt("qty"));
-                localOrder.setStatus(fetchOrdersRs.getInt("status"));
+                localOrder.setStatus(fetchOrdersRs.getString("status"));
                 ordersToReturn.add(localOrder);
             }
         } catch (SQLException ex) {
@@ -374,7 +374,7 @@ public class DatabaseHandler implements IMesDatabase {
             if (lot == null) {
                 return false;       // Invalid lot number returned
             }
-            updOrderEndSt.setInt(1, orderObjectToUpd.getStatus());
+            updOrderEndSt.setString(1, orderObjectToUpd.getStatus());
             updOrderEndSt.setString(2, orderObjectToUpd.getProductionEnd());
             updOrderEndSt.setString(3, lot);
             updOrderEndSt.setInt(4, orderObjectToUpd.getId());

@@ -14,7 +14,7 @@ public class Order {
     private int id;
     private String fetchedTime;
     private int quantity;
-    private int status;
+    private String status;
     private String productionName;
     private String productionBegin;
     private String productionEnd;
@@ -31,7 +31,7 @@ public class Order {
         this.quantity = quantity;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -59,7 +59,7 @@ public class Order {
         return quantity;
     }
 
-    public int getStatus() {
+    public String getStatus() {
         return status;
     }
 

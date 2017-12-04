@@ -95,5 +95,10 @@ public class SingletonMES implements IMes {
             this.date = defaultDate.format(formatter);
         }
     }
+    
+    @Override
+    public HashMap allocateProductionBlock() {
+        return null;
+    }
 
 }

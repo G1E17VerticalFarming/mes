@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -15,12 +10,13 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mes.gui.MainController">
+<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mes.gui.MainController">
    <children>
       <TabPane layoutX="29.0" layoutY="6.0" prefHeight="206.0" prefWidth="320.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -47,7 +43,7 @@
                   </AnchorPane>
               </content>
             </Tab>
-          <Tab fx:id="tabOrders" closable="false" disable="true" text="Orders">
+          <Tab fx:id="tabOrders" closable="false" text="Orders">
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
@@ -80,20 +76,27 @@
                               <content>
                                 <AnchorPane fx:id="tab_order_name" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>
-                                          <Label layoutX="383.0" layoutY="192.0" text="Order:" />
+                                          <Label layoutX="371.0" layoutY="192.0" text="Order:" />
                                           <TextField fx:id="txtFieldPrepOrder" layoutX="485.0" layoutY="188.0" prefHeight="25.0" prefWidth="158.0" />
-                                          <Label layoutX="384.0" layoutY="281.0" text="ID:" />
+                                          <Label layoutX="372.0" layoutY="281.0" text="ID:" />
                                           <TextField fx:id="txtFieldPrepID" disable="true" editable="false" layoutX="485.0" layoutY="277.0" prefHeight="25.0" prefWidth="60.0" />
-                                          <Label layoutX="382.0" layoutY="327.0" text="Order Status:" />
-                                          <Label layoutX="384.0" layoutY="374.0" text="Growth Profile:" />
+                                          <Label layoutX="370.0" layoutY="327.0" text="Order Status:" />
+                                          <Label layoutX="370.0" layoutY="374.0" text="Growth Profile:" />
                                           <ComboBox fx:id="comboBoxPrepOrderStatus" layoutX="484.0" layoutY="323.0" prefWidth="150.0" />
                                           <ComboBox fx:id="comboBoxPrepGrowthProfile" layoutX="484.0" layoutY="370.0" prefWidth="150.0" />
-                                          <Label layoutX="384.0" layoutY="236.0" text="Amount:" />
+                                          <Label layoutX="372.0" layoutY="236.0" text="Amount:" />
                                           <TextField fx:id="txtFieldPrepAmount" layoutX="485.0" layoutY="232.0" prefHeight="25.0" prefWidth="158.0" />
-                                          <Button layoutX="484.0" layoutY="418.0" mnemonicParsing="false" onAction="#handlePrepareOrder" prefHeight="25.0" prefWidth="150.0" text="Prepare" />
+                                          <Button layoutX="484.0" layoutY="465.0" mnemonicParsing="false" onAction="#handlePrepareOrder" prefHeight="25.0" prefWidth="150.0" text="Prepare" />
                                           <Label layoutX="426.0" layoutY="125.0" text="Prepare Order">
                                              <font>
                                                 <Font name="System Bold" size="26.0" />
+                                             </font>
+                                          </Label>
+                                          <ComboBox fx:id="comboBoxPrepProdBlock" layoutX="484.0" layoutY="417.0" prefWidth="150.0" />
+                                          <Label layoutX="371.0" layoutY="421.0" text="Production block:" />
+                                          <Label fx:id="lblSuggestedBlock" layoutX="647.0" layoutY="421.0" text="- Suggested block" textFill="#15d204">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
                                              </font>
                                           </Label>
                                        </children>

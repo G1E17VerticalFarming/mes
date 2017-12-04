@@ -155,6 +155,10 @@ public class MainController implements Initializable {
     private Button btnLogin;
     @FXML
     private Button btnLogout;
+    @FXML
+    private ComboBox<?> comboBoxPrepProdBlock;
+    @FXML
+    private Label lblSuggestedBlock;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
