@@ -7,6 +7,7 @@ package mes.domain;
 
 import java.time.LocalDate;
 import java.util.*;
+import shared.GrowthProfile;
 import shared.ProductionBlock;
 
 /**
@@ -62,9 +63,10 @@ public interface IMes {
      * Not implemented
      *
      * Method to fetch all data logs from the database.
+     * @param filter
      * @return List consisting of Log objects.
      */
-    public List fetchDataLogs();
+    public List fetchDataLogs(String filter);
     
     /**
      * Implemented fully
@@ -84,5 +86,13 @@ public interface IMes {
      * @return ProductionBlock object consisting of a production block ID and name.
      */
     public ProductionBlock allocateProductionBlock();
+    
+    public void deleteGrowthProfile(int id);
+    
+    public void saveGrowthProfile(GrowthProfile profileToSave);
+    
+    public List fetchScadaConnections();
+    
+    public void saveScadaConnection(String ip, int port);
     
 }

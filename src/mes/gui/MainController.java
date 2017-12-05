@@ -8,6 +8,7 @@ package mes.gui;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -83,7 +84,7 @@ public class MainController implements Initializable {
     @FXML
     private TextField txtFieldPrepID;
     @FXML
-    private ComboBox<?> comboBoxPrepOrderStatus;
+    private ComboBox<String> comboBoxPrepOrderStatus;
     @FXML
     private ComboBox<?> comboBoxPrepGrowthProfile;
     @FXML
@@ -157,8 +158,6 @@ public class MainController implements Initializable {
     @FXML
     private Button btnLogout;
     @FXML
-    private ComboBox<?> comboBoxPrepProdBlock;
-    @FXML
     private Label lblSuggestedBlock;
     @FXML
     private ListView<String> listViewScadaConnections;
@@ -175,10 +174,24 @@ public class MainController implements Initializable {
     @FXML
     private TabPane scadaTabPane;
 
+    private GrowthProfile currentGrowthProfile;
+    @FXML
+    private Label lblSelectedGPID;
+    @FXML
+    private TextField txtFieldPrepProdBlock;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         datePickerOrderDate.setValue(LocalDate.now());
+
+        // Fetch data for list/tableviews
         this.setGrowthProfileTableView(MES.fetchGrowthProfiles());
+        this.setScadaConnectionsListView(MES.fetchScadaConnections());
+        
+        comboBoxPrepOrderStatus.getItems().addAll(MES.fetchStatuses());
+
+        // Add listeners to limit certain textfields
+        this.addScadaPortListener();
     }
 
     @FXML
@@ -213,6 +226,15 @@ public class MainController implements Initializable {
         this.setOrderTableView(MES.fetchOrders());
     }
 
+    private void addScadaPortListener() {
+        // Scada port text field - Forces the text field to only accept numeric input
+        txtFieldScadaPort.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtFieldScadaPort.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+    }
+
     private void setOrderTableView(List orders) {
         ObservableList<Order> orderList = FXCollections.observableArrayList(orders);
         tableViewOrderPicker.setItems(orderList);
@@ -220,10 +242,16 @@ public class MainController implements Initializable {
         tabOrderId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tabOrderFetchedTime.setCellValueFactory(new PropertyValueFactory<>("fetchedTime"));
         tabOrderQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-        tabOrderStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        tabOrderStatus.setCellValueFactory(new PropertyValueFactory<>("status".toString())); // Not actually calling toString on a string, but instead on a Status object
         tabOrderProdName.setCellValueFactory(new PropertyValueFactory<>("productionName"));
         tabOrderProdBegin.setCellValueFactory(new PropertyValueFactory<>("productionBegin"));
         tabOrderProdEnd.setCellValueFactory(new PropertyValueFactory<>("productionEnd"));
+    }
+
+    private void setScadaConnectionsListView(List scadaConnections) {
+        ObservableList<String> scadaConnectionsList = FXCollections.observableArrayList(scadaConnections);
+
+        listViewScadaConnections.getItems().addAll(scadaConnectionsList);
     }
 
     private void setGrowthProfileTableView(List growthProfiles) {
@@ -233,26 +261,23 @@ public class MainController implements Initializable {
         tabGpId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tabGpName.setCellValueFactory(new PropertyValueFactory<>("name"));
     }
-    
-    private void setScadaConnectionListView(List scadaConnections) {
-        ObservableList<GrowthProfile> scadaConnectionsList = FXCollections.observableArrayList(scadaConnections);
-        
-    }
 
     @FXML
     private void handleSelectOrder(ActionEvent event) {
         Order currentOrder = tableViewOrderPicker.getSelectionModel().getSelectedItem();
-        
+
         // Check that Order is not null, as that causes errors
-        if(currentOrder != null) {
-        pickedOrderTab.setText(currentOrder.getProductionName());
+        if (currentOrder != null) {
+            comboBoxPrepOrderStatus.getSelectionModel().select(currentOrder.getStatus().getId() - 1);
+                    
+            pickedOrderTab.setText(currentOrder.getProductionName());
 
-        txtFieldPrepOrder.setText(currentOrder.getProductionName());
-        txtFieldPrepAmount.setText(Integer.toString(currentOrder.getQuantity()));
-        txtFieldPrepID.setText(Integer.toString(currentOrder.getId()));
+            txtFieldPrepOrder.setText(currentOrder.getProductionName());
+            txtFieldPrepAmount.setText(Integer.toString(currentOrder.getQuantity()));
+            txtFieldPrepID.setText(Integer.toString(currentOrder.getId()));
 
-        pickedOrderTab.setDisable(false);
-        orderTabPane.getSelectionModel().select(pickedOrderTab);
+            pickedOrderTab.setDisable(false);
+            orderTabPane.getSelectionModel().select(pickedOrderTab);
         }
     }
 
@@ -263,12 +288,14 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleSelectGrowthProfile(ActionEvent event) {
-        GrowthProfile currentGrowthProfile = tableViewGrowthProfile.getSelectionModel().getSelectedItem();
+        currentGrowthProfile = tableViewGrowthProfile.getSelectionModel().getSelectedItem();
 
         txtFieldGpName.setText(currentGrowthProfile.getName());
         txtFieldGpCelcius.setText(Integer.toString(currentGrowthProfile.getTemperature()));
         txtFieldGpWaterLevel.setText(Integer.toString(currentGrowthProfile.getWaterLevel()));
         txtFieldGpMoisture.setText(Integer.toString(currentGrowthProfile.getMoisture()));
+
+        lblSelectedGPID.setText(Integer.toString(currentGrowthProfile.getId()));
     }
 
     @FXML
@@ -281,10 +308,16 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleSaveGrowthProfile(ActionEvent event) {
+        if (currentGrowthProfile != null) {
+            MES.saveGrowthProfile(currentGrowthProfile);
+        }
     }
 
     @FXML
     private void handleDeleteGrowthProfile(ActionEvent event) {
+        if (currentGrowthProfile != null) {
+            MES.deleteGrowthProfile(currentGrowthProfile.getId());
+        }
     }
 
     @FXML
@@ -314,7 +347,7 @@ public class MainController implements Initializable {
         lblLoginStatus.setVisible(true);
         txtFieldUsername.setVisible(true);
         pswdFieldPassword.setVisible(true);
-        
+
         // Reset login input fields
         txtFieldUsername.setText("");
         pswdFieldPassword.setText("");
@@ -324,16 +357,41 @@ public class MainController implements Initializable {
     private void handleAddNewScadaConnection(ActionEvent event) {
         tabNewScadaCon.setDisable(false);
         scadaTabPane.getSelectionModel().select(tabNewScadaCon);
+        
     }
 
     @FXML
     private void handleRemoveScadaConnection(ActionEvent event) {
-        
+
     }
 
     @FXML
     private void handleAddScadaConnection(ActionEvent event) {
+        MES.saveScadaConnection(txtFieldScadaIP.getText(), Integer.parseInt(txtFieldScadaPort.getText()));
         
+        // Update List View
+        this.updateScadaConnectionsListView();
+        
+        // Go back
+        scadaTabPane.getSelectionModel().select(tabScadaCon);
+        tabNewScadaCon.setDisable(true);
+    }
+    
+    private void updateScadaConnectionsListView() {
+        // Clear
+        listViewScadaConnections.getItems().clear();
+        
+        // Rebuild
+        this.setScadaConnectionsListView(MES.fetchScadaConnections());
+    }
+
+    @FXML
+    private void handleUpdateDataLogTableView(ActionEvent event) {
+    }
+
+    @FXML
+    private void handleUpdateScadaConnection(ActionEvent event) {
+        this.updateScadaConnectionsListView();
     }
 
 }

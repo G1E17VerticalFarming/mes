@@ -20,6 +20,7 @@ public class SingletonMES implements IMes {
     private List orders;
     private List growthProfiles = new ArrayList<>();
     private List retrievedLogs;
+    private List scadaConnections;
     private Queue orderQueue;
 
     private String date;
@@ -47,33 +48,32 @@ public class SingletonMES implements IMes {
     @Override
     public List fetchOrders() {
         this.orders = dbHandler.fetchOrders(date);
-        return orders;
+        return this.orders;
     }
     
     @Override
     public List fetchStatuses() {
-        return null;
+        return dbHandler.getOrderStatuses();
     }
     
     @Override
     public List fetchGrowthProfiles() {
-        // Test implementation
-        GrowthProfile profile = new GrowthProfile();
-        profile.setId(1);
-        profile.setMoisture(20);
-        profile.setName("Grøntsager!");
-        profile.setNightTemperature(10);
-        profile.setTemperature(25);
-        profile.setWaterLevel(50);
-        profile.setLightSequence(null);
-        growthProfiles.add(profile);
+        this.growthProfiles = dbHandler.getGrowthProfiles();
         
-        return growthProfiles;
+        return this.growthProfiles;
     }
     
     @Override
-    public List fetchDataLogs() {
-        return retrievedLogs;
+    public List fetchScadaConnections() {
+        this.scadaConnections = dbHandler.getScadaEntries();
+        
+        return this.scadaConnections;
+    }
+    
+    @Override
+    public List fetchDataLogs(String filter) {
+        this.retrievedLogs = dbHandler.getDataLogs(filter);
+        return this.retrievedLogs;
     }
 
     @Override
@@ -100,5 +100,20 @@ public class SingletonMES implements IMes {
     public ProductionBlock allocateProductionBlock() {
         return null;
     }
-
+    
+    @Override
+    public void deleteGrowthProfile(int id) {
+        dbHandler.deleteGrowthProfile(id);
+    }
+    
+    @Override
+    public void saveGrowthProfile(GrowthProfile profileToSave) {
+        dbHandler.saveGrowthProfile(profileToSave);
+    } 
+    
+    @Override
+    public void saveScadaConnection(String ip, int port) {
+        dbHandler.saveScadaEntry(ip, port);
+    }
+    
 }

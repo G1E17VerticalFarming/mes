@@ -92,13 +92,13 @@
                                                 <Font name="System Bold" size="26.0" />
                                              </font>
                                           </Label>
-                                          <ComboBox fx:id="comboBoxPrepProdBlock" layoutX="484.0" layoutY="417.0" prefWidth="150.0" />
                                           <Label layoutX="371.0" layoutY="421.0" text="Production block:" />
                                           <Label fx:id="lblSuggestedBlock" layoutX="647.0" layoutY="421.0" text="- Suggested block" textFill="#15d204">
                                              <font>
                                                 <Font name="System Bold" size="12.0" />
                                              </font>
                                           </Label>
+                                          <TextField fx:id="txtFieldPrepProdBlock" disable="true" layoutX="484.0" layoutY="417.0" prefHeight="25.0" prefWidth="150.0" />
                                        </children>
                                     </AnchorPane>
                               </content>
@@ -122,6 +122,7 @@
                                           <ListView fx:id="listViewScadaConnections" layoutX="27.0" layoutY="21.0" prefHeight="636.0" prefWidth="968.0" />
                                           <Button layoutX="27.0" layoutY="671.0" mnemonicParsing="false" onAction="#handleAddNewScadaConnection" text="Add New Scada Connection" />
                                           <Button layoutX="206.0" layoutY="671.0" mnemonicParsing="false" onAction="#handleRemoveScadaConnection" prefHeight="25.0" prefWidth="164.0" text="Remove Scada Connection" />
+                                          <Button layoutX="831.0" layoutY="671.0" mnemonicParsing="false" onAction="#handleUpdateScadaConnection" prefHeight="25.0" prefWidth="164.0" text="Update" />
                                        </children>
                                     </AnchorPane>
                               </content>
@@ -155,7 +156,7 @@
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#bababa" height="643.0" layoutX="407.0" layoutY="29.0" stroke="#cccccc" strokeType="INSIDE" width="612.0" />
-                        <TableView fx:id="tableViewGrowthProfile" layoutX="14.0" layoutY="30.0" prefHeight="607.0" prefWidth="386.0">
+                        <TableView fx:id="tableViewGrowthProfile" layoutX="14.0" layoutY="30.0" prefHeight="583.0" prefWidth="386.0">
                           <columns>
                             <TableColumn fx:id="tabGpId" prefWidth="90.0" text="ID" />
                             <TableColumn fx:id="tabGpName" prefWidth="295.0" text="Name" />
@@ -214,6 +215,8 @@
                         <Button layoutX="407.0" layoutY="680.0" mnemonicParsing="false" onAction="#handleSaveGrowthProfile" prefHeight="25.0" prefWidth="613.0" text="Save" />
                         <Button layoutX="14.0" layoutY="680.0" mnemonicParsing="false" onAction="#handleDeleteGrowthProfile" prefHeight="25.0" prefWidth="386.0" text="Delete" />
                         <Button layoutX="14.0" layoutY="646.0" mnemonicParsing="false" onAction="#handleSelectGrowthProfile" prefHeight="25.0" prefWidth="386.0" text="Select" />
+                        <Label layoutX="14.0" layoutY="621.0" text="Selected Growthprofile ID:" />
+                        <Label fx:id="lblSelectedGPID" layoutX="173.0" layoutY="621.0" text="-" />
                      </children>
                   </AnchorPane>
               </content>
@@ -239,7 +242,7 @@
                                             </columns>
                                           </TableView>
                                           <Button layoutX="14.0" layoutY="666.0" mnemonicParsing="false" onAction="#handleNewDataLog" prefHeight="25.0" prefWidth="997.0" text="New Data Log" />
-                                          <ComboBox fx:id="comboBoxLogFilter" layoutX="55.0" layoutY="14.0" prefWidth="150.0" />
+                                          <ComboBox fx:id="comboBoxLogFilter" layoutX="55.0" layoutY="14.0" onAction="#handleUpdateDataLogTableView" prefWidth="150.0" />
                                           <Label layoutX="22.0" layoutY="18.0" prefHeight="17.0" prefWidth="33.0" text="Filter:" />
                                        </children>
                                     </AnchorPane>

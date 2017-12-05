@@ -106,7 +106,7 @@ public interface IMesDatabase {
     public abstract boolean saveGrowthProfile(GrowthProfile profileToSave);
     
     /**
-     * Not implemented
+     * Implemented fully
      * Method to add a new SCADA entry to the database
      * @param ip IP of the new SCADA entry
      * @param port Port of the new SCADA entry
@@ -115,7 +115,7 @@ public interface IMesDatabase {
     public abstract boolean saveScadaEntry(String ip, int port);
     
     /**
-     * Not implemented
+     * Implemented fully
      * Method to remove a SCADA entry from the database
      * @param ip IP of the SCADA to remove
      * @param port Port of the SCADA to remove
