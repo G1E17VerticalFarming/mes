@@ -189,6 +189,7 @@ public class MainController implements Initializable {
         this.setScadaConnectionsListView(MES.fetchScadaConnections());
         
         comboBoxPrepOrderStatus.getItems().addAll(MES.fetchStatuses());
+        comboBoxPrepGrowthProfile.getItems().addAll(MES.fetchGrowthProfiles());
 
         // Add listeners to limit certain textfields
         this.addScadaPortListener();
