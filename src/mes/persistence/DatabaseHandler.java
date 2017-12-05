@@ -16,9 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mes.domain.Order;
 import mes.domain.Production;
 import shared.*;
@@ -30,15 +27,16 @@ import mes.domain.Status;
  * @author chris
  */
 public class DatabaseHandler implements IMesDatabase {
+
     private final int port = 5432;
     private final String url = "jdbc:postgresql://";
     private final String host = "tek-mmmi-db0a.tek.c.sdu.dk";
     private final String databaseName = "si3_2017_group_21_db";
     private final String username = "si3_2017_group_21";
     private final String password = "ear70.doling";
-    
+
     private Connection conn = null;
-    
+
     private static DatabaseHandler instance = null;
 
     private DatabaseHandler() {
@@ -50,7 +48,7 @@ public class DatabaseHandler implements IMesDatabase {
             System.exit(1);
         }
     }
-    
+
     /**
      * Implemented fully
      *
@@ -78,17 +76,20 @@ public class DatabaseHandler implements IMesDatabase {
             return lightSeq;
         }
     }
-    
+
     /**
      * Implemented fully
      *
      * Method for saving internal light schedules for a given growthProfile object
+     *
      * @param growthProfile Integer representing a GrowthProfile ID. This is the growthprofile which lightObjectToSave will be stored with
      * @param lightObjectToSave Light object to be stored in database
      * @return True on succesful save in database, false otherwise
      */
     private boolean saveLightSchedule(int growthProfile, Light lightObjectToSave) {
-        String saveLightQuery = "INSERT INTO growthlight_view (growth_id,type,time,value) VALUES (?,?,?,?,?);";
+        String saveLightQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "INSERT INTO growthlight_view (growth_id,type,time,value) VALUES (?,?,?,?,?);"
+                + "COMMIT;";
         try (PreparedStatement saveLightSt = this.conn.prepareStatement(saveLightQuery)) {
             saveLightSt.setInt(1, growthProfile);
             saveLightSt.setInt(2, lightObjectToSave.getType());
@@ -101,17 +102,19 @@ public class DatabaseHandler implements IMesDatabase {
         }
         return true;
     }
-    
+
     /**
      * Implemented fully
-     * 
-     * Internal method to store an Order object in the database
-     * This method is called from saveOrders only
+     *
+     * Internal method to store an Order object in the database This method is called from saveOrders only
+     *
      * @param orderObjectToSave Order object to store in database
      * @return True if orderObjectToSave is stored succesfully in database, false otherwise
      */
     private boolean saveOrder(Order orderObjectToSave) {
-        String saveOrderQuery = "INSERT INTO order_view (fetched_time,prod_name,qty,status_id) VALUES (?,?,?,?);";
+        String saveOrderQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "INSERT INTO order_view (fetched_time,prod_name,qty,status_id) VALUES (?,?,?,?);"
+                + "COMMIT;";
         try (PreparedStatement saveOrderSt = this.conn.prepareStatement(saveOrderQuery)) {
             saveOrderSt.setString(1, orderObjectToSave.getFetchedTime());
             saveOrderSt.setString(2, orderObjectToSave.getProductionName());
@@ -124,13 +127,12 @@ public class DatabaseHandler implements IMesDatabase {
         }
         return true;
     }
-    
+
     /**
      * Implemented fully
-     * 
-     * Internal method to check if the required format for string dates is valid
-     * The given parameter must follow format: SimpleDateFormat("dd-MM-yyyy").
-     * To be considered a valid date.
+     *
+     * Internal method to check if the required format for string dates is valid The given parameter must follow format: SimpleDateFormat("dd-MM-yyyy"). To be considered a valid date.
+     *
      * @param dateToCheck string date to check if correctly formatted
      * @return True if dateToCheck is correctly formatted, false otherwise
      */
@@ -147,17 +149,14 @@ public class DatabaseHandler implements IMesDatabase {
         }
         return true;
     }
-    
+
     /**
      * Implemented fully
-     * 
+     *
      * Internal method to generate a lot number for a finished production order
-     * 
-     * lot number will be generated with following format:
-     * PLC ID - Production ID - WeekInYear DayInWeek Year
-     * Example:
-     * PLC ID: 1, Production ID: 2, EndDate: 23-11-2017
-     * lot = 1-2-47417
+     *
+     * lot number will be generated with following format: PLC ID - Production ID - WeekInYear DayInWeek Year Example: PLC ID: 1, Production ID: 2, EndDate: 23-11-2017 lot = 1-2-47417
+     *
      * @param orderToCreateLotFor Order object to create lot number for
      * @return The lot number
      */
@@ -179,13 +178,14 @@ public class DatabaseHandler implements IMesDatabase {
         }
         return generatedLot;
     }
-    
+
     /**
      * Singleton design pattern
+     *
      * @return The static instance of DatabaseHandler
      */
-    public static DatabaseHandler getInstance(){
-        if(instance == null){
+    public static DatabaseHandler getInstance() {
+        if (instance == null) {
             instance = new DatabaseHandler();
         }
         return instance;
@@ -198,14 +198,13 @@ public class DatabaseHandler implements IMesDatabase {
      */
     public static void main(String[] args) {
         DatabaseHandler handler = DatabaseHandler.getInstance();
-        
+        System.out.println("Testing time taken with 2 statements.");
+        long beginTime = System.currentTimeMillis();
         System.out.println(handler.getProductionBlocks());
 
         System.out.println(handler.getProductionBlock(1));
 
         System.out.println(handler.getGrowthProfile(2).getLightSequence());
-
-        System.out.println(handler.deleteDataLog(13));
 
         System.out.println(handler.fetchOrders("22-11-2017"));
 
@@ -214,7 +213,8 @@ public class DatabaseHandler implements IMesDatabase {
 //        ord.setProductionEnd("23-11-2017");
 //        ord.setStatus(1);
 //        System.out.println(db.updateOrderEndDate(ord));
-
+        long endTime = System.currentTimeMillis();
+        System.out.println("Elapsed time: " + (endTime - beginTime));
     }
 
     @Override
@@ -296,7 +296,9 @@ public class DatabaseHandler implements IMesDatabase {
 
     @Override
     public boolean saveDataLog(Log dataObjectToSave) {
-        String saveDatQuery = "INSERT INTO datalogs_view (prod_block,type,timestamp,cmd,value,prod_id) VALUES (?,?,?,?,?,?);";
+        String saveDatQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "INSERT INTO datalogs_view (prod_block,type,timestamp,cmd,value,prod_id) VALUES (?,?,?,?,?,?);"
+                + "COMMIT;";
         try (PreparedStatement saveDatSt = this.conn.prepareStatement(saveDatQuery)) {
             saveDatSt.setInt(1, dataObjectToSave.getBlock());
             saveDatSt.setString(2, dataObjectToSave.getType());
@@ -315,7 +317,9 @@ public class DatabaseHandler implements IMesDatabase {
     @Override
     public boolean saveGrowthProfile(GrowthProfile profileToSave) {
         ResultSet saveProfRs;
-        String saveProfQuery = "INSERT INTO growthprofile (celcius,water_lvl,moist,night_celcius,name) VALUES (?,?,?,?,?) RETURNING growth_id;";
+        String saveProfQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "INSERT INTO growthprofile (celcius,water_lvl,moist,night_celcius,name) VALUES (?,?,?,?,?) RETURNING growth_id;"
+                + "COMMIT;";
         try (PreparedStatement saveProfSt = this.conn.prepareStatement(saveProfQuery)) {
             saveProfSt.setInt(1, profileToSave.getTemperature());
             saveProfSt.setInt(2, profileToSave.getWaterLevel());
@@ -336,28 +340,6 @@ public class DatabaseHandler implements IMesDatabase {
     }
 
     @Override
-    public boolean deleteDataLog(int dataLogIdToDelete) {
-        String delDatQuery = "DELETE FROM datalogs_view WHERE data_id = ?";
-        try (PreparedStatement delDatSt = this.conn.prepareStatement(delDatQuery)) {
-            if (dataLogIdToDelete < 0) {
-                throw new IllegalArgumentException("Data ID can only be positive!");
-            }
-            delDatSt.setInt(1, dataLogIdToDelete);
-            if (delDatSt.executeUpdate() == 0) {
-                System.out.println("No rows deleted. ID may not exist in database.");
-                return false;
-            }
-        } catch (SQLException ex) {
-            System.out.println("Error deleting from database:\n" + ex);
-            return false;
-        } catch (IllegalArgumentException ex) {
-            System.out.println("Invalid input: " + ex.getMessage());
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public boolean saveOrders(List<Order> orderObjectsToSave) {
         for (Order order : orderObjectsToSave) {
             if (!this.saveOrder(order)) {
@@ -372,7 +354,9 @@ public class DatabaseHandler implements IMesDatabase {
         if (prodObjectToSave.getBlock() == null || prodObjectToSave.getDataLogs() == null || prodObjectToSave.getGrowthProfile() == null || prodObjectToSave.getOrder() == null) {
             return false;
         }
-        String saveProdQuery = "INSERT INTO prod_overview (plc_id,growth_id,order_id,prod_begin,status_id) VALUES (?,?,?,?,?)";
+        String saveProdQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "INSERT INTO prod_overview (plc_id,growth_id,order_id,prod_begin,status_id) VALUES (?,?,?,?,?)"
+                + "COMMIT;";
         try (PreparedStatement saveProdSt = this.conn.prepareStatement(saveProdQuery)) {
             saveProdSt.setInt(1, prodObjectToSave.getBlock().getId());
             saveProdSt.setInt(2, prodObjectToSave.getGrowthProfile().getId());
@@ -421,7 +405,9 @@ public class DatabaseHandler implements IMesDatabase {
 
     @Override
     public boolean saveProductionBlock(ProductionBlock prodBlockToSave) {
-        String saveProdBlockQuery = "INSERT INTO plc_conn (ip,port,name) VALUES (?,?,?);";
+        String saveProdBlockQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "INSERT INTO plc_conn (ip,port,name) VALUES (?,?,?);"
+                + "COMMIT;";
         try (PreparedStatement saveProdBlockSt = this.conn.prepareStatement(saveProdBlockQuery)) {
             saveProdBlockSt.setString(1, prodBlockToSave.getIpaddress());
             saveProdBlockSt.setInt(2, prodBlockToSave.getPort());
@@ -439,7 +425,9 @@ public class DatabaseHandler implements IMesDatabase {
         if ((orderObjectToUpd.getId() < 0) || (orderObjectToUpd.getProductionEnd() == null)) {
             return false;
         }
-        String updOrderEndQuery = "UPDATE prod_overview SET status_id = ?, prod_end = ?, lot = ? WHERE order_id = ?;";
+        String updOrderEndQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "UPDATE prod_overview SET status_id = ?, prod_end = ?, lot = ? WHERE order_id = ?;"
+                + "COMMIT;";
         try (PreparedStatement updOrderEndSt = this.conn.prepareStatement(updOrderEndQuery)) {
             if (!isDateCorrectFormat(orderObjectToUpd.getProductionEnd())) {
                 return false;
@@ -466,9 +454,9 @@ public class DatabaseHandler implements IMesDatabase {
     public List<GrowthProfile> getGrowthProfiles() {
         List<GrowthProfile> growthProfiles = new ArrayList<>();
         String getGrowthProfsQuery = "SELECT growth_id,name,celcius,water_lvl,moist,night_celcius FROM growthprofile ORDER BY growth_id;";
-        try(Statement getGrowthProfsSt = this.conn.createStatement();
-                ResultSet getGrowthProfsRs = getGrowthProfsSt.executeQuery(getGrowthProfsQuery)){
-            while(getGrowthProfsRs.next()){
+        try (Statement getGrowthProfsSt = this.conn.createStatement();
+                ResultSet getGrowthProfsRs = getGrowthProfsSt.executeQuery(getGrowthProfsQuery)) {
+            while (getGrowthProfsRs.next()) {
                 GrowthProfile localProf = new GrowthProfile();
                 localProf.setId(getGrowthProfsRs.getInt("growth_id"));
                 localProf.setMoisture(getGrowthProfsRs.getInt("moist"));
@@ -488,20 +476,19 @@ public class DatabaseHandler implements IMesDatabase {
 
     @Override
     public boolean deleteGrowthProfile(int growthProfileIdToDelete) {
-        String delGrowthProfQuery = "DELETE FROM growthlight_view WHERE growth_id = ?;";
-        try(PreparedStatement delGrowthProfSt = this.conn.prepareStatement(delGrowthProfQuery)){
+        String delGrowthProfQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "DELETE FROM growthprofile WHERE growth_id = ?;"
+                + "COMMIT;";
+        try (PreparedStatement delGrowthProfSt = this.conn.prepareStatement(delGrowthProfQuery)) {
             if (growthProfileIdToDelete < 0) {
                 throw new IllegalArgumentException("Data ID can only be positive!");
             }
             delGrowthProfSt.setInt(1, growthProfileIdToDelete);
-            if (delGrowthProfSt.executeUpdate() == 0) {
-                System.out.println("No rows deleted. ID may not exist in database.");
-                return false;
-            }
+            delGrowthProfSt.executeUpdate();
         } catch (SQLException ex) {
             System.out.println("Error deleting from database:\n" + ex);
             return false;
-        } catch (IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
             System.out.println("Invalid input: " + ex.getMessage());
             return false;
         }
@@ -512,9 +499,9 @@ public class DatabaseHandler implements IMesDatabase {
     public List<Status> getOrderStatuses() {
         List<Status> orderStatuses = new ArrayList<>();
         String getOrderStatusesQuery = "SELECT status_id,value FROM statuses;";
-        try(Statement getOrderStatusesSt = this.conn.createStatement();
-                ResultSet getOrderStatusesRs = getOrderStatusesSt.executeQuery(getOrderStatusesQuery)){
-            while(getOrderStatusesRs.next()){
+        try (Statement getOrderStatusesSt = this.conn.createStatement();
+                ResultSet getOrderStatusesRs = getOrderStatusesSt.executeQuery(getOrderStatusesQuery)) {
+            while (getOrderStatusesRs.next()) {
                 Status localStatus = new Status();
                 localStatus.setId(getOrderStatusesRs.getInt("status_id"));
                 localStatus.setValue(getOrderStatusesRs.getString("value"));
@@ -530,19 +517,19 @@ public class DatabaseHandler implements IMesDatabase {
     @Override
     public List<Log> getDataLogs(String filter) {
         String getLogsQuery;
-        if(filter.isEmpty()){ // No filter provided, fetch all logs
+        if (filter.isEmpty()) { // No filter provided, fetch all logs
             getLogsQuery = "SELECT data_id,prod_block,type,cmd,value,timestamp,prod_id FROM data NATURAL JOIN logs ORDER BY data_id;";
         } else {
             getLogsQuery = "SELECT data_id,prod_block,type,cmd,value,timestamp,prod_id FROM data NATURAL JOIN logs WHERE type = ? ORDER BY data_id;";
         }
         List<Log> dataLogs = new ArrayList<>();
-        try(PreparedStatement getLogsSt = this.conn.prepareStatement(getLogsQuery)){
+        try (PreparedStatement getLogsSt = this.conn.prepareStatement(getLogsQuery)) {
             ResultSet getLogsRs;
-            if(!filter.isEmpty()){
+            if (!filter.isEmpty()) {
                 getLogsSt.setString(1, filter);
             }
             getLogsRs = getLogsSt.executeQuery();
-            while(getLogsRs.next()){
+            while (getLogsRs.next()) {
                 Log localLog = new Log();
                 localLog.setId(getLogsRs.getInt("data_id"));
                 localLog.setBlock(getLogsRs.getInt("prod_block"));
@@ -564,9 +551,9 @@ public class DatabaseHandler implements IMesDatabase {
     public List<String> getScadaEntries() {
         List<String> scadaEntries = new ArrayList<>();
         String getScadaEntriesQuery = "SELECT ip,port FROM scada_conn;";
-        try(Statement getScadaEntriesSt = this.conn.createStatement();
-                ResultSet getScadaEntriesRs = getScadaEntriesSt.executeQuery(getScadaEntriesQuery)){
-            while(getScadaEntriesRs.next()){
+        try (Statement getScadaEntriesSt = this.conn.createStatement();
+                ResultSet getScadaEntriesRs = getScadaEntriesSt.executeQuery(getScadaEntriesQuery)) {
+            while (getScadaEntriesRs.next()) {
                 scadaEntries.add(getScadaEntriesRs.getString("ip") + ":" + getScadaEntriesRs.getString("port"));
             }
         } catch (SQLException ex) {
@@ -578,13 +565,21 @@ public class DatabaseHandler implements IMesDatabase {
 
     @Override
     public boolean saveScadaEntry(String ip, int port) {
-        String saveScadaEntryQuery = "INSERT INTO scada_conn (ip,port) VALUES (?,?);";
-        try(PreparedStatement saveScadaEntrySt = this.conn.prepareStatement(saveScadaEntryQuery)){
+        String saveScadaEntryQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "INSERT INTO scada_conn (ip,port) VALUES (?,?);"
+                + "COMMIT;";
+        try (PreparedStatement saveScadaEntrySt = this.conn.prepareStatement(saveScadaEntryQuery)) {
+            if (port <= 1024) {
+                throw new IllegalArgumentException("Port cannot be 1024 or lower. Port range reserved.");
+            }
             saveScadaEntrySt.setString(1, ip);
             saveScadaEntrySt.setInt(2, port);
             saveScadaEntrySt.executeUpdate();
         } catch (SQLException ex) {
             System.out.println("Error inserting into database:\n" + ex);
+            return false;
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Invalid input: " + ex.getMessage());
             return false;
         }
         return true;
@@ -592,14 +587,34 @@ public class DatabaseHandler implements IMesDatabase {
 
     @Override
     public boolean deleteScadaEntry(String ip, int port) {
-        String delScadaEntryQuery = "DELETE FROM scada_conn WHERE ip = ? AND port = ?;";
-        try(PreparedStatement delScadaEntrySt = this.conn.prepareStatement(delScadaEntryQuery)){
+        String delScadaEntryQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "DELETE FROM scada_conn WHERE ip = ? AND port = ?;"
+                + "COMMIT;";
+        try (PreparedStatement delScadaEntrySt = this.conn.prepareStatement(delScadaEntryQuery)) {
+            if (port <= 1024) {
+                throw new IllegalArgumentException("Port cannot be 1024 or lower. Port range reserved.");
+            }
             delScadaEntrySt.setString(1, ip);
             delScadaEntrySt.setInt(2, port);
-            if (delScadaEntrySt.executeUpdate() == 0) {
-                System.out.println("No rows deleted. ID may not exist in database.");
-                return false;
-            }
+            delScadaEntrySt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("Error deleting from database:\n" + ex);
+            return false;
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Invalid input: " + ex.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean deleteProductionBlock(int prodBlockIdToDelete) {
+        String delProdBlockQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "DELETE FROM plc_conn WHERE plc_id = ?;"
+                + "COMMIT;";
+        try (PreparedStatement delProdBlockSt = this.conn.prepareStatement(delProdBlockQuery)) {
+            delProdBlockSt.setInt(1, prodBlockIdToDelete);
+            delProdBlockSt.executeUpdate();
         } catch (SQLException ex) {
             System.out.println("Error deleting from database:\n" + ex);
             return false;

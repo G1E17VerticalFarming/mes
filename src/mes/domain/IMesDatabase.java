@@ -167,20 +167,19 @@ public interface IMesDatabase {
     public abstract boolean updateOrderEndDate(Order orderObjectToUpd);
     
     /**
-     * Implemented fully
-     *
-     * Method to delete a dataLog from the database.
-     * 
-     * Method will fail if dataLogIdToDelete is not greater than 0
-     * @param dataLogIdToDelete Data log ID to delete from database
-     * @return True if data log is deleted succesfully, false otherwise
-     */
-    public abstract boolean deleteDataLog(int dataLogIdToDelete);
-    
-    /**
      * Not implemented
      * @param growthProfileIdToDelete GrowthProfile ID to delete from database
      * @return True if growth profile has been succesfully deleted
      */
     public abstract boolean deleteGrowthProfile(int growthProfileIdToDelete);
+    
+    /**
+     * Implemented fully
+     * 
+     * Method to delete a production block from database. This is used if a PLC
+     * goes from online to offline
+     * @param prodBlockIdToDelete The ID of the production block to delete from database
+     * @return True on succesful delete from database, false otherwise
+     */
+    public abstract boolean deleteProductionBlock(int prodBlockIdToDelete);
 }
