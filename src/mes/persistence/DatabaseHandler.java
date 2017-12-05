@@ -16,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mes.domain.Order;
 import mes.domain.Production;
 import shared.*;
@@ -200,13 +202,13 @@ public class DatabaseHandler implements IMesDatabase {
         DatabaseHandler handler = DatabaseHandler.getInstance();
         System.out.println("Testing time taken with 2 statements.");
         long beginTime = System.currentTimeMillis();
-        System.out.println(handler.getProductionBlocks());
-
-        System.out.println(handler.getProductionBlock(1));
-
-        System.out.println(handler.getGrowthProfile(2).getLightSequence());
-
-        System.out.println(handler.fetchOrders("22-11-2017"));
+//        System.out.println(handler.getProductionBlocks());
+//
+//        System.out.println(handler.getProductionBlock(1));
+//
+//        System.out.println(handler.getGrowthProfile(2).getLightSequence());
+//
+//        System.out.println(handler.fetchOrders("22-11-2017"));
 
 //        Order ord = new Order();
 //        ord.setId(2);
@@ -351,7 +353,7 @@ public class DatabaseHandler implements IMesDatabase {
 
     @Override
     public boolean saveProduction(Production prodObjectToSave) {
-        if (prodObjectToSave.getBlock() == null || prodObjectToSave.getDataLogs() == null || prodObjectToSave.getGrowthProfile() == null || prodObjectToSave.getOrder() == null) {
+        if (prodObjectToSave.getBlock() == null || prodObjectToSave.getGrowthProfile() == null || prodObjectToSave.getOrder() == null) {
             return false;
         }
         String saveProdQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
@@ -620,5 +622,53 @@ public class DatabaseHandler implements IMesDatabase {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public Production getProduction(Order orderToFetchProdFor) {
+        Production prodToReturn = new Production();
+        String getProdQuery = "SELECT prod_id,lot,plc_id,plc_name,ip,port,growth_id FROM prod_overview WHERE order_id = ?;";
+        ResultSet getProdRs;
+        try(PreparedStatement getProdSt = this.conn.prepareStatement(getProdQuery)){
+            if(orderToFetchProdFor.getId() <= 0){
+                throw new IllegalArgumentException("Order ID cannot be negative or zero.");
+            }
+            getProdSt.setInt(1, orderToFetchProdFor.getId());
+            getProdRs = getProdSt.executeQuery();
+            getProdRs.next();
+            ProductionBlock prodBlock = new ProductionBlock();
+            prodBlock.setId(getProdRs.getInt("plc_id"));
+            prodBlock.setName(getProdRs.getString("plc_name"));
+            prodBlock.setPort(getProdRs.getInt("port"));
+            prodBlock.setIpaddress(getProdRs.getString("ip"));
+            
+            prodToReturn.setBlock(prodBlock);
+            prodToReturn.setOrder(orderToFetchProdFor);
+            prodToReturn.setGrowthProfile(this.getGrowthProfile(getProdRs.getInt("growth_id")));
+            prodToReturn.setDataLogs(null); // Not filled in
+        } catch (SQLException ex) {
+            System.out.println("Error fetching from database:\n" + ex);
+            return null;
+        } catch (IllegalArgumentException ex){
+            System.out.println("Invalid input: " + ex.getMessage());
+            return null;
+        }
+        return prodToReturn;
+    }
+
+    @Override
+    public List<String> getDataLogFilterOptions() {
+        List<String> filters = new ArrayList<>();
+        String getDatFiltersQuery = "SELECT type FROM data;";
+        try(Statement getDatFiltersSt = this.conn.createStatement();
+                ResultSet getDatFiltersRs = getDatFiltersSt.executeQuery(getDatFiltersQuery)){
+            while(getDatFiltersRs.next()){
+                filters.add(getDatFiltersRs.getString("type"));
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error fetching from database:\n" + ex);
+            return null;
+        }
+        return filters;
     }
 }

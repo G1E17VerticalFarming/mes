@@ -182,4 +182,23 @@ public interface IMesDatabase {
      * @return True on succesful delete from database, false otherwise
      */
     public abstract boolean deleteProductionBlock(int prodBlockIdToDelete);
+    
+    /**
+     * Implemented fully
+     * 
+     * Method to fetch a Production object for a given Order.
+     * This method will populate a Production object with an Order object, 
+     * ProductionBlock object and GrowthProfile object
+     * @param orderIdToFetchProdFor Order object to fetch production for
+     * @return Full Production object
+     */
+    public abstract Production getProduction(Order orderToFetchProdFor);
+    
+    /**
+     * Implemented fully
+     * 
+     * Method to fetch a list of filter options for data logs
+     * @return List of String objects represented in table data.type
+     */
+    public abstract List<String> getDataLogFilterOptions();
 }
