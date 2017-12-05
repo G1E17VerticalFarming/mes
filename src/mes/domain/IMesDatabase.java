@@ -34,7 +34,7 @@ public interface IMesDatabase {
     public abstract List<Order> fetchOrders(String dateStringRepresentation);
     
     /**
-     * Not implemented
+     * Implemented fully
      * 
      * Method to get a map of all available orderStatuses in database
      * @return List of Status objects containing a key-value pair of an identifier and a value
@@ -42,7 +42,7 @@ public interface IMesDatabase {
     public abstract List<Status> getOrderStatuses();
     
     /**
-     * Not implemented
+     * Implemented fully
      * 
      * Method to get a list of all data logs in the database, filtered with filter parameter
      * @param filter String filter to use as filter in database query (Will filter on data.type)
@@ -78,7 +78,7 @@ public interface IMesDatabase {
     public abstract List<GrowthProfile> getGrowthProfiles();
     
     /**
-     * Not implemented
+     * Implemented fully
      * 
      * This method will fetch current scada systems running and connected to this MES
      * @return List of Strings with scada entries represented as ip : port
@@ -107,6 +107,7 @@ public interface IMesDatabase {
     
     /**
      * Implemented fully
+     * 
      * Method to add a new SCADA entry to the database
      * @param ip IP of the new SCADA entry
      * @param port Port of the new SCADA entry
@@ -116,6 +117,7 @@ public interface IMesDatabase {
     
     /**
      * Implemented fully
+     * 
      * Method to remove a SCADA entry from the database
      * @param ip IP of the SCADA to remove
      * @param port Port of the SCADA to remove
@@ -167,7 +169,8 @@ public interface IMesDatabase {
     public abstract boolean updateOrderEndDate(Order orderObjectToUpd);
     
     /**
-     * Not implemented
+     * Implemented fully
+     * 
      * @param growthProfileIdToDelete GrowthProfile ID to delete from database
      * @return True if growth profile has been succesfully deleted
      */
@@ -189,7 +192,7 @@ public interface IMesDatabase {
      * Method to fetch a Production object for a given Order.
      * This method will populate a Production object with an Order object, 
      * ProductionBlock object and GrowthProfile object
-     * @param orderIdToFetchProdFor Order object to fetch production for
+     * @param orderToFetchProdFor Order object to fetch production for
      * @return Full Production object
      */
     public abstract Production getProduction(Order orderToFetchProdFor);
