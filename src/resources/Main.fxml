@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -16,7 +21,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mes.gui.MainController">
+<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mes.gui.MainController">
    <children>
       <TabPane layoutX="29.0" layoutY="6.0" prefHeight="206.0" prefWidth="320.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -252,17 +257,15 @@
                               <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>
-                                          <ComboBox fx:id="comboBoxLogType" layoutX="204.0" layoutY="84.0" prefWidth="150.0" />
-                                          <DatePicker fx:id="datePickerLog" layoutX="38.0" layoutY="27.0" />
-                                          <ComboBox fx:id="comboBoxLogCmd" layoutX="369.0" layoutY="84.0" prefWidth="150.0" />
-                                          <TextArea fx:id="txtAreaLog" layoutX="38.0" layoutY="156.0" prefHeight="488.0" prefWidth="945.0" />
-                                          <ComboBox fx:id="comboBoxLogProdBlock" layoutX="38.0" layoutY="84.0" prefWidth="150.0" />
+                                          <ComboBox fx:id="comboBoxLogType" layoutX="203.0" layoutY="55.0" prefWidth="150.0" />
+                                          <ComboBox fx:id="comboBoxLogCmd" layoutX="368.0" layoutY="55.0" prefWidth="150.0" />
+                                          <TextArea fx:id="txtAreaLog" layoutX="38.0" layoutY="140.0" prefHeight="504.0" prefWidth="945.0" />
+                                          <ComboBox fx:id="comboBoxLogProdBlock" layoutX="37.0" layoutY="55.0" prefWidth="150.0" />
                                           <Button layoutX="37.0" layoutY="663.0" mnemonicParsing="false" onAction="#handleSaveDataLog" prefHeight="25.0" prefWidth="947.0" text="Save Data Log" />
-                                          <Label layoutX="38.0" layoutY="6.0" text="Date:" />
-                                          <Label layoutX="38.0" layoutY="60.0" text="Production block:" />
-                                          <Label layoutX="204.0" layoutY="60.0" text="Type:" />
-                                          <Label layoutX="369.0" layoutY="60.0" text="Command:" />
-                                          <Label layoutX="38.0" layoutY="110.0" text="Log:">
+                                          <Label layoutX="37.0" layoutY="31.0" text="Production block:" />
+                                          <Label layoutX="203.0" layoutY="31.0" text="Type:" />
+                                          <Label layoutX="368.0" layoutY="31.0" text="Command:" />
+                                          <Label layoutX="37.0" layoutY="96.0" text="Log:">
                                              <font>
                                                 <Font name="System Bold" size="30.0" />
                                              </font>

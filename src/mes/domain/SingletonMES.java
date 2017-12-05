@@ -5,6 +5,7 @@
  */
 package mes.domain;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -114,6 +115,30 @@ public class SingletonMES implements IMes {
     @Override
     public void saveScadaConnection(String ip, int port) {
         dbHandler.saveScadaEntry(ip, port);
+    }
+    
+    @Override
+    public void deleteScadaConnection(String scadaEntry) {
+        String elements[] = scadaEntry.split(":");
+        dbHandler.deleteScadaEntry(elements[0], Integer.parseInt(elements[1]));
+    }
+    
+    @Override
+    public List fetchLogFilters() {
+        return dbHandler.getDataLogFilterOptions();
+    }
+    
+    @Override
+    public void saveDataLog(int block, String type, int cmd, String value) {
+        Log dataLogToSave = new Log();
+        dataLogToSave.setBlock(block);
+        dataLogToSave.setType(type);
+        dataLogToSave.setUnixTimestamp((int)Instant.now().getEpochSecond());
+        dataLogToSave.setCmd(cmd);
+        dataLogToSave.setValue(value);
+        
+        dbHandler.saveDataLog(dataLogToSave);
+        
     }
     
 }

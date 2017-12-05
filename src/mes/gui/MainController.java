@@ -32,6 +32,7 @@ import mes.domain.IMes;
 import mes.domain.Order;
 import mes.domain.SingletonMES;
 import shared.GrowthProfile;
+import shared.Log;
 
 /**
  *
@@ -118,31 +119,29 @@ public class MainController implements Initializable {
     @FXML
     private Label lblSequenceSelected;
     @FXML
-    private TableView<?> tableViewDataLogs;
+    private TableView<Log> tableViewDataLogs;
     @FXML
-    private TableColumn<?, ?> tabDataId;
+    private TableColumn<Log, Integer> tabDataId;
     @FXML
-    private TableColumn<?, ?> tabDataProductionBlock;
+    private TableColumn<Log, Integer> tabDataProductionBlock;
     @FXML
-    private TableColumn<?, ?> tabDataType;
+    private TableColumn<Log, String> tabDataType;
     @FXML
-    private TableColumn<?, ?> tabDataTimestamp;
+    private TableColumn<Log, Integer> tabDataTimestamp;
     @FXML
-    private TableColumn<?, ?> tabDataCommand;
+    private TableColumn<Log, Integer> tabDataCommand;
     @FXML
-    private TableColumn<?, ?> tabDataValue;
+    private TableColumn<Log, String> tabDataValue;
     @FXML
-    private ComboBox<?> comboBoxLogFilter;
+    private ComboBox<String> comboBoxLogFilter;
     @FXML
-    private ComboBox<?> comboBoxLogType;
+    private ComboBox<String> comboBoxLogType;
     @FXML
-    private DatePicker datePickerLog;
-    @FXML
-    private ComboBox<?> comboBoxLogCmd;
+    private ComboBox<Integer> comboBoxLogCmd;
     @FXML
     private TextArea txtAreaLog;
     @FXML
-    private ComboBox<?> comboBoxLogProdBlock;
+    private ComboBox<Integer> comboBoxLogProdBlock;
     @FXML
     private Tab tabNewDataLog;
     @FXML
@@ -183,13 +182,18 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         datePickerOrderDate.setValue(LocalDate.now());
-
+        
+        // Fetch data for combo boxes
+        comboBoxPrepOrderStatus.getItems().addAll(MES.fetchStatuses());
+        comboBoxPrepGrowthProfile.getItems().addAll(MES.fetchGrowthProfiles());
+        comboBoxLogFilter.getItems().addAll(MES.fetchLogFilters());
+        
+        comboBoxLogFilter.getSelectionModel().selectFirst();
+        
         // Fetch data for list/tableviews
         this.setGrowthProfileTableView(MES.fetchGrowthProfiles());
         this.setScadaConnectionsListView(MES.fetchScadaConnections());
-        
-        comboBoxPrepOrderStatus.getItems().addAll(MES.fetchStatuses());
-        comboBoxPrepGrowthProfile.getItems().addAll(MES.fetchGrowthProfiles());
+        this.setDataLogsTableView(MES.fetchDataLogs(comboBoxLogFilter.getSelectionModel().getSelectedItem()));
 
         // Add listeners to limit certain textfields
         this.addScadaPortListener();
@@ -254,6 +258,18 @@ public class MainController implements Initializable {
 
         listViewScadaConnections.getItems().addAll(scadaConnectionsList);
     }
+    
+    private void setDataLogsTableView(List dataLogs) {
+        ObservableList<Log> logs = FXCollections.observableArrayList(dataLogs);
+        tableViewDataLogs.setItems(logs);
+        
+        tabDataId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        tabDataProductionBlock.setCellValueFactory(new PropertyValueFactory<>("block"));
+        tabDataTimestamp.setCellValueFactory(new PropertyValueFactory<>("unixTimestamp"));
+        tabDataCommand.setCellValueFactory(new PropertyValueFactory<>("cmd"));
+        tabDataValue.setCellValueFactory(new PropertyValueFactory<>("value"));
+        tabDataType.setCellValueFactory(new PropertyValueFactory<>("type"));
+    }
 
     private void setGrowthProfileTableView(List growthProfiles) {
         ObservableList<GrowthProfile> growthProfileList = FXCollections.observableArrayList(growthProfiles);
@@ -279,6 +295,13 @@ public class MainController implements Initializable {
 
             pickedOrderTab.setDisable(false);
             orderTabPane.getSelectionModel().select(pickedOrderTab);
+            
+            if(currentOrder.getStatus().getValue().equals("Færdig")) {
+                txtFieldPrepOrder.setDisable(true);
+                txtFieldPrepAmount.setDisable(true);
+                comboBoxPrepOrderStatus.setDisable(true);
+                comboBoxPrepGrowthProfile.setDisable(true);
+            }
         }
     }
 
@@ -323,13 +346,16 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleNewDataLog(ActionEvent event) {
-        datePickerLog.setValue(LocalDate.now());
         tabNewDataLog.setDisable(false);
         statisticsTabPane.getSelectionModel().select(tabNewDataLog);
     }
 
     @FXML
     private void handleSaveDataLog(ActionEvent event) {
+        MES.saveDataLog(comboBoxLogProdBlock.getSelectionModel().getSelectedItem(), 
+                comboBoxLogType.getSelectionModel().getSelectedItem(),
+                comboBoxLogCmd.getSelectionModel().getSelectedItem(), 
+                txtAreaLog.getText());
     }
 
     @FXML
@@ -363,7 +389,10 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleRemoveScadaConnection(ActionEvent event) {
-
+        if(listViewScadaConnections.getSelectionModel().getSelectedItem() != null) {
+            MES.deleteScadaConnection(listViewScadaConnections.getSelectionModel().getSelectedItem());
+            this.updateScadaConnectionsListView();
+        }
     }
 
     @FXML

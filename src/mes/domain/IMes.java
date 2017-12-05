@@ -95,4 +95,10 @@ public interface IMes {
     
     public void saveScadaConnection(String ip, int port);
     
+    public void deleteScadaConnection(String scadaEntry);
+    
+    public List fetchLogFilters();
+    
+    public void saveDataLog(int block, String type, int cmd, String value);
+    
 }
