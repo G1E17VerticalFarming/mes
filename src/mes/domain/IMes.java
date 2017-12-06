@@ -8,6 +8,7 @@ package mes.domain;
 import java.time.LocalDate;
 import java.util.*;
 import shared.GrowthProfile;
+import shared.Light;
 import shared.ProductionBlock;
 
 /**
@@ -99,6 +100,22 @@ public interface IMes {
     
     public List fetchLogFilters();
     
-    public void saveDataLog(int block, String type, int cmd, String value);
+    public void saveDataLog(int block, String value);
+    
+    public String[] getGrowthProfileLightTypes();
+    
+    public void setGrowthProfileLights(GrowthProfile gp);
+    
+    public void setTempGrowthProfileLights(ArrayList lights);
+    
+    public ArrayList getTempGrowthProfileLights();
+    
+    public void removeTempGrowthProfileLight(int index);
+    
+    public Production fetchProduction(Order orderToFetchProdFor);
+    
+    public void addGrowthProfileLight(Light light);
+    
+    public Light createGrowthProfileLight(int type, int time, int value);
     
 }

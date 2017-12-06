@@ -19,10 +19,10 @@ import shared.*;
 public class SingletonMES implements IMes {
 
     private List orders;
-    private List growthProfiles = new ArrayList<>();
+    private List growthProfiles;
     private List retrievedLogs;
     private List scadaConnections;
-    private Queue orderQueue;
+    private ArrayList<Light> tempGrowthProfileLights;
 
     private String date;
     private IMesDatabase dbHandler = DatabaseHandler.getInstance();
@@ -38,6 +38,46 @@ public class SingletonMES implements IMes {
             instance = new SingletonMES();
         }
         return instance;
+    }
+    
+    @Override
+    public Production fetchProduction(Order orderToFetchProdFor) {
+        return dbHandler.getProduction(orderToFetchProdFor);
+    }
+    
+    @Override
+    public void removeTempGrowthProfileLight(int index) {
+        tempGrowthProfileLights.remove(index);
+    }
+    
+    @Override
+    public ArrayList getTempGrowthProfileLights() {
+        return this.tempGrowthProfileLights;
+    }
+    
+    @Override
+    public void setTempGrowthProfileLights(ArrayList lights) {
+        this.tempGrowthProfileLights = lights;
+    }
+    
+    @Override
+    public void setGrowthProfileLights(GrowthProfile gp) {
+        gp.setLightSequence(tempGrowthProfileLights);
+    }
+    
+    @Override
+    public void addGrowthProfileLight(Light light) {
+        this.tempGrowthProfileLights.add(light);
+    }
+    
+    @Override
+    public Light createGrowthProfileLight(int type, int time, int value) {
+        Light newLight = new Light();
+        newLight.setType(type);
+        newLight.setPowerLevel(value);
+        newLight.setRunTimeUnix(time * 3600);
+        
+        return newLight;
     }
     
     @Override
@@ -109,6 +149,7 @@ public class SingletonMES implements IMes {
     
     @Override
     public void saveGrowthProfile(GrowthProfile profileToSave) {
+        profileToSave.setLightSequence(tempGrowthProfileLights);
         dbHandler.saveGrowthProfile(profileToSave);
     } 
     
@@ -129,16 +170,23 @@ public class SingletonMES implements IMes {
     }
     
     @Override
-    public void saveDataLog(int block, String type, int cmd, String value) {
+    public void saveDataLog(int block, String value) {
         Log dataLogToSave = new Log();
         dataLogToSave.setBlock(block);
-        dataLogToSave.setType(type);
+        dataLogToSave.setType("manuel kommentar");
         dataLogToSave.setUnixTimestamp((int)Instant.now().getEpochSecond());
-        dataLogToSave.setCmd(cmd);
+        dataLogToSave.setCmd(0);
         dataLogToSave.setValue(value);
         
         dbHandler.saveDataLog(dataLogToSave);
         
+    }
+    
+    @Override
+    public String[] getGrowthProfileLightTypes() {
+        String[] lightTypes = {"Ingen lys", "Rødt lys", "Blåt lys", "Blåt og rødt lys"};
+        
+        return lightTypes;
     }
     
 }
