@@ -32,6 +32,7 @@ import mes.domain.IMes;
 import mes.domain.Order;
 import mes.domain.SingletonMES;
 import shared.GrowthProfile;
+import shared.Light;
 import shared.Log;
 
 /**
@@ -42,14 +43,6 @@ public class MainController implements Initializable {
 
     @FXML
     private AnchorPane tab_order_name;
-    @FXML
-    private TableColumn<?, ?> tab_sequences_sequence;
-    @FXML
-    private TableColumn<?, ?> tab_sequences_type;
-    @FXML
-    private TableColumn<?, ?> tab_sequences_time;
-    @FXML
-    private TableColumn<?, ?> tab_sequences_value;
     @FXML
     private Button btnFetchOrders;
     @FXML
@@ -87,7 +80,7 @@ public class MainController implements Initializable {
     @FXML
     private ComboBox<String> comboBoxPrepOrderStatus;
     @FXML
-    private ComboBox<?> comboBoxPrepGrowthProfile;
+    private ComboBox<GrowthProfile> comboBoxPrepGrowthProfile;
     @FXML
     private TextField txtFieldPrepAmount;
     @FXML
@@ -109,15 +102,13 @@ public class MainController implements Initializable {
     @FXML
     private TextField txtFieldGpName;
     @FXML
-    private TableView<?> tableViewSequences;
+    private TableView<Light> tableViewSequences;
     @FXML
     private TextField txtFieldGpTime;
     @FXML
-    private ComboBox<?> comboBoxGpType;
+    private ComboBox<String> comboBoxGpType;
     @FXML
     private TextField txtFieldGpValue;
-    @FXML
-    private Label lblSequenceSelected;
     @FXML
     private TableView<Log> tableViewDataLogs;
     @FXML
@@ -134,10 +125,6 @@ public class MainController implements Initializable {
     private TableColumn<Log, String> tabDataValue;
     @FXML
     private ComboBox<String> comboBoxLogFilter;
-    @FXML
-    private ComboBox<String> comboBoxLogType;
-    @FXML
-    private ComboBox<Integer> comboBoxLogCmd;
     @FXML
     private TextArea txtAreaLog;
     @FXML
@@ -173,23 +160,31 @@ public class MainController implements Initializable {
     @FXML
     private TabPane scadaTabPane;
 
-    private GrowthProfile currentGrowthProfile;
+    private GrowthProfile currentGrowthProfile = new GrowthProfile();
     @FXML
     private Label lblSelectedGPID;
     @FXML
     private TextField txtFieldPrepProdBlock;
+    @FXML
+    private TableColumn<?, ?> tabSequencesType;
+    @FXML
+    private TableColumn<?, ?> tabSequencesTime;
+    @FXML
+    private TableColumn<?, ?> tabSequencesValue;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         datePickerOrderDate.setValue(LocalDate.now());
-        
+
         // Fetch data for combo boxes
         comboBoxPrepOrderStatus.getItems().addAll(MES.fetchStatuses());
         comboBoxPrepGrowthProfile.getItems().addAll(MES.fetchGrowthProfiles());
         comboBoxLogFilter.getItems().addAll(MES.fetchLogFilters());
-        
+        comboBoxGpType.getItems().addAll(MES.getGrowthProfileLightTypes());
+
         comboBoxLogFilter.getSelectionModel().selectFirst();
-        
+        comboBoxGpType.getSelectionModel().selectFirst();
+
         // Fetch data for list/tableviews
         this.setGrowthProfileTableView(MES.fetchGrowthProfiles());
         this.setScadaConnectionsListView(MES.fetchScadaConnections());
@@ -197,6 +192,7 @@ public class MainController implements Initializable {
 
         // Add listeners to limit certain textfields
         this.addScadaPortListener();
+        this.addGrowthProfileListeners();
     }
 
     @FXML
@@ -240,6 +236,26 @@ public class MainController implements Initializable {
         });
     }
 
+    private void addGrowthProfileListeners() {
+        txtFieldGpWaterLevel.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtFieldGpWaterLevel.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        txtFieldGpMoisture.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtFieldGpMoisture.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        txtFieldGpValue.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtFieldGpValue.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+    }
+
     private void setOrderTableView(List orders) {
         ObservableList<Order> orderList = FXCollections.observableArrayList(orders);
         tableViewOrderPicker.setItems(orderList);
@@ -258,11 +274,11 @@ public class MainController implements Initializable {
 
         listViewScadaConnections.getItems().addAll(scadaConnectionsList);
     }
-    
+
     private void setDataLogsTableView(List dataLogs) {
         ObservableList<Log> logs = FXCollections.observableArrayList(dataLogs);
         tableViewDataLogs.setItems(logs);
-        
+
         tabDataId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tabDataProductionBlock.setCellValueFactory(new PropertyValueFactory<>("block"));
         tabDataTimestamp.setCellValueFactory(new PropertyValueFactory<>("unixTimestamp"));
@@ -286,7 +302,7 @@ public class MainController implements Initializable {
         // Check that Order is not null, as that causes errors
         if (currentOrder != null) {
             comboBoxPrepOrderStatus.getSelectionModel().select(currentOrder.getStatus().getId() - 1);
-                    
+
             pickedOrderTab.setText(currentOrder.getProductionName());
 
             txtFieldPrepOrder.setText(currentOrder.getProductionName());
@@ -294,9 +310,16 @@ public class MainController implements Initializable {
             txtFieldPrepID.setText(Integer.toString(currentOrder.getId()));
 
             pickedOrderTab.setDisable(false);
+            txtFieldPrepOrder.setDisable(false);
+            txtFieldPrepAmount.setDisable(false);
+            comboBoxPrepOrderStatus.setDisable(false);
+            comboBoxPrepGrowthProfile.setDisable(false);
             orderTabPane.getSelectionModel().select(pickedOrderTab);
-            
-            if(currentOrder.getStatus().getValue().equals("Færdig")) {
+
+            if (currentOrder.getStatus().getValue().equals("Færdig")) {
+                comboBoxPrepGrowthProfile.getItems().add(MES.fetchProduction(currentOrder).getGrowthProfile());
+                comboBoxPrepGrowthProfile.getSelectionModel().selectFirst();
+                txtFieldPrepProdBlock.setText(Integer.toString(MES.fetchProduction(currentOrder).getBlock().getId()));
                 txtFieldPrepOrder.setDisable(true);
                 txtFieldPrepAmount.setDisable(true);
                 comboBoxPrepOrderStatus.setDisable(true);
@@ -319,21 +342,41 @@ public class MainController implements Initializable {
         txtFieldGpWaterLevel.setText(Integer.toString(currentGrowthProfile.getWaterLevel()));
         txtFieldGpMoisture.setText(Integer.toString(currentGrowthProfile.getMoisture()));
 
+        MES.setTempGrowthProfileLights(currentGrowthProfile.getLightSequence());
+
+        this.setGpLightTableView(MES.getTempGrowthProfileLights());
+
         lblSelectedGPID.setText(Integer.toString(currentGrowthProfile.getId()));
     }
 
     @FXML
     private void handleAddSequence(ActionEvent event) {
+        MES.addGrowthProfileLight(MES.createGrowthProfileLight(comboBoxGpType.getSelectionModel().getSelectedIndex(),
+                Integer.parseInt(txtFieldGpTime.getText()), Integer.parseInt(txtFieldGpValue.getText())));
+
+        tableViewSequences.getItems().clear();
+        this.setGpLightTableView(MES.getTempGrowthProfileLights());
     }
 
     @FXML
     private void handleDeleteSequence(ActionEvent event) {
+        if (tableViewSequences.getSelectionModel().getSelectedItem() != null) {
+            MES.removeTempGrowthProfileLight(tableViewSequences.getSelectionModel().getSelectedIndex());
+
+            tableViewSequences.getItems().clear();
+            this.setGpLightTableView(MES.getTempGrowthProfileLights());
+        }
     }
 
     @FXML
     private void handleSaveGrowthProfile(ActionEvent event) {
         if (currentGrowthProfile != null) {
+            currentGrowthProfile.setName(txtFieldGpName.getText());
+            currentGrowthProfile.setMoisture(Integer.parseInt(txtFieldGpMoisture.getText()));
+            currentGrowthProfile.setTemperature(Integer.parseInt(txtFieldGpCelcius.getText()));
+            currentGrowthProfile.setWaterLevel(Integer.parseInt(txtFieldGpWaterLevel.getText()));
             MES.saveGrowthProfile(currentGrowthProfile);
+            this.updateGrowthProfilesTableView();
         }
     }
 
@@ -341,6 +384,7 @@ public class MainController implements Initializable {
     private void handleDeleteGrowthProfile(ActionEvent event) {
         if (currentGrowthProfile != null) {
             MES.deleteGrowthProfile(currentGrowthProfile.getId());
+            this.updateGrowthProfilesTableView();
         }
     }
 
@@ -352,9 +396,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleSaveDataLog(ActionEvent event) {
-        MES.saveDataLog(comboBoxLogProdBlock.getSelectionModel().getSelectedItem(), 
-                comboBoxLogType.getSelectionModel().getSelectedItem(),
-                comboBoxLogCmd.getSelectionModel().getSelectedItem(), 
+        MES.saveDataLog(comboBoxLogProdBlock.getSelectionModel().getSelectedItem(),
                 txtAreaLog.getText());
     }
 
@@ -384,12 +426,12 @@ public class MainController implements Initializable {
     private void handleAddNewScadaConnection(ActionEvent event) {
         tabNewScadaCon.setDisable(false);
         scadaTabPane.getSelectionModel().select(tabNewScadaCon);
-        
+
     }
 
     @FXML
     private void handleRemoveScadaConnection(ActionEvent event) {
-        if(listViewScadaConnections.getSelectionModel().getSelectedItem() != null) {
+        if (listViewScadaConnections.getSelectionModel().getSelectedItem() != null) {
             MES.deleteScadaConnection(listViewScadaConnections.getSelectionModel().getSelectedItem());
             this.updateScadaConnectionsListView();
         }
@@ -398,21 +440,38 @@ public class MainController implements Initializable {
     @FXML
     private void handleAddScadaConnection(ActionEvent event) {
         MES.saveScadaConnection(txtFieldScadaIP.getText(), Integer.parseInt(txtFieldScadaPort.getText()));
-        
+
         // Update List View
         this.updateScadaConnectionsListView();
-        
+
         // Go back
         scadaTabPane.getSelectionModel().select(tabScadaCon);
         tabNewScadaCon.setDisable(true);
     }
-    
+
     private void updateScadaConnectionsListView() {
         // Clear
         listViewScadaConnections.getItems().clear();
-        
+
         // Rebuild
         this.setScadaConnectionsListView(MES.fetchScadaConnections());
+    }
+
+    private void updateGrowthProfilesTableView() {
+        // Clear
+        tableViewGrowthProfile.getItems().clear();
+
+        // Rebuild
+        this.setGrowthProfileTableView(MES.fetchGrowthProfiles());
+    }
+
+    private void setGpLightTableView(List lights) {
+        ObservableList<Light> lightList = FXCollections.observableArrayList(lights);
+        tableViewSequences.setItems(lightList);
+
+        tabSequencesType.setCellValueFactory(new PropertyValueFactory<>("type"));
+        tabSequencesTime.setCellValueFactory(new PropertyValueFactory<>("runTimeUnix"));
+        tabSequencesValue.setCellValueFactory(new PropertyValueFactory<>("powerLevel"));
     }
 
     @FXML

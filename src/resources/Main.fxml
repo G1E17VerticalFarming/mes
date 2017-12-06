@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -21,7 +16,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mes.gui.MainController">
+<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mes.gui.MainController">
    <children>
       <TabPane layoutX="29.0" layoutY="6.0" prefHeight="206.0" prefWidth="320.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -156,7 +151,7 @@
                   </AnchorPane>
             </content>
           </Tab>
-            <Tab fx:id="tabGrowthProfiles" closable="false" disable="true" text="Growth Profiles">
+            <Tab fx:id="tabGrowthProfiles" closable="false" text="Growth Profiles">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -171,9 +166,9 @@
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font></Label>
-                        <TextField fx:id="txtFieldGpCelcius" layoutX="533.0" layoutY="141.0" />
-                        <TextField fx:id="txtFieldGpWaterLevel" layoutX="533.0" layoutY="183.0" />
-                        <TextField fx:id="txtFieldGpMoisture" layoutX="533.0" layoutY="226.0" />
+                        <TextField fx:id="txtFieldGpCelcius" layoutX="533.0" layoutY="141.0" text="0" />
+                        <TextField fx:id="txtFieldGpWaterLevel" layoutX="533.0" layoutY="183.0" text="0" />
+                        <TextField fx:id="txtFieldGpMoisture" layoutX="533.0" layoutY="226.0" text="0" />
                         <TextField fx:id="txtFieldGpName" layoutX="533.0" layoutY="74.0" prefHeight="25.0" prefWidth="348.0" />
                         <Label layoutX="534.0" layoutY="30.0" text="Add/Edit Growth Profile:">
                            <font>
@@ -196,26 +191,23 @@
                         <Label layoutX="477.0" layoutY="78.0" text="Name" />
                         <TableView fx:id="tableViewSequences" layoutX="534.0" layoutY="454.0" prefHeight="166.0" prefWidth="347.0">
                           <columns>
-                            <TableColumn fx:id="tab_sequences_sequence" prefWidth="65.66668701171875" text="Sequence" />
-                            <TableColumn fx:id="tab_sequences_type" prefWidth="105.6666259765625" text="Type" />
-                              <TableColumn fx:id="tab_sequences_time" prefWidth="84.3333740234375" text="Time" />
-                              <TableColumn fx:id="tab_sequences_value" prefWidth="91.6666259765625" text="Value" />
+                            <TableColumn fx:id="tabSequencesType" prefWidth="131.33331298828125" text="Type" />
+                              <TableColumn fx:id="tabSequencesTime" prefWidth="114.6666259765625" text="Time" />
+                              <TableColumn fx:id="tabSequencesValue" prefWidth="99.0" text="Value" />
                           </columns>
                         </TableView>
-                        <TextField fx:id="txtFieldGpTime" layoutX="533.0" layoutY="332.0" prefHeight="25.0" prefWidth="150.0" />
+                        <TextField fx:id="txtFieldGpTime" layoutX="533.0" layoutY="332.0" prefHeight="25.0" prefWidth="150.0" text="0" />
                         <ComboBox fx:id="comboBoxGpType" layoutX="533.0" layoutY="290.0" prefWidth="150.0" />
-                        <TextField fx:id="txtFieldGpValue" layoutX="533.0" layoutY="373.0" prefHeight="25.0" prefWidth="149.0" />
+                        <TextField fx:id="txtFieldGpValue" layoutX="533.0" layoutY="373.0" prefHeight="25.0" prefWidth="149.0" text="0" />
                         <Button layoutX="534.0" layoutY="413.0" mnemonicParsing="false" onAction="#handleAddSequence" text="Add Sequence" />
                         <Label layoutX="480.0" layoutY="294.0" text="Type" />
                         <Label layoutX="479.0" layoutY="336.0" text="Time" />
                         <Label layoutX="479.0" layoutY="377.0" text="Value" />
-                        <Label layoutX="534.0" layoutY="629.0" text="Selected:" />
                         <Button layoutX="728.0" layoutY="625.0" mnemonicParsing="false" onAction="#handleDeleteSequence" prefHeight="25.0" prefWidth="152.0" text="Delete" />
-                        <Label fx:id="lblSequenceSelected" layoutX="594.0" layoutY="629.0" text="-" />
                         <Label layoutX="694.0" layoutY="145.0" text="degrees" />
                         <Label layoutX="694.0" layoutY="187.0" text="\%" />
                         <Label layoutX="694.0" layoutY="230.0" text="\%" />
-                        <Label layoutX="696.0" layoutY="336.0" text="sec" />
+                        <Label layoutX="696.0" layoutY="336.0" text="hours" />
                         <Label layoutX="694.0" layoutY="377.0" text="\%" />
                         <Button layoutX="407.0" layoutY="680.0" mnemonicParsing="false" onAction="#handleSaveGrowthProfile" prefHeight="25.0" prefWidth="613.0" text="Save" />
                         <Button layoutX="14.0" layoutY="680.0" mnemonicParsing="false" onAction="#handleDeleteGrowthProfile" prefHeight="25.0" prefWidth="386.0" text="Delete" />
@@ -257,14 +249,10 @@
                               <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>
-                                          <ComboBox fx:id="comboBoxLogType" layoutX="203.0" layoutY="55.0" prefWidth="150.0" />
-                                          <ComboBox fx:id="comboBoxLogCmd" layoutX="368.0" layoutY="55.0" prefWidth="150.0" />
                                           <TextArea fx:id="txtAreaLog" layoutX="38.0" layoutY="140.0" prefHeight="504.0" prefWidth="945.0" />
                                           <ComboBox fx:id="comboBoxLogProdBlock" layoutX="37.0" layoutY="55.0" prefWidth="150.0" />
                                           <Button layoutX="37.0" layoutY="663.0" mnemonicParsing="false" onAction="#handleSaveDataLog" prefHeight="25.0" prefWidth="947.0" text="Save Data Log" />
                                           <Label layoutX="37.0" layoutY="31.0" text="Production block:" />
-                                          <Label layoutX="203.0" layoutY="31.0" text="Type:" />
-                                          <Label layoutX="368.0" layoutY="31.0" text="Command:" />
                                           <Label layoutX="37.0" layoutY="96.0" text="Log:">
                                              <font>
                                                 <Font name="System Bold" size="30.0" />
