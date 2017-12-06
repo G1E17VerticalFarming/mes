@@ -221,12 +221,13 @@ public class DatabaseHandler implements IMesDatabase {
     @Override
     public List<ProductionBlock> getActiveProductionBlocks() {
         List<ProductionBlock> prodBlocks = new ArrayList<>();
-        String getProdBlockQuery = "SELECT DISTINCT plc_id,ip,port,name,growth_id FROM plc_conn NATURAL JOIN handles NATURAL JOIN production NATURAL JOIN requires;";
+        String getProdBlockQuery = "SELECT DISTINCT prod_id,plc_id,ip,port,name,growth_id FROM plc_conn NATURAL JOIN handles NATURAL JOIN production NATURAL JOIN requires;";
         try (Statement getProdBlocksSt = this.conn.createStatement();
                 ResultSet getProdBlocksRs = getProdBlocksSt.executeQuery(getProdBlockQuery)) {
             while (getProdBlocksRs.next()) {
                 ProductionBlock localProdBlock = new ProductionBlock();
                 localProdBlock.setId(getProdBlocksRs.getInt("plc_id"));
+                localProdBlock.setBatchId(getProdBlocksRs.getInt("prod_id"));
                 localProdBlock.setIpaddress(getProdBlocksRs.getString("ip"));
                 localProdBlock.setPort(getProdBlocksRs.getInt("port"));
                 localProdBlock.setName(getProdBlocksRs.getString("name"));

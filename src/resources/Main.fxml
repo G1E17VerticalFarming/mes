@@ -151,7 +151,7 @@
                   </AnchorPane>
             </content>
           </Tab>
-            <Tab fx:id="tabGrowthProfiles" closable="false" text="Growth Profiles">
+            <Tab fx:id="tabGrowthProfiles" closable="false" disable="true" text="Growth Profiles">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -224,7 +224,7 @@
                      <children>
                         <TabPane fx:id="statisticsTabPane" layoutX="132.0" prefHeight="739.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <tabs>
-                            <Tab text="Logs">
+                            <Tab fx:id="tabDataLog" text="Logs">
                               <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>
@@ -250,7 +250,7 @@
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>
                                           <TextArea fx:id="txtAreaLog" layoutX="38.0" layoutY="140.0" prefHeight="504.0" prefWidth="945.0" />
-                                          <ComboBox fx:id="comboBoxLogProdBlock" layoutX="37.0" layoutY="55.0" prefWidth="150.0" />
+                                          <ComboBox fx:id="comboBoxLogProdBlock" layoutX="37.0" layoutY="55.0" prefHeight="25.0" prefWidth="273.0" />
                                           <Button layoutX="37.0" layoutY="663.0" mnemonicParsing="false" onAction="#handleSaveDataLog" prefHeight="25.0" prefWidth="947.0" text="Save Data Log" />
                                           <Label layoutX="37.0" layoutY="31.0" text="Production block:" />
                                           <Label layoutX="37.0" layoutY="96.0" text="Log:">
