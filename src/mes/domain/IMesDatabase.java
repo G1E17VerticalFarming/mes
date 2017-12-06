@@ -18,9 +18,17 @@ public interface IMesDatabase {
      * Implemented fully
      *
      * Method to get a list of all active production blocks in database
-     * @return List of all productionblocks present in the database
+     * @return List of all actively working productionblocks in the database
      */
-    public abstract List<ProductionBlock> getProductionBlocks();
+    public abstract List<ProductionBlock> getActiveProductionBlocks();
+    
+    /**
+     * Implemented fully
+     * 
+     * Method to get a list of all idle production blocks in database
+     * @return List of all productionblocks present in plc_conn, but only those idle.
+     */
+    public abstract List<ProductionBlock> getIdleProductionBlocks();
     
     /**
      * Implemented fully
@@ -204,4 +212,14 @@ public interface IMesDatabase {
      * @return List of String objects represented in table data.type
      */
     public abstract List<String> getDataLogFilterOptions();
+    
+    /**
+     * Implemented fully
+     * 
+     * Method to remove a light sequence from a given growthprofile
+     * @param growthProfileId Growth profile id to remove a light from
+     * @param lightToDelete Light ID to remove from database
+     * @return True on succesful delete from Database, false otherwise
+     */
+    public abstract boolean deleteLightFromProfile(int growthProfileId, int lightToDelete);
 }

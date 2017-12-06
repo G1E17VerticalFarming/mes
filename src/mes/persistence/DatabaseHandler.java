@@ -16,8 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mes.domain.Order;
 import mes.domain.Production;
 import shared.*;
@@ -215,12 +213,13 @@ public class DatabaseHandler implements IMesDatabase {
 //        ord.setProductionEnd("23-11-2017");
 //        ord.setStatus(1);
 //        System.out.println(db.updateOrderEndDate(ord));
+        handler.deleteGrowthProfile(12);
         long endTime = System.currentTimeMillis();
         System.out.println("Elapsed time: " + (endTime - beginTime));
     }
 
     @Override
-    public List<ProductionBlock> getProductionBlocks() {
+    public List<ProductionBlock> getActiveProductionBlocks() {
         List<ProductionBlock> prodBlocks = new ArrayList<>();
         String getProdBlockQuery = "SELECT DISTINCT plc_id,ip,port,name,growth_id FROM plc_conn NATURAL JOIN handles NATURAL JOIN production NATURAL JOIN requires;";
         try (Statement getProdBlocksSt = this.conn.createStatement();
@@ -232,6 +231,27 @@ public class DatabaseHandler implements IMesDatabase {
                 localProdBlock.setPort(getProdBlocksRs.getInt("port"));
                 localProdBlock.setName(getProdBlocksRs.getString("name"));
                 localProdBlock.setGrowthConfigId(getProdBlocksRs.getInt("growth_id"));
+                prodBlocks.add(localProdBlock);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error fetching from database:\n" + ex);
+            return null;
+        }
+        return prodBlocks;
+    }
+
+    @Override
+    public List<ProductionBlock> getIdleProductionBlocks() {
+        List<ProductionBlock> prodBlocks = new ArrayList<>();
+        String getProdBlockQuery = "SELECT plc_id,ip,port,name FROM plc_conn WHERE plc_id NOT IN (SELECT plc_id FROM handles);";
+        try (Statement getProdBlocksSt = this.conn.createStatement();
+                ResultSet getProdBlocksRs = getProdBlocksSt.executeQuery(getProdBlockQuery)) {
+            while (getProdBlocksRs.next()) {
+                ProductionBlock localProdBlock = new ProductionBlock();
+                localProdBlock.setId(getProdBlocksRs.getInt("plc_id"));
+                localProdBlock.setIpaddress(getProdBlocksRs.getString("ip"));
+                localProdBlock.setPort(getProdBlocksRs.getInt("port"));
+                localProdBlock.setName(getProdBlocksRs.getString("name"));
                 prodBlocks.add(localProdBlock);
             }
         } catch (SQLException ex) {
@@ -319,9 +339,7 @@ public class DatabaseHandler implements IMesDatabase {
     @Override
     public boolean saveGrowthProfile(GrowthProfile profileToSave) {
         ResultSet saveProfRs;
-        String saveProfQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
-                + "INSERT INTO growthprofile (celcius,water_lvl,moist,night_celcius,name) VALUES (?,?,?,?,?) RETURNING growth_id;"
-                + "COMMIT;";
+        String saveProfQuery = "INSERT INTO growthprofile (celcius,water_lvl,moist,night_celcius,name) VALUES (?,?,?,?,?) RETURNING growth_id;";
         try (PreparedStatement saveProfSt = this.conn.prepareStatement(saveProfQuery)) {
             saveProfSt.setInt(1, profileToSave.getTemperature());
             saveProfSt.setInt(2, profileToSave.getWaterLevel());
@@ -331,8 +349,10 @@ public class DatabaseHandler implements IMesDatabase {
             saveProfRs = saveProfSt.executeQuery();
             saveProfRs.next();
             profileToSave.setId(saveProfRs.getInt("growth_id"));
-            for (Light light : profileToSave.getLightSequence()) {
-                this.saveLightSchedule(profileToSave.getId(), light);
+            if(profileToSave.getLightSequence() != null){
+                for (Light light : profileToSave.getLightSequence()) {
+                    this.saveLightSchedule(profileToSave.getId(), light);
+                }
             }
         } catch (SQLException ex) {
             System.out.println("Error inserting into database:\n" + ex);
@@ -670,5 +690,27 @@ public class DatabaseHandler implements IMesDatabase {
             return null;
         }
         return filters;
+    }
+
+    @Override
+    public boolean deleteLightFromProfile(int growthProfileId, int lightToDelete) {
+        String delLightQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
+                + "DELETE FROM growthlight_view WHERE growth_id = ? AND light_id = ?;"
+                + "COMMIT;";
+        try(PreparedStatement delLightSt = this.conn.prepareStatement(delLightQuery)){
+            if(growthProfileId <= 0 || lightToDelete <= 0){
+                throw new IllegalArgumentException("Growthprofile ID or Light ID cannot be zero or less.");
+            }
+            delLightSt.setInt(1, growthProfileId);
+            delLightSt.setInt(2, lightToDelete);
+            delLightSt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("Error deleting from database:\n" + ex);
+            return false;
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Invalid input: " + ex.getMessage());
+            return false;
+        }
+        return true;
     }
 }
