@@ -100,7 +100,7 @@ public interface IMes {
     
     public List fetchLogFilters();
     
-    public void saveDataLog(int block, String value);
+    public void saveDataLog(int block, String value, int prodId);
     
     public String[] getGrowthProfileLightTypes();
     
@@ -113,6 +113,8 @@ public interface IMes {
     public void removeTempGrowthProfileLight(int index);
     
     public Production fetchProduction(Order orderToFetchProdFor);
+    
+    public List<ProductionBlock> fetchActiveProductionBlocks();
     
     public void addGrowthProfileLight(Light light);
     

@@ -34,6 +34,7 @@ import mes.domain.SingletonMES;
 import shared.GrowthProfile;
 import shared.Light;
 import shared.Log;
+import shared.ProductionBlock;
 
 /**
  *
@@ -128,7 +129,7 @@ public class MainController implements Initializable {
     @FXML
     private TextArea txtAreaLog;
     @FXML
-    private ComboBox<Integer> comboBoxLogProdBlock;
+    private ComboBox<ProductionBlock> comboBoxLogProdBlock;
     @FXML
     private Tab tabNewDataLog;
     @FXML
@@ -171,6 +172,8 @@ public class MainController implements Initializable {
     private TableColumn<?, ?> tabSequencesTime;
     @FXML
     private TableColumn<?, ?> tabSequencesValue;
+    @FXML
+    private Tab tabDataLog;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -181,9 +184,11 @@ public class MainController implements Initializable {
         comboBoxPrepGrowthProfile.getItems().addAll(MES.fetchGrowthProfiles());
         comboBoxLogFilter.getItems().addAll(MES.fetchLogFilters());
         comboBoxGpType.getItems().addAll(MES.getGrowthProfileLightTypes());
+        comboBoxLogProdBlock.getItems().addAll(MES.fetchActiveProductionBlocks());
 
         comboBoxLogFilter.getSelectionModel().selectFirst();
         comboBoxGpType.getSelectionModel().selectFirst();
+        comboBoxLogProdBlock.getSelectionModel().selectFirst();
 
         // Fetch data for list/tableviews
         this.setGrowthProfileTableView(MES.fetchGrowthProfiles());
@@ -396,8 +401,15 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleSaveDataLog(ActionEvent event) {
-        MES.saveDataLog(comboBoxLogProdBlock.getSelectionModel().getSelectedItem(),
-                txtAreaLog.getText());
+        MES.saveDataLog(comboBoxLogProdBlock.getSelectionModel().getSelectedItem().getId(),
+                txtAreaLog.getText(), comboBoxLogProdBlock.getSelectionModel().getSelectedItem().getBatchId());
+        
+        tableViewDataLogs.getItems().clear();
+        this.setDataLogsTableView(MES.fetchDataLogs(comboBoxLogFilter.getSelectionModel().getSelectedItem()));
+        
+        tabNewDataLog.setDisable(true);
+        statisticsTabPane.getSelectionModel().select(tabDataLog);
+        txtAreaLog.clear();
     }
 
     @FXML
@@ -476,6 +488,8 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleUpdateDataLogTableView(ActionEvent event) {
+        tableViewDataLogs.getItems().clear();
+        this.setDataLogsTableView(MES.fetchDataLogs(comboBoxLogFilter.getSelectionModel().getSelectedItem()));
     }
 
     @FXML

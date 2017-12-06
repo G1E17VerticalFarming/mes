@@ -41,6 +41,14 @@ public class SingletonMES implements IMes {
     }
     
     @Override
+    public List<ProductionBlock> fetchActiveProductionBlocks() {
+        List<ProductionBlock> pBlocks = new ArrayList<>();
+        pBlocks.addAll(dbHandler.getActiveProductionBlocks());
+        
+        return pBlocks;
+    }
+    
+    @Override
     public Production fetchProduction(Order orderToFetchProdFor) {
         return dbHandler.getProduction(orderToFetchProdFor);
     }
@@ -170,13 +178,14 @@ public class SingletonMES implements IMes {
     }
     
     @Override
-    public void saveDataLog(int block, String value) {
+    public void saveDataLog(int block, String value, int prodId) {
         Log dataLogToSave = new Log();
         dataLogToSave.setBlock(block);
         dataLogToSave.setType("manuel kommentar");
         dataLogToSave.setUnixTimestamp((int)Instant.now().getEpochSecond());
         dataLogToSave.setCmd(0);
         dataLogToSave.setValue(value);
+        dataLogToSave.setProdId(prodId);
         
         dbHandler.saveDataLog(dataLogToSave);
         
