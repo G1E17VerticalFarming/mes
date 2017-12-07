@@ -9,8 +9,8 @@ import shared.ProductionBlock;
 import shared.GrowthProfile;
 import shared.Log;
 
-//import mes.domain.IMes;
-//import mes.domain.Mes;
+import mes.domain.IMes;
+import mes.domain.SingletonMES;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,24 +21,25 @@ import org.springframework.http.ResponseEntity;
  */
 public class ApiReceiveController {
     
-    //private IMes mes;
+    private IMes mes;
     
     public ApiReceiveController() {
-        //this.mes = Mes.getInstance();
+        this.mes = SingletonMES.getInstance();
     }
     
     public ResponseEntity<ProductionBlock[]> getAllProductionBlocks() {
-        ProductionBlock[] pbArr = new ProductionBlock[2];
-        pbArr[0] = new ProductionBlock();
-        pbArr[0].setName("hejejeje");
-        pbArr[1] = new ProductionBlock();
-        pbArr[1].setName("lololo");
+        ProductionBlock[] pbArr = this.mes.fetchActiveProductionBlocks().toArray(new ProductionBlock[0]);
         return new ResponseEntity<ProductionBlock[]>(pbArr, HttpStatus.OK);
     }
     
     public ResponseEntity<ProductionBlock> getSpecificProductionBlock(int id) {
-        ProductionBlock pb = new ProductionBlock();
-        pb.setPort(id);
+        ProductionBlock pb = null;
+        for(ProductionBlock productionBlock : this.mes.fetchActiveProductionBlocks()) {
+            if(productionBlock.getId() == id) {
+                pb = productionBlock;
+                break;
+            }
+        }
         return new ResponseEntity<ProductionBlock>(pb, HttpStatus.OK);
     }
     
@@ -62,7 +63,7 @@ public class ApiReceiveController {
     }
     
     public ResponseEntity<Boolean> ping() {
-        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
-        //return new ResponseEntity<Boolean>(this.mes != null, HttpStatus.OK);
+        //return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+        return new ResponseEntity<Boolean>(this.mes != null, HttpStatus.OK);
     }
 }
