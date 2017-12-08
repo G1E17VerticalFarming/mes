@@ -378,7 +378,7 @@ public class DatabaseHandler implements IMesDatabase {
             return false;
         }
         String saveProdQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
-                + "INSERT INTO prod_overview (plc_id,growth_id,order_id,prod_begin,status_id) VALUES (?,?,?,?,?)"
+                + "INSERT INTO prod_overview (plc_id,growth_id,order_id,prod_begin,status_id) VALUES (?,?,?,?,?);"
                 + "COMMIT;";
         try (PreparedStatement saveProdSt = this.conn.prepareStatement(saveProdQuery)) {
             saveProdSt.setInt(1, prodObjectToSave.getBlock().getId());
@@ -386,9 +386,9 @@ public class DatabaseHandler implements IMesDatabase {
             saveProdSt.setInt(3, prodObjectToSave.getOrder().getId());
             saveProdSt.setString(4, new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
             saveProdSt.setInt(5, prodObjectToSave.getOrder().getStatus().getId());
-            saveProdSt.executeQuery();
+            saveProdSt.executeUpdate();
         } catch (SQLException ex) {
-            System.out.println("Error fetching from database:\n" + ex);
+            System.out.println("Error inserting into database:\n" + ex);
             return false;
         }
         return true;

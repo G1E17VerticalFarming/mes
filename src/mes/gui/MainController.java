@@ -31,6 +31,7 @@ import javafx.scene.layout.AnchorPane;
 import mes.domain.IMes;
 import mes.domain.Order;
 import mes.domain.SingletonMES;
+import mes.domain.Status;
 import shared.GrowthProfile;
 import shared.Light;
 import shared.Log;
@@ -50,6 +51,7 @@ public class MainController implements Initializable {
     private DatePicker datePickerOrderDate;
 
     private IMes MES = SingletonMES.getInstance();
+    
     @FXML
     private Tab tabOrders;
     @FXML
@@ -79,7 +81,7 @@ public class MainController implements Initializable {
     @FXML
     private TextField txtFieldPrepID;
     @FXML
-    private ComboBox<String> comboBoxPrepOrderStatus;
+    private ComboBox<Status> comboBoxPrepOrderStatus;
     @FXML
     private ComboBox<GrowthProfile> comboBoxPrepGrowthProfile;
     @FXML
@@ -162,6 +164,8 @@ public class MainController implements Initializable {
     private TabPane scadaTabPane;
 
     private GrowthProfile currentGrowthProfile = new GrowthProfile();
+    private Order currentOrder;
+    
     @FXML
     private Label lblSelectedGPID;
     @FXML
@@ -174,6 +178,10 @@ public class MainController implements Initializable {
     private TableColumn<?, ?> tabSequencesValue;
     @FXML
     private Tab tabDataLog;
+    @FXML
+    private Button btnPrepOrder;
+    @FXML
+    private Tab orderTab;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -302,7 +310,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleSelectOrder(ActionEvent event) {
-        Order currentOrder = tableViewOrderPicker.getSelectionModel().getSelectedItem();
+        currentOrder = tableViewOrderPicker.getSelectionModel().getSelectedItem();
 
         // Check that Order is not null, as that causes errors
         if (currentOrder != null) {
@@ -319,23 +327,34 @@ public class MainController implements Initializable {
             txtFieldPrepAmount.setDisable(false);
             comboBoxPrepOrderStatus.setDisable(false);
             comboBoxPrepGrowthProfile.setDisable(false);
+            btnPrepOrder.setDisable(false);
             orderTabPane.getSelectionModel().select(pickedOrderTab);
 
             if (currentOrder.getStatus().getValue().equals("Færdig")) {
-                comboBoxPrepGrowthProfile.getItems().add(MES.fetchProduction(currentOrder).getGrowthProfile());
-                comboBoxPrepGrowthProfile.getSelectionModel().selectFirst();
+                comboBoxPrepGrowthProfile.getSelectionModel().select(MES.fetchProduction(currentOrder).getGrowthProfile());
                 txtFieldPrepProdBlock.setText(Integer.toString(MES.fetchProduction(currentOrder).getBlock().getId()));
                 txtFieldPrepOrder.setDisable(true);
                 txtFieldPrepAmount.setDisable(true);
                 comboBoxPrepOrderStatus.setDisable(true);
                 comboBoxPrepGrowthProfile.setDisable(true);
+                btnPrepOrder.setDisable(true);
+            } else if(currentOrder.getStatus().getValue().equals("Under produktion")) {
+                comboBoxPrepGrowthProfile.getSelectionModel().select(MES.fetchProduction(currentOrder).getGrowthProfile());
+                txtFieldPrepOrder.setDisable(true);
+                txtFieldPrepAmount.setDisable(true);
+                comboBoxPrepGrowthProfile.setDisable(true);
+                txtFieldPrepProdBlock.setText(Integer.toString(MES.fetchProduction(currentOrder).getBlock().getId()));
             }
         }
     }
 
     @FXML
     private void handlePrepareOrder(ActionEvent event) {
-        MES.prepareOrder();
+        MES.prepareOrder(currentOrder, comboBoxPrepOrderStatus.getSelectionModel().getSelectedItem(),
+                comboBoxPrepGrowthProfile.getSelectionModel().getSelectedItem(),Integer.parseInt(txtFieldPrepProdBlock.getText()));
+        
+        pickedOrderTab.setDisable(true);
+        orderTabPane.getSelectionModel().select(orderTab);
     }
 
     @FXML
