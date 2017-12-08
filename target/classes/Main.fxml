@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -16,7 +21,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mes.gui.MainController">
+<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mes.gui.MainController">
    <children>
       <TabPane layoutX="29.0" layoutY="6.0" prefHeight="206.0" prefWidth="320.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -49,7 +54,7 @@
                      <children>
                         <TabPane fx:id="orderTabPane" layoutX="-24.0" layoutY="111.0" prefHeight="421.0" prefWidth="650.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <tabs>
-                            <Tab closable="false" text="Order Picker">
+                            <Tab fx:id="orderTab" closable="false" text="Order Picker">
                               <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                        <children>
@@ -86,7 +91,7 @@
                                           <ComboBox fx:id="comboBoxPrepGrowthProfile" layoutX="484.0" layoutY="370.0" prefWidth="150.0" />
                                           <Label layoutX="372.0" layoutY="236.0" text="Amount:" />
                                           <TextField fx:id="txtFieldPrepAmount" layoutX="485.0" layoutY="232.0" prefHeight="25.0" prefWidth="158.0" />
-                                          <Button layoutX="484.0" layoutY="465.0" mnemonicParsing="false" onAction="#handlePrepareOrder" prefHeight="25.0" prefWidth="150.0" text="Prepare" />
+                                          <Button fx:id="btnPrepOrder" layoutX="484.0" layoutY="465.0" mnemonicParsing="false" onAction="#handlePrepareOrder" prefHeight="25.0" prefWidth="150.0" text="Prepare" />
                                           <Label layoutX="426.0" layoutY="125.0" text="Prepare Order">
                                              <font>
                                                 <Font name="System Bold" size="26.0" />

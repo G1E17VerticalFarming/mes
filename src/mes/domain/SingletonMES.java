@@ -16,7 +16,7 @@ import shared.*;
  *
  * @author chris
  */
-public class SingletonMES implements IMes {
+public class SingletonMES implements IMes, IMesApi {
 
     private List orders;
     private List growthProfiles;
@@ -205,6 +205,21 @@ public class SingletonMES implements IMes {
         String[] lightTypes = {"Ingen lys", "Rødt lys", "Blåt lys", "Blåt og rødt lys"};
         
         return lightTypes;
+    }
+
+    @Override
+    public boolean saveProductionBlock(ProductionBlock prodBlockToSave) {
+        return this.dbHandler.saveProductionBlock(prodBlockToSave);
+    }
+
+    @Override
+    public GrowthProfile getGrowthProfile(int growthProfileId) {
+        return this.dbHandler.getGrowthProfile(growthProfileId);
+    }
+
+    @Override
+    public boolean saveDataLog(Log dataObjectToSave) {
+        return this.dbHandler.saveDataLog(dataObjectToSave);
     }
     
 }

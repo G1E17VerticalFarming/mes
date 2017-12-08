@@ -9,7 +9,7 @@ import shared.ProductionBlock;
 import shared.GrowthProfile;
 import shared.Log;
 
-import mes.domain.IMes;
+import mes.domain.IMesApi;
 import mes.domain.SingletonMES;
 
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
  */
 public class ApiReceiveController {
     
-    private IMes mes;
+    private IMesApi mes;
     
     public ApiReceiveController() {
         this.mes = SingletonMES.getInstance();
@@ -44,21 +44,18 @@ public class ApiReceiveController {
     }
     
     public ResponseEntity<String> saveProductionBlock(ProductionBlock pb) {
-        //Save log!
-        System.out.println(pb.getName());
+        this.mes.saveProductionBlock(pb);
         return new ResponseEntity<String>("success", HttpStatus.OK);
     }
     
     
     public ResponseEntity<GrowthProfile> getSpecificGrowthProfile(int id) {
-        GrowthProfile gp = new GrowthProfile();
-        gp.setId(id);
+        GrowthProfile gp = this.mes.getGrowthProfile(id);
         return new ResponseEntity<GrowthProfile>(gp, HttpStatus.OK);
     }
     
     public ResponseEntity<String> saveLog(Log log) {
-        //Save log!
-        System.out.println(log.getType());
+        this.mes.saveDataLog(log);
         return new ResponseEntity<String>("success", HttpStatus.OK);
     }
     

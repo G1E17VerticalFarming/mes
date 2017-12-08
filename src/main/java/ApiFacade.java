@@ -68,7 +68,7 @@ public class ApiFacade {
     }
     
     @RequestMapping(value = "/production_block/", method = RequestMethod.POST)
-    public ResponseEntity<String> postLog(@RequestBody ProductionBlock pb) {
+    public ResponseEntity<String> saveProductionBlock(@RequestBody ProductionBlock pb) {
         ResponseEntity<String> returnResp = this.apiReceiveController.saveProductionBlock(pb);
         return returnResp;
     }
@@ -87,7 +87,7 @@ public class ApiFacade {
     }
     
     @RequestMapping(value = "/ping/", method = RequestMethod.GET)
-    public ResponseEntity<Boolean> postLog() {
+    public ResponseEntity<Boolean> ping() {
         ResponseEntity<Boolean> returnResp = this.apiReceiveController.ping();
         return returnResp;
     }
