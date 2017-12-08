@@ -126,9 +126,18 @@ public class SingletonMES implements IMes {
     }
 
     @Override
-    public boolean prepareOrder() {
-        // Call DB handler
-        System.out.println("Prepare order called");
+    public boolean prepareOrder(Order currentOrder, Status status, GrowthProfile growthProfile, int prodBlock) {
+        currentOrder.setStatus(status);
+        
+        ProductionBlock newProdBlock = new ProductionBlock();
+        newProdBlock.setBatchId(prodBlock);
+        
+        Production newProd = new Production();
+        newProd.setBlock(newProdBlock);
+        newProd.setOrder(currentOrder);
+        newProd.setGrowthProfile(growthProfile);
+        
+        dbHandler.saveProduction(newProd);
         return true;
     }
 
