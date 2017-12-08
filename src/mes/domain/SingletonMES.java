@@ -130,7 +130,7 @@ public class SingletonMES implements IMes {
         currentOrder.setStatus(status);
         
         ProductionBlock newProdBlock = new ProductionBlock();
-        newProdBlock.setBatchId(prodBlock);
+        newProdBlock.setId(prodBlock);
         
         Production newProd = new Production();
         newProd.setBlock(newProdBlock);
