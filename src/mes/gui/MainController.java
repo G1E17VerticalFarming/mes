@@ -353,7 +353,7 @@ public class MainController implements Initializable {
         MES.prepareOrder(currentOrder, comboBoxPrepOrderStatus.getSelectionModel().getSelectedItem(),
                 comboBoxPrepGrowthProfile.getSelectionModel().getSelectedItem(),Integer.parseInt(txtFieldPrepProdBlock.getText()));
         
-        orderTab.setDisable(true);
+        pickedOrderTab.setDisable(true);
         orderTabPane.getSelectionModel().select(orderTab);
     }
 
