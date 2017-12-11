@@ -160,9 +160,11 @@ public interface IMesDatabase {
      * Inserts a new row into plc_conn.
      * Will use all attributes in prodBlockToSave as arguments for this SQL statement.
      * @param prodBlockToSave ProductionBlock object to save to database
+     * @param scadaIp SCADA IP this production block is connected to
+     * @param scadaPort SCADA port this production block is connected to
      * @return True on successful save to database
      */
-    public abstract boolean saveProductionBlock(ProductionBlock prodBlockToSave);
+    public abstract boolean saveProductionBlock(ProductionBlock prodBlockToSave,String scadaIp, int scadaPort);
     
     /**
      * Implemented Fully
@@ -222,4 +224,16 @@ public interface IMesDatabase {
      * @return True on succesful delete from Database, false otherwise
      */
     public abstract boolean deleteLightFromProfile(int growthProfileId, int lightToDelete);
+    
+    /**
+     * Implemented fully
+     * 
+     * Method to recieve every single plc_conn based on a ip and port. 
+     * Used if a SCADA program crashes and needs to recieve all its production blocks
+     * again after restart
+     * @param ip SCADA IP to fetch all prod blocks from
+     * @param port SCADA port to fetch all prod blocks from
+     * @return List of all production blocks for a given ip and port.
+     */
+    public abstract List<ProductionBlock> getAllProductionBlocks(String ip,int port);
 }
