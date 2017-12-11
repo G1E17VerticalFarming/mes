@@ -52,10 +52,10 @@ public class ApiFacade {
         return new ResponseEntity<Test>(greeting.getTest(), HttpStatus.CREATED);
     }*/
     
-    @RequestMapping(value = "/production_block/", method = RequestMethod.GET)
-    public ResponseEntity<ProductionBlock[]> getAllProductionBlocks() {
+    @RequestMapping(value = "/{ip}/{port}/production_block/", method = RequestMethod.GET)
+    public ResponseEntity<ProductionBlock[]> getAllProductionBlocks(@PathVariable String ip, @PathVariable int port) {
         // Fetch all production blocks from
-        ResponseEntity<ProductionBlock[]> returnResp = this.apiReceiveController.getAllProductionBlocks();
+        ResponseEntity<ProductionBlock[]> returnResp = this.apiReceiveController.getAllProductionBlocks(ip, port);
         return returnResp;
     }
     
@@ -70,6 +70,12 @@ public class ApiFacade {
     @RequestMapping(value = "/production_block/", method = RequestMethod.POST)
     public ResponseEntity<String> saveProductionBlock(@RequestBody ProductionBlock pb) {
         ResponseEntity<String> returnResp = this.apiReceiveController.saveProductionBlock(pb);
+        return returnResp;
+    }
+    
+    @RequestMapping(value = "/production_block/delete/", method = RequestMethod.POST)
+    public ResponseEntity<String> deleteProductionBlock(@RequestBody ProductionBlock pb) {
+        ResponseEntity<String> returnResp = this.apiReceiveController.deleteProductionBlock(pb);
         return returnResp;
     }
     

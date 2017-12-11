@@ -223,11 +223,16 @@ public class SingletonMES implements IMes, IMesApi {
     }
 
     @Override
-    public List<ProductionBlock> fetchAllProductionBlocks() {
+    public List<ProductionBlock> fetchAllProductionBlocks(String ip, int port) {
         List<ProductionBlock> pBlocks = new ArrayList<>();
         pBlocks.addAll(dbHandler.getActiveProductionBlocks());
         pBlocks.addAll(this.dbHandler.getIdleProductionBlocks());
         return pBlocks;
+    }
+
+    @Override
+    public boolean deleteProductionBlock(ProductionBlock prodBlockToSave) {
+        return this.dbHandler.deleteProductionBlock(prodBlockToSave.getId());
     }
     
 }

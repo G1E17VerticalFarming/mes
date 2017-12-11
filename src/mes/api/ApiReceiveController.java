@@ -27,14 +27,14 @@ public class ApiReceiveController {
         this.mes = SingletonMES.getInstance();
     }
     
-    public ResponseEntity<ProductionBlock[]> getAllProductionBlocks() {
-        ProductionBlock[] pbArr = this.mes.fetchAllProductionBlocks().toArray(new ProductionBlock[0]);
+    public ResponseEntity<ProductionBlock[]> getAllProductionBlocks(String ip, int port) {
+        ProductionBlock[] pbArr = this.mes.fetchAllProductionBlocks(ip, port).toArray(new ProductionBlock[0]);
         return new ResponseEntity<ProductionBlock[]>(pbArr, HttpStatus.OK);
     }
     
     public ResponseEntity<ProductionBlock> getSpecificProductionBlock(int id) {
         ProductionBlock pb = null;
-        for(ProductionBlock productionBlock : this.mes.fetchAllProductionBlocks()) {
+        for(ProductionBlock productionBlock : this.mes.fetchAllProductionBlocks("", 0)) {
             if(productionBlock.getId() == id) {
                 pb = productionBlock;
                 break;
@@ -48,6 +48,9 @@ public class ApiReceiveController {
         return new ResponseEntity<String>("success", HttpStatus.OK);
     }
     
+    public ResponseEntity<String> deleteProductionBlock(ProductionBlock pb) {
+        return new ResponseEntity<String>("" + this.mes.deleteProductionBlock(pb), HttpStatus.OK);
+    }
     
     public ResponseEntity<GrowthProfile> getSpecificGrowthProfile(int id) {
         GrowthProfile gp = this.mes.getGrowthProfile(id);

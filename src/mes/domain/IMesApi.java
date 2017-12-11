@@ -22,7 +22,7 @@ public interface IMesApi {
      * Fetches ProductionBlocks that are currently in use from the database.
      * @return List of ProductionBlock objects.
      */
-    public abstract List<ProductionBlock> fetchAllProductionBlocks();
+    public abstract List<ProductionBlock> fetchAllProductionBlocks(String ip, int port);
     
     /**
      * Implemented fully
@@ -33,6 +33,8 @@ public interface IMesApi {
      * @return True on successful save to database
      */
     public abstract boolean saveProductionBlock(ProductionBlock prodBlockToSave);
+    
+    public abstract boolean deleteProductionBlock(ProductionBlock prodBlockToSave);
     
     /**
      * Implemented fully
