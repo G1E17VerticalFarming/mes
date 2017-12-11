@@ -59,12 +59,12 @@ public class SingletonMES implements IMes, IMesApi {
     }
     
     @Override
-    public ArrayList getTempGrowthProfileLights() {
+    public ArrayList<Light> getTempGrowthProfileLights() {
         return this.tempGrowthProfileLights;
     }
     
     @Override
-    public void setTempGrowthProfileLights(ArrayList lights) {
+    public void setTempGrowthProfileLights(ArrayList<Light> lights) {
         this.tempGrowthProfileLights = lights;
     }
     
@@ -75,6 +75,9 @@ public class SingletonMES implements IMes, IMesApi {
     
     @Override
     public void addGrowthProfileLight(Light light) {
+        if(this.tempGrowthProfileLights == null) {
+            this.tempGrowthProfileLights = new ArrayList<>();
+        }
         this.tempGrowthProfileLights.add(light);
     }
     
@@ -101,7 +104,7 @@ public class SingletonMES implements IMes, IMesApi {
     }
     
     @Override
-    public List fetchStatuses() {
+    public List<Status> fetchStatuses() {
         return dbHandler.getOrderStatuses();
     }
     
@@ -166,7 +169,7 @@ public class SingletonMES implements IMes, IMesApi {
     
     @Override
     public void saveGrowthProfile(GrowthProfile profileToSave) {
-        profileToSave.setLightSequence(tempGrowthProfileLights);
+        //profileToSave.setLightSequence(tempGrowthProfileLights);
         dbHandler.saveGrowthProfile(profileToSave);
     } 
     
@@ -208,8 +211,8 @@ public class SingletonMES implements IMes, IMesApi {
     }
 
     @Override
-    public boolean saveProductionBlock(ProductionBlock prodBlockToSave) {
-        return this.dbHandler.saveProductionBlock(prodBlockToSave);
+    public boolean saveProductionBlock(ProductionBlock prodBlockToSave, String ip, int port) {
+        return this.dbHandler.saveProductionBlock(prodBlockToSave, ip, port);
     }
 
     @Override
@@ -224,15 +227,20 @@ public class SingletonMES implements IMes, IMesApi {
 
     @Override
     public List<ProductionBlock> fetchAllProductionBlocks(String ip, int port) {
-        List<ProductionBlock> pBlocks = new ArrayList<>();
-        pBlocks.addAll(dbHandler.getActiveProductionBlocks());
-        pBlocks.addAll(this.dbHandler.getIdleProductionBlocks());
-        return pBlocks;
+        return this.dbHandler.getAllProductionBlocks(ip, port);
     }
 
     @Override
     public boolean deleteProductionBlock(ProductionBlock prodBlockToSave) {
         return this.dbHandler.deleteProductionBlock(prodBlockToSave.getId());
+    }
+    
+    @Override
+    public int getSuggestedProductionBlock() {
+        for(ProductionBlock pb : this.dbHandler.getIdleProductionBlocks()) {
+            return pb.getId();
+        }
+        return -1;
     }
     
 }

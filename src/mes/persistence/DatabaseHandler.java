@@ -90,7 +90,7 @@ public class DatabaseHandler implements IMesDatabase {
      */
     private boolean saveLightSchedule(int growthProfile, Light lightObjectToSave) {
         String saveLightQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
-                + "INSERT INTO growthlight_view (growth_id,type,time,value) VALUES (?,?,?,?,?);"
+                + "INSERT INTO growthlight_view (growth_id,type,time,value) VALUES (?,?,?,?);"
                 + "COMMIT;";
         try (PreparedStatement saveLightSt = this.conn.prepareStatement(saveLightQuery)) {
             saveLightSt.setInt(1, growthProfile);
@@ -556,6 +556,10 @@ public class DatabaseHandler implements IMesDatabase {
 
     @Override
     public List<Log> getDataLogs(String filter) {
+        if(filter == null) {
+            filter = "";
+        }
+        
         String getLogsQuery;
         if (filter.isEmpty()) { // No filter provided, fetch all logs
             getLogsQuery = "SELECT data_id,prod_block,type,cmd,value,timestamp,prod_id FROM data NATURAL JOIN logs ORDER BY data_id;";
@@ -582,7 +586,7 @@ public class DatabaseHandler implements IMesDatabase {
             }
         } catch (SQLException ex) {
             System.out.println("Error fetching from database:\n" + ex);
-            return null;
+            return new ArrayList<>();
         }
         return dataLogs;
     }

@@ -311,6 +311,14 @@ public class MainController implements Initializable {
     @FXML
     private void handleSelectOrder(ActionEvent event) {
         currentOrder = tableViewOrderPicker.getSelectionModel().getSelectedItem();
+        
+        
+        comboBoxPrepOrderStatus.getItems().clear();
+        for(Status st : this.MES.fetchStatuses()) {
+            if(st.getId() != 1) {
+                comboBoxPrepOrderStatus.getItems().add(st);
+            }
+        }
 
         // Check that Order is not null, as that causes errors
         if (currentOrder != null) {
@@ -344,6 +352,14 @@ public class MainController implements Initializable {
                 txtFieldPrepAmount.setDisable(true);
                 comboBoxPrepGrowthProfile.setDisable(true);
                 txtFieldPrepProdBlock.setText(Integer.toString(MES.fetchProduction(currentOrder).getBlock().getId()));
+            } else if(currentOrder.getStatus().getValue().equals("Klar til forberedelse")) {
+                int pbId = MES.getSuggestedProductionBlock();
+                if(pbId == -1) {
+                    btnPrepOrder.setDisable(true);
+                    txtFieldPrepProdBlock.setText("Ingen mulige");
+                } else {
+                    txtFieldPrepProdBlock.setText("" + pbId);
+                }
             }
         }
     }
@@ -375,11 +391,19 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleAddSequence(ActionEvent event) {
-        MES.addGrowthProfileLight(MES.createGrowthProfileLight(comboBoxGpType.getSelectionModel().getSelectedIndex(),
-                Integer.parseInt(txtFieldGpTime.getText()), Integer.parseInt(txtFieldGpValue.getText())));
+        Light newLight = new Light();
+        newLight.setType(comboBoxGpType.getSelectionModel().getSelectedIndex());
+        newLight.setRunTimeUnix(Integer.parseInt(txtFieldGpTime.getText()));
+        newLight.setPowerLevel(Integer.parseInt(txtFieldGpValue.getText()));
+        if(currentGrowthProfile == null) {
+            currentGrowthProfile = new GrowthProfile();
+        }
+        currentGrowthProfile.getLightSequence().add(newLight);
+        //MES.addGrowthProfileLight(MES.createGrowthProfileLight(comboBoxGpType.getSelectionModel().getSelectedIndex(),
+                //), Integer.parseInt(txtFieldGpValue.getText())));
 
-        tableViewSequences.getItems().clear();
-        this.setGpLightTableView(MES.getTempGrowthProfileLights());
+        //tableViewSequences.getItems().clear();
+        this.setGpLightTableView(currentGrowthProfile.getLightSequence());
     }
 
     @FXML
@@ -401,6 +425,8 @@ public class MainController implements Initializable {
             currentGrowthProfile.setWaterLevel(Integer.parseInt(txtFieldGpWaterLevel.getText()));
             MES.saveGrowthProfile(currentGrowthProfile);
             this.updateGrowthProfilesTableView();
+            comboBoxPrepGrowthProfile.getItems().clear();
+            comboBoxPrepGrowthProfile.getItems().addAll(MES.fetchGrowthProfiles());
         }
     }
 
@@ -409,6 +435,8 @@ public class MainController implements Initializable {
         if (currentGrowthProfile != null) {
             MES.deleteGrowthProfile(currentGrowthProfile.getId());
             this.updateGrowthProfilesTableView();
+            comboBoxPrepGrowthProfile.getItems().clear();
+            comboBoxPrepGrowthProfile.getItems().addAll(MES.fetchGrowthProfiles());
         }
     }
 
@@ -497,12 +525,13 @@ public class MainController implements Initializable {
     }
 
     private void setGpLightTableView(List lights) {
-        ObservableList<Light> lightList = FXCollections.observableArrayList(lights);
-        tableViewSequences.setItems(lightList);
 
         tabSequencesType.setCellValueFactory(new PropertyValueFactory<>("type"));
         tabSequencesTime.setCellValueFactory(new PropertyValueFactory<>("runTimeUnix"));
         tabSequencesValue.setCellValueFactory(new PropertyValueFactory<>("powerLevel"));
+        
+        ObservableList<Light> lightList = FXCollections.observableArrayList(lights);
+        tableViewSequences.setItems(lightList);
     }
 
     @FXML

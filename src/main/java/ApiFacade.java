@@ -60,16 +60,16 @@ public class ApiFacade {
     }
     
     //@PathVariable String userId
-    @RequestMapping(value = "/production_block/{id}", method = RequestMethod.GET)
-    public ResponseEntity<ProductionBlock> getAllProductionBlocks(@PathVariable int id) {
+    @RequestMapping(value = "/{ip}/{port}/production_block/{id}", method = RequestMethod.GET)
+    public ResponseEntity<ProductionBlock> getSpecificProductionBlocks(@PathVariable int id, @PathVariable String ip, @PathVariable int port) {
         // Fetch all production blocks from
-        ResponseEntity<ProductionBlock> returnResp = this.apiReceiveController.getSpecificProductionBlock(id);
+        ResponseEntity<ProductionBlock> returnResp = this.apiReceiveController.getSpecificProductionBlock(id, ip, port);
         return returnResp;
     }
     
-    @RequestMapping(value = "/production_block/", method = RequestMethod.POST)
-    public ResponseEntity<String> saveProductionBlock(@RequestBody ProductionBlock pb) {
-        ResponseEntity<String> returnResp = this.apiReceiveController.saveProductionBlock(pb);
+    @RequestMapping(value = "/{ip}/{port}/production_block/", method = RequestMethod.POST)
+    public ResponseEntity<String> saveProductionBlock(@RequestBody ProductionBlock pb, @PathVariable String ip, @PathVariable int port) {
+        ResponseEntity<String> returnResp = this.apiReceiveController.saveProductionBlock(pb, ip, port);
         return returnResp;
     }
     

@@ -32,9 +32,9 @@ public class ApiReceiveController {
         return new ResponseEntity<ProductionBlock[]>(pbArr, HttpStatus.OK);
     }
     
-    public ResponseEntity<ProductionBlock> getSpecificProductionBlock(int id) {
+    public ResponseEntity<ProductionBlock> getSpecificProductionBlock(int id, String ip, int port) {
         ProductionBlock pb = null;
-        for(ProductionBlock productionBlock : this.mes.fetchAllProductionBlocks("", 0)) {
+        for(ProductionBlock productionBlock : this.mes.fetchAllProductionBlocks(ip, port)) {
             if(productionBlock.getId() == id) {
                 pb = productionBlock;
                 break;
@@ -43,8 +43,8 @@ public class ApiReceiveController {
         return new ResponseEntity<ProductionBlock>(pb, HttpStatus.OK);
     }
     
-    public ResponseEntity<String> saveProductionBlock(ProductionBlock pb) {
-        this.mes.saveProductionBlock(pb);
+    public ResponseEntity<String> saveProductionBlock(ProductionBlock pb, String ip, int port) {
+        this.mes.saveProductionBlock(pb, ip, port);
         return new ResponseEntity<String>("success", HttpStatus.OK);
     }
     

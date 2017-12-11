@@ -6,11 +6,12 @@
 package mes.domain;
 
 import java.util.*;
+import shared.ProductionBlock;
 
 /**
  *
  * @author AKT
  */
 public class AllocationController {
-    private List productionBlocks;
+    private List<ProductionBlock> productionBlocks;
 }

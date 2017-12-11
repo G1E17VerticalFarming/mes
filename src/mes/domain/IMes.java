@@ -42,7 +42,7 @@ public interface IMes {
      * Method to fetch all order statuses from the database.
      * @return List containing order statuses
      */
-    public List fetchStatuses();
+    public List<Status> fetchStatuses();
     
     /**
      * Implemented fully
@@ -187,7 +187,7 @@ public interface IMes {
      * given in the parameter.
      * @param lights A list of Light objects
      */
-    public void setTempGrowthProfileLights(ArrayList lights);
+    public void setTempGrowthProfileLights(ArrayList<Light> lights);
     
     /**
      * Implemented fully
@@ -195,7 +195,7 @@ public interface IMes {
      * returns tempGrowthProfileLights, which is an ArrayList containing Light objects.
      * @return ArrayList
      */
-    public ArrayList getTempGrowthProfileLights();
+    public ArrayList<Light> getTempGrowthProfileLights();
     
     /**
      * Implemented fully
@@ -242,4 +242,5 @@ public interface IMes {
      */
     public Light createGrowthProfileLight(int type, int time, int value);
     
+    public abstract int getSuggestedProductionBlock();
 }

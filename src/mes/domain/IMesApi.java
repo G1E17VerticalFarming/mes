@@ -32,7 +32,7 @@ public interface IMesApi {
      * @param prodBlockToSave ProductionBlock object to save to database
      * @return True on successful save to database
      */
-    public abstract boolean saveProductionBlock(ProductionBlock prodBlockToSave);
+    public abstract boolean saveProductionBlock(ProductionBlock prodBlockToSave, String ip, int port);
     
     public abstract boolean deleteProductionBlock(ProductionBlock prodBlockToSave);
     
