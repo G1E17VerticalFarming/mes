@@ -16,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mes.domain.Order;
 import mes.domain.Production;
 import shared.*;
@@ -200,6 +202,12 @@ public class DatabaseHandler implements IMesDatabase {
         DatabaseHandler handler = DatabaseHandler.getInstance();
         System.out.println("Testing time taken with 2 statements.");
         long beginTime = System.currentTimeMillis();
+        
+        ProductionBlock pb = new ProductionBlock();
+        pb.setName("Local Virtual #99");
+        pb.setIpaddress("localhost");
+        pb.setPort(5555);
+        System.out.println(handler.saveProductionBlock(pb, "127.0.0.1", 81));
 //        System.out.println(handler.getProductionBlocks());
 //
 //        System.out.println(handler.getProductionBlock(1));
@@ -213,7 +221,7 @@ public class DatabaseHandler implements IMesDatabase {
 //        ord.setProductionEnd("23-11-2017");
 //        ord.setStatus(1);
 //        System.out.println(db.updateOrderEndDate(ord));
-        handler.deleteGrowthProfile(12);
+        System.out.println(handler.getAllProductionBlocks("127.0.0.1", 81));
         long endTime = System.currentTimeMillis();
         System.out.println("Elapsed time: " + (endTime - beginTime));
     }
@@ -221,7 +229,7 @@ public class DatabaseHandler implements IMesDatabase {
     @Override
     public List<ProductionBlock> getActiveProductionBlocks() {
         List<ProductionBlock> prodBlocks = new ArrayList<>();
-        String getProdBlockQuery = "SELECT DISTINCT prod_id,plc_id,ip,port,name,growth_id FROM plc_conn NATURAL JOIN handles NATURAL JOIN production NATURAL JOIN requires;";
+        String getProdBlockQuery = "SELECT DISTINCT ON (plc_id) plc_id,prod_id,ip,port,name,growth_id FROM plc_conn NATURAL JOIN handles NATURAL JOIN production NATURAL JOIN requires;";
         try (Statement getProdBlocksSt = this.conn.createStatement();
                 ResultSet getProdBlocksRs = getProdBlocksSt.executeQuery(getProdBlockQuery)) {
             while (getProdBlocksRs.next()) {
@@ -427,17 +435,26 @@ public class DatabaseHandler implements IMesDatabase {
     }
 
     @Override
-    public boolean saveProductionBlock(ProductionBlock prodBlockToSave) {
+    public boolean saveProductionBlock(ProductionBlock prodBlockToSave, String scadaIp, int scadaPort) {
         String saveProdBlockQuery = "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
                 + "INSERT INTO plc_conn (ip,port,name) VALUES (?,?,?);"
+                + "INSERT INTO controls (plc_id,scada_id) VALUES (currval('plc_conn_id_seq'),(SELECT scada_id FROM scada_conn WHERE ip = ? AND port = ?));"
                 + "COMMIT;";
         try (PreparedStatement saveProdBlockSt = this.conn.prepareStatement(saveProdBlockQuery)) {
+            if(scadaIp.isEmpty() || scadaPort == 0){
+                throw new IllegalArgumentException("SCADA IP and port cannot be empty.");
+            }
             saveProdBlockSt.setString(1, prodBlockToSave.getIpaddress());
             saveProdBlockSt.setInt(2, prodBlockToSave.getPort());
             saveProdBlockSt.setString(3, prodBlockToSave.getName());
+            saveProdBlockSt.setString(4, scadaIp);
+            saveProdBlockSt.setInt(5, scadaPort);
             saveProdBlockSt.execute();
         } catch (SQLException ex) {
             System.out.println("Error fetching from database:\n" + ex);
+            return false;
+        } catch (IllegalArgumentException ex){
+            System.out.println("Invalid input: " + ex.getMessage());
             return false;
         }
         return true;
@@ -573,11 +590,11 @@ public class DatabaseHandler implements IMesDatabase {
     @Override
     public List<String> getScadaEntries() {
         List<String> scadaEntries = new ArrayList<>();
-        String getScadaEntriesQuery = "SELECT ip,port FROM scada_conn;";
+        String getScadaEntriesQuery = "SELECT scada_id,ip,port FROM scada_conn;";
         try (Statement getScadaEntriesSt = this.conn.createStatement();
                 ResultSet getScadaEntriesRs = getScadaEntriesSt.executeQuery(getScadaEntriesQuery)) {
             while (getScadaEntriesRs.next()) {
-                scadaEntries.add(getScadaEntriesRs.getString("ip") + ":" + getScadaEntriesRs.getString("port"));
+                scadaEntries.add(getScadaEntriesRs.getInt("scada_id") + ":" + getScadaEntriesRs.getString("ip") + ":" + getScadaEntriesRs.getString("port"));
             }
         } catch (SQLException ex) {
             System.out.println("Error fetching from database:\n" + ex);
@@ -713,5 +730,39 @@ public class DatabaseHandler implements IMesDatabase {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<ProductionBlock> getAllProductionBlocks(String ip, int port) {
+        List<ProductionBlock> prodBlocks = new ArrayList<>();
+        ResultSet getAllPbRs;
+        String getAllPbQuery = "SELECT plc_id,ip,port,name FROM plc_conn WHERE plc_id IN("
+                + "SELECT plc_id FROM controls WHERE scada_id IN("
+                    + "SELECT scada_id FROM scada_conn WHERE ip = ? AND port = ?"
+                    + ")"
+                + ");";
+        try(PreparedStatement getAllPbSt = this.conn.prepareStatement(getAllPbQuery)){
+            if(ip.isEmpty() || port == 0){
+                throw new IllegalArgumentException("IP and port cannot be empty.");
+            }
+            getAllPbSt.setString(1, ip);
+            getAllPbSt.setInt(2, port);
+            getAllPbRs = getAllPbSt.executeQuery();
+            while(getAllPbRs.next()){
+                ProductionBlock localPb = new ProductionBlock();
+                localPb.setId(getAllPbRs.getInt("plc_id"));
+                localPb.setName(getAllPbRs.getString("name"));
+                localPb.setPort(getAllPbRs.getInt("port"));
+                localPb.setIpaddress(getAllPbRs.getString("ip"));
+                prodBlocks.add(localPb);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error fetching from database:\n" + ex);
+            return null;
+        } catch (IllegalArgumentException ex){
+            System.out.println("Invalid input: " + ex.getMessage());
+            return null;
+        }
+        return prodBlocks;
     }
 }
