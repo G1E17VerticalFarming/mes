@@ -28,13 +28,13 @@ public class ApiReceiveController {
     }
     
     public ResponseEntity<ProductionBlock[]> getAllProductionBlocks() {
-        ProductionBlock[] pbArr = this.mes.fetchActiveProductionBlocks().toArray(new ProductionBlock[0]);
+        ProductionBlock[] pbArr = this.mes.fetchAllProductionBlocks().toArray(new ProductionBlock[0]);
         return new ResponseEntity<ProductionBlock[]>(pbArr, HttpStatus.OK);
     }
     
     public ResponseEntity<ProductionBlock> getSpecificProductionBlock(int id) {
         ProductionBlock pb = null;
-        for(ProductionBlock productionBlock : this.mes.fetchActiveProductionBlocks()) {
+        for(ProductionBlock productionBlock : this.mes.fetchAllProductionBlocks()) {
             if(productionBlock.getId() == id) {
                 pb = productionBlock;
                 break;

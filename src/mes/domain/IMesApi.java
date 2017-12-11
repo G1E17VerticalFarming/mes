@@ -22,7 +22,7 @@ public interface IMesApi {
      * Fetches ProductionBlocks that are currently in use from the database.
      * @return List of ProductionBlock objects.
      */
-    public abstract List<ProductionBlock> fetchActiveProductionBlocks();
+    public abstract List<ProductionBlock> fetchAllProductionBlocks();
     
     /**
      * Implemented fully

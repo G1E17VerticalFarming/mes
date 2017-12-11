@@ -221,5 +221,13 @@ public class SingletonMES implements IMes, IMesApi {
     public boolean saveDataLog(Log dataObjectToSave) {
         return this.dbHandler.saveDataLog(dataObjectToSave);
     }
+
+    @Override
+    public List<ProductionBlock> fetchAllProductionBlocks() {
+        List<ProductionBlock> pBlocks = new ArrayList<>();
+        pBlocks.addAll(dbHandler.getActiveProductionBlocks());
+        pBlocks.addAll(this.dbHandler.getIdleProductionBlocks());
+        return pBlocks;
+    }
     
 }
