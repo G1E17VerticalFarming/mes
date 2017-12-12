@@ -21,7 +21,7 @@ public interface DomainReadWriteScadaConnections {
      *
      * @return List of Strings representing scada connections.
      */
-    public List fetchScadaConnections();
+    public abstract List<String> fetchScadaConnections();
 
     /**
      * Implemented fully
@@ -32,7 +32,7 @@ public interface DomainReadWriteScadaConnections {
      * @param ip
      * @param port
      */
-    public void saveScadaConnection(String ip, int port);
+    public abstract void saveScadaConnection(String ip, int port);
 
     /**
      * Implemented fully
@@ -43,5 +43,5 @@ public interface DomainReadWriteScadaConnections {
      *
      * @param scadaEntry
      */
-    public void deleteScadaConnection(String scadaEntry);
+    public abstract void deleteScadaConnection(String scadaEntry);
 }

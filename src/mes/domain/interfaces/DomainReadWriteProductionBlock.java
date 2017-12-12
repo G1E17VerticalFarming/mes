@@ -23,7 +23,7 @@ public interface DomainReadWriteProductionBlock {
      * @return ProductionBlock object consisting of a production block ID and
      * name.
      */
-    public ProductionBlock allocateProductionBlock();
+    public abstract ProductionBlock allocateProductionBlock();
     
     /**
      * Implemented fully
@@ -32,5 +32,5 @@ public interface DomainReadWriteProductionBlock {
      *
      * @return List of ProductionBlock objects.
      */
-    public List<ProductionBlock> fetchActiveProductionBlocks();
+    public abstract List<ProductionBlock> fetchActiveProductionBlocks();
 }

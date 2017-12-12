@@ -88,7 +88,7 @@ public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowth
     }
     
     @Override
-    public ArrayList getTempGrowthProfileLights() {
+    public ArrayList<Light> getTempGrowthProfileLights() {
         return this.tempGrowthProfileLights;
     }
     
@@ -124,32 +124,32 @@ public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowth
     }
 
     @Override
-    public List fetchOrders() {
+    public List<Order> fetchOrders() {
         this.orders = orderHandler.fetchOrders(date);
         return this.orders;
     }
     
     @Override
-    public List fetchStatuses() {
+    public List<Status> fetchStatuses() {
         return orderHandler.getOrderStatuses();
     }
     
     @Override
-    public List fetchGrowthProfiles() {
+    public List<GrowthProfile> fetchGrowthProfiles() {
         this.growthProfiles = groProfHandler.getGrowthProfiles();
         
         return this.growthProfiles;
     }
     
     @Override
-    public List fetchScadaConnections() {
+    public List<String> fetchScadaConnections() {
         this.scadaConnections = scadConnHandler.getScadaEntries();
         
         return this.scadaConnections;
     }
     
     @Override
-    public List fetchDataLogs(String filter) {
+    public List<Log> fetchDataLogs(String filter) {
         this.retrievedLogs = datLogHandler.getDataLogs(filter);
         return this.retrievedLogs;
     }
@@ -211,7 +211,7 @@ public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowth
     }
     
     @Override
-    public List fetchLogFilters() {
+    public List<String> fetchLogFilters() {
         return datLogHandler.getDataLogFilterOptions();
     }
     

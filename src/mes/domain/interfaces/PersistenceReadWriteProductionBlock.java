@@ -72,4 +72,13 @@ public interface PersistenceReadWriteProductionBlock {
      * @return True on succesful delete from database, false otherwise
      */
     public abstract boolean deleteProductionBlock(int prodBlockIdToDelete);
+    
+    /**
+     * Implemented fully
+     * 
+     * Method to update a production block in the database
+     * @param objectToUpdate Object containing ID and new values to update in the database
+     * @return True on succesful update, false otherwise
+     */
+    public abstract boolean updateProductionBlock(ProductionBlock objectToUpdate);
 }

@@ -757,4 +757,29 @@ public class DatabaseHandler implements PersistenceReadWriteProductionBlock, Per
         }
         return prodBlocks;
     }
+
+    @Override
+    public boolean updateProductionBlock(ProductionBlock objectToUpdate) {
+        String updProdBlockQuery = "UPDATE plc_conn SET ip = ?, port = ?, name = ? WHERE plc_id = ?;";
+        try(PreparedStatement updProdBlockSt = this.conn.prepareStatement(updProdBlockQuery)){
+            if(objectToUpdate.getId() <= 0){
+                throw new IllegalArgumentException("Production block ID cannot be less than or equal to zero.");
+            }
+            updProdBlockSt.setString(1, objectToUpdate.getIpaddress());
+            updProdBlockSt.setInt(2, objectToUpdate.getPort());
+            updProdBlockSt.setString(3, objectToUpdate.getName());
+            updProdBlockSt.setInt(4, objectToUpdate.getId());
+            int result = updProdBlockSt.executeUpdate();
+            if(result == 0){
+                System.out.println("Query succesful. However, no rows were updated in database, ID may not exist.");
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error updating production block in database:\n" + ex);
+            return false;
+        } catch (IllegalArgumentException ex){
+            System.out.println("Invalid input: " + ex.getMessage());
+            return false;
+        }
+        return true;
+    }
 }

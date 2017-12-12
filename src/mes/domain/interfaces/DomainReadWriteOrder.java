@@ -22,7 +22,7 @@ public interface DomainReadWriteOrder {
      * Method to fetch orders from the database for the selected date.
      * @return List consisting of order objects.
      */
-    public List fetchOrders();
+    public abstract List<Order> fetchOrders();
     
     /**
      * Implemented fully
@@ -30,7 +30,7 @@ public interface DomainReadWriteOrder {
      * Method to fetch all order statuses from the database.
      * @return List containing order statuses
      */
-    public List fetchStatuses();
+    public abstract List<Status> fetchStatuses();
     
     /**
      * Not implemented
@@ -42,5 +42,5 @@ public interface DomainReadWriteOrder {
      * @param prodBlock
      * @return boolean reporting on whether the call failed or not.
      */
-    public boolean prepareOrder(Order currentOrder, Status status, GrowthProfile growthProfile, int prodBlock);
+    public abstract boolean prepareOrder(Order currentOrder, Status status, GrowthProfile growthProfile, int prodBlock);
 }

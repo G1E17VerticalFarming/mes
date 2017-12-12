@@ -22,5 +22,5 @@ public interface DomainWriteDate {
      *
      * @param date LocalDate selected in GUI and parsed through SingletonMes.
      */
-    public void setDate(LocalDate date);
+    public abstract void setDate(LocalDate date);
 }

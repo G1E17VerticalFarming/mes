@@ -22,5 +22,5 @@ public interface DomainReadProduction {
      * @param orderToFetchProdFor
      * @return Production
      */
-    public Production fetchProduction(Order orderToFetchProdFor);
+    public abstract Production fetchProduction(Order orderToFetchProdFor);
 }

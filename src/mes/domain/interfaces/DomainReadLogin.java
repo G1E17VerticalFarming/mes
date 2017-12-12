@@ -20,5 +20,5 @@ public interface DomainReadLogin {
      * @param password
      * @return boolean reporting on whether or not the call failed.
      */
-    public boolean loginCertified(String username, String password);
+    public abstract boolean loginCertified(String username, String password);
 }

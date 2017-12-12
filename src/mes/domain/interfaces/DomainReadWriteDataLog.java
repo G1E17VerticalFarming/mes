@@ -6,6 +6,7 @@
 package mes.domain.interfaces;
 
 import java.util.List;
+import shared.Log;
 
 /**
  *
@@ -23,7 +24,7 @@ public interface DomainReadWriteDataLog {
      *
      * @return List of data log filters
      */
-    public List fetchLogFilters();
+    public abstract List<String> fetchLogFilters();
 
     /**
      * Implemented fully
@@ -37,7 +38,7 @@ public interface DomainReadWriteDataLog {
      * @param value
      * @param prodId
      */
-    public void saveDataLog(int block, String value, int prodId);
+    public abstract void saveDataLog(int block, String value, int prodId);
     
     /**
      * Implemented fully
@@ -47,5 +48,5 @@ public interface DomainReadWriteDataLog {
      * @param filter
      * @return List consisting of Log objects.
      */
-    public List fetchDataLogs(String filter);
+    public abstract List<Log> fetchDataLogs(String filter);
 }

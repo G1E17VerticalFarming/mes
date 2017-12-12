@@ -7,7 +7,6 @@ package mes.domain.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
-import mes.domain.Order;
 import shared.GrowthProfile;
 import shared.Light;
 
@@ -23,7 +22,7 @@ public interface DomainReadWriteGrowthProfile {
      * Method to fetch all growth profiles from the database.
      * @return List consisting of GrowthProfile objects.
      */
-    public List fetchGrowthProfiles();
+    public abstract List<GrowthProfile> fetchGrowthProfiles();
     
     /**
      * Implemented fully
@@ -31,7 +30,7 @@ public interface DomainReadWriteGrowthProfile {
      * Method to delete growth profile from the database, based on an id.
      * @param id
      */
-    public void deleteGrowthProfile(int id);
+    public abstract void deleteGrowthProfile(int id);
     
     /**
      * Implemented fully
@@ -40,7 +39,7 @@ public interface DomainReadWriteGrowthProfile {
      * Each profile is saved as a new entry in the database.
      * @param profileToSave
      */
-    public void saveGrowthProfile(GrowthProfile profileToSave);
+    public abstract void saveGrowthProfile(GrowthProfile profileToSave);
     
     /**
      * Implemented fully
@@ -49,7 +48,7 @@ public interface DomainReadWriteGrowthProfile {
      * them as an array of strings.
      * @return String[] array of light types.
      */
-    public String[] getGrowthProfileLightTypes();
+    public abstract String[] getGrowthProfileLightTypes();
     
     /**
      * Implemented fully
@@ -58,7 +57,7 @@ public interface DomainReadWriteGrowthProfile {
      * be equal to the tempGrowthProfileLights variable in SingletonMES.
      * @param gp The growth profile for which lights are being set.
      */
-    public void setGrowthProfileLights(GrowthProfile gp);
+    public abstract void setGrowthProfileLights(GrowthProfile gp);
     
     /**
      * Implemented fully
@@ -67,7 +66,7 @@ public interface DomainReadWriteGrowthProfile {
      * given in the parameter.
      * @param lights A list of Light objects
      */
-    public void setTempGrowthProfileLights(ArrayList lights);
+    public abstract void setTempGrowthProfileLights(ArrayList lights);
     
     /**
      * Implemented fully
@@ -75,7 +74,7 @@ public interface DomainReadWriteGrowthProfile {
      * returns tempGrowthProfileLights, which is an ArrayList containing Light objects.
      * @return ArrayList
      */
-    public ArrayList getTempGrowthProfileLights();
+    public abstract ArrayList<Light> getTempGrowthProfileLights();
     
     /**
      * Implemented fully
@@ -84,7 +83,7 @@ public interface DomainReadWriteGrowthProfile {
      * the parameter.
      * @param index of the light to be removed.
      */
-    public void removeTempGrowthProfileLight(int index);
+    public abstract void removeTempGrowthProfileLight(int index);
     
     /**
      * Implemented fully
@@ -92,7 +91,7 @@ public interface DomainReadWriteGrowthProfile {
      * Adds the Light object from the parameter to the variable tempGrowthProfileLights.
      * @param light to be added
      */
-    public void addGrowthProfileLight(Light light);
+    public abstract void addGrowthProfileLight(Light light);
     
     /**
      * Implemented fully
@@ -103,5 +102,5 @@ public interface DomainReadWriteGrowthProfile {
      * @param value
      * @return Light
      */
-    public Light createGrowthProfileLight(int type, int time, int value);
+    public abstract Light createGrowthProfileLight(int type, int time, int value);
 }
