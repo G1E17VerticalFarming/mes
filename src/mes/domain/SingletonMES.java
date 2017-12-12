@@ -9,14 +9,31 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import mes.domain.interfaces.DomainReadLogin;
+import mes.domain.interfaces.DomainReadProduction;
+import mes.domain.interfaces.DomainReadWriteDataLog;
+import mes.domain.interfaces.DomainReadWriteGrowthProfile;
+import mes.domain.interfaces.DomainReadWriteOrder;
+import mes.domain.interfaces.DomainReadWriteProductionBlock;
+import mes.domain.interfaces.DomainReadWriteScadaConnections;
+import mes.domain.interfaces.DomainWriteDate;
 import mes.persistence.DatabaseHandler;
-import shared.*;
+import shared.Log;
+import shared.GrowthProfile;
+import shared.Light;
+import shared.ProductionBlock;
+import mes.domain.interfaces.PersistenceReadWriteDataLog;
+import mes.domain.interfaces.PersistenceReadWriteGrowthProfile;
+import mes.domain.interfaces.PersistenceReadWriteOrder;
+import mes.domain.interfaces.PersistenceReadWriteProduction;
+import mes.domain.interfaces.PersistenceReadWriteProductionBlock;
+import mes.domain.interfaces.PersistenceReadWriteScadaConnections;
 
 /**
  *
  * @author chris
  */
-public class SingletonMES implements IMes {
+public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowthProfile, DomainReadWriteScadaConnections, DomainReadWriteProductionBlock, DomainWriteDate, DomainReadProduction, DomainReadLogin, DomainReadWriteDataLog {
 
     private List orders;
     private List growthProfiles;
@@ -25,12 +42,24 @@ public class SingletonMES implements IMes {
     private ArrayList<Light> tempGrowthProfileLights;
 
     private String date;
-    private IMesDatabase dbHandler = DatabaseHandler.getInstance();
+    private PersistenceReadWriteProductionBlock prodBlockHandler;
+    private PersistenceReadWriteGrowthProfile groProfHandler;
+    private PersistenceReadWriteDataLog datLogHandler;
+    private PersistenceReadWriteProduction prodHandler;
+    private PersistenceReadWriteOrder orderHandler;
+    private PersistenceReadWriteScadaConnections scadConnHandler;
 
     private static SingletonMES instance = null;
 
     protected SingletonMES() {
         // Is here to prevent instantiation
+        DatabaseHandler mainDbHandler = new DatabaseHandler();
+        this.prodBlockHandler = mainDbHandler;
+        this.groProfHandler = mainDbHandler;
+        this.datLogHandler = mainDbHandler;
+        this.prodHandler = mainDbHandler;
+        this.orderHandler = mainDbHandler;
+        this.scadConnHandler = mainDbHandler;
     }
 
     public static SingletonMES getInstance() {
@@ -43,14 +72,14 @@ public class SingletonMES implements IMes {
     @Override
     public List<ProductionBlock> fetchActiveProductionBlocks() {
         List<ProductionBlock> pBlocks = new ArrayList<>();
-        pBlocks.addAll(dbHandler.getActiveProductionBlocks());
+        pBlocks.addAll(prodBlockHandler.getActiveProductionBlocks());
         
         return pBlocks;
     }
     
     @Override
     public Production fetchProduction(Order orderToFetchProdFor) {
-        return dbHandler.getProduction(orderToFetchProdFor);
+        return prodHandler.getProduction(orderToFetchProdFor);
     }
     
     @Override
@@ -96,32 +125,32 @@ public class SingletonMES implements IMes {
 
     @Override
     public List fetchOrders() {
-        this.orders = dbHandler.fetchOrders(date);
+        this.orders = orderHandler.fetchOrders(date);
         return this.orders;
     }
     
     @Override
     public List fetchStatuses() {
-        return dbHandler.getOrderStatuses();
+        return orderHandler.getOrderStatuses();
     }
     
     @Override
     public List fetchGrowthProfiles() {
-        this.growthProfiles = dbHandler.getGrowthProfiles();
+        this.growthProfiles = groProfHandler.getGrowthProfiles();
         
         return this.growthProfiles;
     }
     
     @Override
     public List fetchScadaConnections() {
-        this.scadaConnections = dbHandler.getScadaEntries();
+        this.scadaConnections = scadConnHandler.getScadaEntries();
         
         return this.scadaConnections;
     }
     
     @Override
     public List fetchDataLogs(String filter) {
-        this.retrievedLogs = dbHandler.getDataLogs(filter);
+        this.retrievedLogs = datLogHandler.getDataLogs(filter);
         return this.retrievedLogs;
     }
 
@@ -137,7 +166,7 @@ public class SingletonMES implements IMes {
         newProd.setOrder(currentOrder);
         newProd.setGrowthProfile(growthProfile);
         
-        dbHandler.saveProduction(newProd);
+        prodHandler.saveProduction(newProd);
         return true;
     }
 
@@ -161,29 +190,29 @@ public class SingletonMES implements IMes {
     
     @Override
     public void deleteGrowthProfile(int id) {
-        dbHandler.deleteGrowthProfile(id);
+        groProfHandler.deleteGrowthProfile(id);
     }
     
     @Override
     public void saveGrowthProfile(GrowthProfile profileToSave) {
         profileToSave.setLightSequence(tempGrowthProfileLights);
-        dbHandler.saveGrowthProfile(profileToSave);
+        groProfHandler.saveGrowthProfile(profileToSave);
     } 
     
     @Override
     public void saveScadaConnection(String ip, int port) {
-        dbHandler.saveScadaEntry(ip, port);
+        scadConnHandler.saveScadaEntry(ip, port);
     }
     
     @Override
     public void deleteScadaConnection(String scadaEntry) {
         String elements[] = scadaEntry.split(":");
-        dbHandler.deleteScadaEntry(elements[0], Integer.parseInt(elements[1]));
+        scadConnHandler.deleteScadaEntry(elements[0], Integer.parseInt(elements[1]));
     }
     
     @Override
     public List fetchLogFilters() {
-        return dbHandler.getDataLogFilterOptions();
+        return datLogHandler.getDataLogFilterOptions();
     }
     
     @Override
@@ -196,7 +225,7 @@ public class SingletonMES implements IMes {
         dataLogToSave.setValue(value);
         dataLogToSave.setProdId(prodId);
         
-        dbHandler.saveDataLog(dataLogToSave);
+        datLogHandler.saveDataLog(dataLogToSave);
         
     }
     

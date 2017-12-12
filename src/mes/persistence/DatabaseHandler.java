@@ -16,19 +16,25 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mes.domain.Order;
 import mes.domain.Production;
-import shared.*;
-import mes.domain.IMesDatabase;
+import shared.Log;
+import shared.GrowthProfile;
+import shared.Light;
+import shared.ProductionBlock;
 import mes.domain.Status;
+import mes.domain.interfaces.PersistenceReadWriteDataLog;
+import mes.domain.interfaces.PersistenceReadWriteGrowthProfile;
+import mes.domain.interfaces.PersistenceReadWriteOrder;
+import mes.domain.interfaces.PersistenceReadWriteProduction;
+import mes.domain.interfaces.PersistenceReadWriteProductionBlock;
+import mes.domain.interfaces.PersistenceReadWriteScadaConnections;
 
 /**
  *
  * @author chris
  */
-public class DatabaseHandler implements IMesDatabase {
+public class DatabaseHandler implements PersistenceReadWriteProductionBlock, PersistenceReadWriteGrowthProfile, PersistenceReadWriteDataLog, PersistenceReadWriteProduction, PersistenceReadWriteScadaConnections, PersistenceReadWriteOrder {
 
     private final int port = 5432;
     private final String url = "jdbc:postgresql://";
@@ -39,9 +45,7 @@ public class DatabaseHandler implements IMesDatabase {
 
     private Connection conn = null;
 
-    private static DatabaseHandler instance = null;
-
-    private DatabaseHandler() {
+    public DatabaseHandler() {
         try {
             this.conn = DriverManager.getConnection(this.url + this.host + ":" + this.port + "/" + this.databaseName, this.username, this.password);
         } catch (SQLException ex) {
@@ -182,24 +186,12 @@ public class DatabaseHandler implements IMesDatabase {
     }
 
     /**
-     * Singleton design pattern
-     *
-     * @return The static instance of DatabaseHandler
-     */
-    public static DatabaseHandler getInstance() {
-        if (instance == null) {
-            instance = new DatabaseHandler();
-        }
-        return instance;
-    }
-
-    /**
      * Used for test
      *
      * @param args
      */
     public static void main(String[] args) {
-        DatabaseHandler handler = DatabaseHandler.getInstance();
+        DatabaseHandler handler = new DatabaseHandler();
         System.out.println("Testing time taken with 2 statements.");
         long beginTime = System.currentTimeMillis();
         

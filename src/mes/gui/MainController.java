@@ -28,10 +28,17 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import mes.domain.IMes;
 import mes.domain.Order;
 import mes.domain.SingletonMES;
 import mes.domain.Status;
+import mes.domain.interfaces.DomainReadLogin;
+import mes.domain.interfaces.DomainReadProduction;
+import mes.domain.interfaces.DomainReadWriteDataLog;
+import mes.domain.interfaces.DomainReadWriteGrowthProfile;
+import mes.domain.interfaces.DomainReadWriteOrder;
+import mes.domain.interfaces.DomainReadWriteProductionBlock;
+import mes.domain.interfaces.DomainReadWriteScadaConnections;
+import mes.domain.interfaces.DomainWriteDate;
 import shared.GrowthProfile;
 import shared.Light;
 import shared.Log;
@@ -43,15 +50,21 @@ import shared.ProductionBlock;
  */
 public class MainController implements Initializable {
 
+    private DomainReadLogin loginMes;
+    private DomainReadProduction prodMes;
+    private DomainReadWriteDataLog datMes;
+    private DomainReadWriteGrowthProfile profMes;
+    private DomainReadWriteOrder orderMes;
+    private DomainReadWriteProductionBlock prodBlockMes;
+    private DomainReadWriteScadaConnections scadConnMes;
+    private DomainWriteDate dateMes;
+    
     @FXML
     private AnchorPane tab_order_name;
     @FXML
     private Button btnFetchOrders;
     @FXML
     private DatePicker datePickerOrderDate;
-
-    private IMes MES = SingletonMES.getInstance();
-    
     @FXML
     private Tab tabOrders;
     @FXML
@@ -185,23 +198,33 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        SingletonMES mainMes = SingletonMES.getInstance();
+        this.datMes = mainMes;
+        this.dateMes = mainMes;
+        this.loginMes = mainMes;
+        this.orderMes = mainMes;
+        this.prodBlockMes = mainMes;
+        this.prodMes = mainMes;
+        this.profMes = mainMes;
+        this.scadConnMes = mainMes;
+        
         datePickerOrderDate.setValue(LocalDate.now());
 
         // Fetch data for combo boxes
-        comboBoxPrepOrderStatus.getItems().addAll(MES.fetchStatuses());
-        comboBoxPrepGrowthProfile.getItems().addAll(MES.fetchGrowthProfiles());
-        comboBoxLogFilter.getItems().addAll(MES.fetchLogFilters());
-        comboBoxGpType.getItems().addAll(MES.getGrowthProfileLightTypes());
-        comboBoxLogProdBlock.getItems().addAll(MES.fetchActiveProductionBlocks());
+        comboBoxPrepOrderStatus.getItems().addAll(orderMes.fetchStatuses());
+        comboBoxPrepGrowthProfile.getItems().addAll(profMes.fetchGrowthProfiles());
+        comboBoxLogFilter.getItems().addAll(datMes.fetchLogFilters());
+        comboBoxGpType.getItems().addAll(profMes.getGrowthProfileLightTypes());
+        comboBoxLogProdBlock.getItems().addAll(prodBlockMes.fetchActiveProductionBlocks());
 
         comboBoxLogFilter.getSelectionModel().selectFirst();
         comboBoxGpType.getSelectionModel().selectFirst();
         comboBoxLogProdBlock.getSelectionModel().selectFirst();
 
         // Fetch data for list/tableviews
-        this.setGrowthProfileTableView(MES.fetchGrowthProfiles());
-        this.setScadaConnectionsListView(MES.fetchScadaConnections());
-        this.setDataLogsTableView(MES.fetchDataLogs(comboBoxLogFilter.getSelectionModel().getSelectedItem()));
+        this.setGrowthProfileTableView(profMes.fetchGrowthProfiles());
+        this.setScadaConnectionsListView(scadConnMes.fetchScadaConnections());
+        this.setDataLogsTableView(datMes.fetchDataLogs(comboBoxLogFilter.getSelectionModel().getSelectedItem()));
 
         // Add listeners to limit certain textfields
         this.addScadaPortListener();
@@ -210,7 +233,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleMESLogin(ActionEvent event) {
-        if (MES.loginCertified(txtFieldUsername.getText(), pswdFieldPassword.getText())) {
+        if (loginMes.loginCertified(txtFieldUsername.getText(), pswdFieldPassword.getText())) {
             lblLoginStatus.setText("");
 
             // Enable tabs
@@ -236,8 +259,8 @@ public class MainController implements Initializable {
     @FXML
     private void handleFetchOrdersFromDate(ActionEvent event) {
         LocalDate date = datePickerOrderDate.getValue();
-        MES.setDate(date);
-        this.setOrderTableView(MES.fetchOrders());
+        dateMes.setDate(date);
+        this.setOrderTableView(orderMes.fetchOrders());
     }
 
     private void addScadaPortListener() {
@@ -331,26 +354,26 @@ public class MainController implements Initializable {
             orderTabPane.getSelectionModel().select(pickedOrderTab);
 
             if (currentOrder.getStatus().getValue().equals("Færdig")) {
-                comboBoxPrepGrowthProfile.getSelectionModel().select(MES.fetchProduction(currentOrder).getGrowthProfile());
-                txtFieldPrepProdBlock.setText(Integer.toString(MES.fetchProduction(currentOrder).getBlock().getId()));
+                comboBoxPrepGrowthProfile.getSelectionModel().select(prodMes.fetchProduction(currentOrder).getGrowthProfile());
+                txtFieldPrepProdBlock.setText(Integer.toString(prodMes.fetchProduction(currentOrder).getBlock().getId()));
                 txtFieldPrepOrder.setDisable(true);
                 txtFieldPrepAmount.setDisable(true);
                 comboBoxPrepOrderStatus.setDisable(true);
                 comboBoxPrepGrowthProfile.setDisable(true);
                 btnPrepOrder.setDisable(true);
             } else if(currentOrder.getStatus().getValue().equals("Under produktion")) {
-                comboBoxPrepGrowthProfile.getSelectionModel().select(MES.fetchProduction(currentOrder).getGrowthProfile());
+                comboBoxPrepGrowthProfile.getSelectionModel().select(prodMes.fetchProduction(currentOrder).getGrowthProfile());
                 txtFieldPrepOrder.setDisable(true);
                 txtFieldPrepAmount.setDisable(true);
                 comboBoxPrepGrowthProfile.setDisable(true);
-                txtFieldPrepProdBlock.setText(Integer.toString(MES.fetchProduction(currentOrder).getBlock().getId()));
+                txtFieldPrepProdBlock.setText(Integer.toString(prodMes.fetchProduction(currentOrder).getBlock().getId()));
             }
         }
     }
 
     @FXML
     private void handlePrepareOrder(ActionEvent event) {
-        MES.prepareOrder(currentOrder, comboBoxPrepOrderStatus.getSelectionModel().getSelectedItem(),
+        orderMes.prepareOrder(currentOrder, comboBoxPrepOrderStatus.getSelectionModel().getSelectedItem(),
                 comboBoxPrepGrowthProfile.getSelectionModel().getSelectedItem(),Integer.parseInt(txtFieldPrepProdBlock.getText()));
         
         pickedOrderTab.setDisable(true);
@@ -366,29 +389,29 @@ public class MainController implements Initializable {
         txtFieldGpWaterLevel.setText(Integer.toString(currentGrowthProfile.getWaterLevel()));
         txtFieldGpMoisture.setText(Integer.toString(currentGrowthProfile.getMoisture()));
 
-        MES.setTempGrowthProfileLights(currentGrowthProfile.getLightSequence());
+        profMes.setTempGrowthProfileLights(currentGrowthProfile.getLightSequence());
 
-        this.setGpLightTableView(MES.getTempGrowthProfileLights());
+        this.setGpLightTableView(profMes.getTempGrowthProfileLights());
 
         lblSelectedGPID.setText(Integer.toString(currentGrowthProfile.getId()));
     }
 
     @FXML
     private void handleAddSequence(ActionEvent event) {
-        MES.addGrowthProfileLight(MES.createGrowthProfileLight(comboBoxGpType.getSelectionModel().getSelectedIndex(),
+        profMes.addGrowthProfileLight(profMes.createGrowthProfileLight(comboBoxGpType.getSelectionModel().getSelectedIndex(),
                 Integer.parseInt(txtFieldGpTime.getText()), Integer.parseInt(txtFieldGpValue.getText())));
 
         tableViewSequences.getItems().clear();
-        this.setGpLightTableView(MES.getTempGrowthProfileLights());
+        this.setGpLightTableView(profMes.getTempGrowthProfileLights());
     }
 
     @FXML
     private void handleDeleteSequence(ActionEvent event) {
         if (tableViewSequences.getSelectionModel().getSelectedItem() != null) {
-            MES.removeTempGrowthProfileLight(tableViewSequences.getSelectionModel().getSelectedIndex());
+            profMes.removeTempGrowthProfileLight(tableViewSequences.getSelectionModel().getSelectedIndex());
 
             tableViewSequences.getItems().clear();
-            this.setGpLightTableView(MES.getTempGrowthProfileLights());
+            this.setGpLightTableView(profMes.getTempGrowthProfileLights());
         }
     }
 
@@ -399,7 +422,7 @@ public class MainController implements Initializable {
             currentGrowthProfile.setMoisture(Integer.parseInt(txtFieldGpMoisture.getText()));
             currentGrowthProfile.setTemperature(Integer.parseInt(txtFieldGpCelcius.getText()));
             currentGrowthProfile.setWaterLevel(Integer.parseInt(txtFieldGpWaterLevel.getText()));
-            MES.saveGrowthProfile(currentGrowthProfile);
+            profMes.saveGrowthProfile(currentGrowthProfile);
             this.updateGrowthProfilesTableView();
         }
     }
@@ -407,7 +430,7 @@ public class MainController implements Initializable {
     @FXML
     private void handleDeleteGrowthProfile(ActionEvent event) {
         if (currentGrowthProfile != null) {
-            MES.deleteGrowthProfile(currentGrowthProfile.getId());
+            profMes.deleteGrowthProfile(currentGrowthProfile.getId());
             this.updateGrowthProfilesTableView();
         }
     }
@@ -420,11 +443,11 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleSaveDataLog(ActionEvent event) {
-        MES.saveDataLog(comboBoxLogProdBlock.getSelectionModel().getSelectedItem().getId(),
+        datMes.saveDataLog(comboBoxLogProdBlock.getSelectionModel().getSelectedItem().getId(),
                 txtAreaLog.getText(), comboBoxLogProdBlock.getSelectionModel().getSelectedItem().getBatchId());
         
         tableViewDataLogs.getItems().clear();
-        this.setDataLogsTableView(MES.fetchDataLogs(comboBoxLogFilter.getSelectionModel().getSelectedItem()));
+        this.setDataLogsTableView(datMes.fetchDataLogs(comboBoxLogFilter.getSelectionModel().getSelectedItem()));
         
         tabNewDataLog.setDisable(true);
         statisticsTabPane.getSelectionModel().select(tabDataLog);
@@ -463,14 +486,14 @@ public class MainController implements Initializable {
     @FXML
     private void handleRemoveScadaConnection(ActionEvent event) {
         if (listViewScadaConnections.getSelectionModel().getSelectedItem() != null) {
-            MES.deleteScadaConnection(listViewScadaConnections.getSelectionModel().getSelectedItem());
+            scadConnMes.deleteScadaConnection(listViewScadaConnections.getSelectionModel().getSelectedItem());
             this.updateScadaConnectionsListView();
         }
     }
 
     @FXML
     private void handleAddScadaConnection(ActionEvent event) {
-        MES.saveScadaConnection(txtFieldScadaIP.getText(), Integer.parseInt(txtFieldScadaPort.getText()));
+        scadConnMes.saveScadaConnection(txtFieldScadaIP.getText(), Integer.parseInt(txtFieldScadaPort.getText()));
 
         // Update List View
         this.updateScadaConnectionsListView();
@@ -485,7 +508,7 @@ public class MainController implements Initializable {
         listViewScadaConnections.getItems().clear();
 
         // Rebuild
-        this.setScadaConnectionsListView(MES.fetchScadaConnections());
+        this.setScadaConnectionsListView(scadConnMes.fetchScadaConnections());
     }
 
     private void updateGrowthProfilesTableView() {
@@ -493,7 +516,7 @@ public class MainController implements Initializable {
         tableViewGrowthProfile.getItems().clear();
 
         // Rebuild
-        this.setGrowthProfileTableView(MES.fetchGrowthProfiles());
+        this.setGrowthProfileTableView(profMes.fetchGrowthProfiles());
     }
 
     private void setGpLightTableView(List lights) {
@@ -508,7 +531,7 @@ public class MainController implements Initializable {
     @FXML
     private void handleUpdateDataLogTableView(ActionEvent event) {
         tableViewDataLogs.getItems().clear();
-        this.setDataLogsTableView(MES.fetchDataLogs(comboBoxLogFilter.getSelectionModel().getSelectedItem()));
+        this.setDataLogsTableView(datMes.fetchDataLogs(comboBoxLogFilter.getSelectionModel().getSelectedItem()));
     }
 
     @FXML
