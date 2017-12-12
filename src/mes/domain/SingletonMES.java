@@ -33,7 +33,7 @@ import mes.domain.interfaces.PersistenceReadWriteScadaConnections;
  *
  * @author chris
  */
-public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowthProfile, DomainReadWriteScadaConnections, DomainReadWriteProductionBlock, DomainWriteDate, DomainReadProduction, DomainReadLogin, DomainReadWriteDataLog, IMesApi {
+public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowthProfile, DomainReadWriteScadaConnections, DomainReadWriteProductionBlock, DomainWriteDate, DomainReadProduction, DomainReadLogin, DomainReadWriteDataLog {
 
     private List orders;
     private List growthProfiles;
@@ -241,6 +241,11 @@ public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowth
     @Override
     public List<ProductionBlock> fetchAllProductionBlocks(String ip, int port) {
         return this.prodBlockHandler.getAllProductionBlocks(ip, port);
+    }
+
+    @Override
+    public boolean updateProductionBlock(ProductionBlock prodBlockToSave) {
+        return this.prodBlockHandler.updateProductionBlock(prodBlockToSave);
     }
 
     @Override

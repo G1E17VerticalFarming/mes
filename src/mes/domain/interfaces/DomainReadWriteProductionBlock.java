@@ -35,4 +35,32 @@ public interface DomainReadWriteProductionBlock {
     public abstract List<ProductionBlock> fetchActiveProductionBlocks();
     
     public abstract int getSuggestedProductionBlock();
+    
+    /**
+     * Implemented fully
+     *
+     * Fetches ProductionBlocks that are currently in use from the database.
+     * @return List of ProductionBlock objects.
+     */
+    public abstract List<ProductionBlock> fetchAllProductionBlocks(String ip, int port);
+    
+    /**
+     * Implemented fully
+     *
+     * Inserts a new row into plc_conn.
+     * Will use all attributes in prodBlockToSave as arguments for this SQL statement.
+     * @param prodBlockToSave ProductionBlock object to save to database
+     * @return True on successful save to database
+     */
+    public abstract boolean saveProductionBlock(ProductionBlock prodBlockToSave, String ip, int port);
+    
+    /**
+     * Implemented fully
+     *
+     * @param prodBlockToSave ProductionBlock object to save
+     * @return True on successful save
+     */
+    public abstract boolean updateProductionBlock(ProductionBlock prodBlockToSave);
+    
+    public abstract boolean deleteProductionBlock(ProductionBlock prodBlockToSave);
 }

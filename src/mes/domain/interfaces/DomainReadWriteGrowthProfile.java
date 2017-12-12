@@ -103,4 +103,13 @@ public interface DomainReadWriteGrowthProfile {
      * @return Light
      */
     public abstract Light createGrowthProfileLight(int type, int time, int value);
+    
+    /**
+     * Implemented fully
+     *
+     * Method to fetch a growthprofile.
+     * @param growthProfileId ID for growthprofile to be fetched from database
+     * @return A complete GrowthProfile object, with Light sequence.
+     */
+    public abstract GrowthProfile getGrowthProfile(int growthProfileId);
 }

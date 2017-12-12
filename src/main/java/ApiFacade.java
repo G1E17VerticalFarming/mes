@@ -73,6 +73,12 @@ public class ApiFacade {
         return returnResp;
     }
     
+    @RequestMapping(value = "/production_block/update/", method = RequestMethod.POST)
+    public ResponseEntity<String> updateProductionBlock(@RequestBody ProductionBlock pb) {
+        ResponseEntity<String> returnResp = this.apiReceiveController.updateProductionBlock(pb);
+        return returnResp;
+    }
+    
     @RequestMapping(value = "/production_block/delete/", method = RequestMethod.POST)
     public ResponseEntity<String> deleteProductionBlock(@RequestBody ProductionBlock pb) {
         ResponseEntity<String> returnResp = this.apiReceiveController.deleteProductionBlock(pb);

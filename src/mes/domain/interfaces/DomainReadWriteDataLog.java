@@ -49,4 +49,13 @@ public interface DomainReadWriteDataLog {
      * @return List consisting of Log objects.
      */
     public abstract List<Log> fetchDataLogs(String filter);
+    
+    /**
+     * Implemented fully!
+     *
+     * Method to save a data log.
+     * @param dataObjectToSave Log object to store in the database
+     * @return True if dataObjectToSave is stored succesfully in database
+     */
+    public abstract boolean saveDataLog(Log dataObjectToSave);
 }

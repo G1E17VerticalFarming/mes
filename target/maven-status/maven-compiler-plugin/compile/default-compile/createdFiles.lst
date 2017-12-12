@@ -8,7 +8,6 @@ mes\domain\interfaces\DomainReadLogin.class
 mes\domain\interfaces\DomainReadWriteGrowthProfile.class
 mes\domain\interfaces\DomainReadProduction.class
 mes\domain\interfaces\PersistenceReadWriteGrowthProfile.class
-mes\domain\IMesApi.class
 mes\domain\interfaces\PersistenceReadWriteDataLog.class
 mes\domain\interfaces\PersistenceReadWriteProductionBlock.class
 mes\domain\interfaces\DomainWriteDate.class
