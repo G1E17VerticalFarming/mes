@@ -34,6 +34,7 @@ public class ApiReceiveController {
     }
     
     public ResponseEntity<ProductionBlock[]> getAllProductionBlocks(String ip, int port) {
+        System.out.println("GET ALL PRODUCTION BLOCKS");
         ProductionBlock[] pbArr = this.prodBlockMes.fetchAllProductionBlocks(ip, port).toArray(new ProductionBlock[0]);
         return new ResponseEntity<ProductionBlock[]>(pbArr, HttpStatus.OK);
     }

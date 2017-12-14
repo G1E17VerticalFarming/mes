@@ -29,6 +29,7 @@ public interface PersistenceReadWriteProductionBlock {
      * @return List of all productionblocks present in plc_conn, but only those idle.
      */
     public abstract List<ProductionBlock> getIdleProductionBlocks();
+    public abstract List<ProductionBlock> getIdleProductionBlocks(String ip, int port);
     
     /**
      * Implemented fully

@@ -733,7 +733,12 @@ public class DatabaseHandler implements PersistenceReadWriteProductionBlock, Per
     public List<ProductionBlock> getAllProductionBlocks(String ip, int port) {
         List<ProductionBlock> prodBlocks = new ArrayList<>();
         ResultSet getAllPbRs;
-        String getAllPbQuery = "SELECT plc_id,ip,port,name FROM plc_conn WHERE plc_id IN("
+        /*String getAllPbQuery = "SELECT plc_id,ip,port,name FROM plc_conn WHERE plc_id IN("
+                + "SELECT plc_id FROM controls WHERE scada_id IN("
+                    + "SELECT scada_id FROM scada_conn WHERE ip = ? AND port = ?"
+                    + ")"
+                + ");";*/
+        String getAllPbQuery = "SELECT DISTINCT ON (plc_id) plc_id,growth_id,port,ip,plc_name FROM prod_overview WHERE plc_id IN("
                 + "SELECT plc_id FROM controls WHERE scada_id IN("
                     + "SELECT scada_id FROM scada_conn WHERE ip = ? AND port = ?"
                     + ")"
@@ -748,9 +753,10 @@ public class DatabaseHandler implements PersistenceReadWriteProductionBlock, Per
             while(getAllPbRs.next()){
                 ProductionBlock localPb = new ProductionBlock();
                 localPb.setId(getAllPbRs.getInt("plc_id"));
-                localPb.setName(getAllPbRs.getString("name"));
+                localPb.setName(getAllPbRs.getString("plc_name"));
                 localPb.setPort(getAllPbRs.getInt("port"));
                 localPb.setIpaddress(getAllPbRs.getString("ip"));
+                localPb.setGrowthConfigId(getAllPbRs.getInt("growth_id"));
                 prodBlocks.add(localPb);
             }
         } catch (SQLException ex) {
@@ -786,5 +792,35 @@ public class DatabaseHandler implements PersistenceReadWriteProductionBlock, Per
             return false;
         }
         return true;
+    }
+    
+    @Override
+    public List<ProductionBlock> getIdleProductionBlocks(String ip, int port) {
+        List<ProductionBlock> prodBlocks = new ArrayList<>();
+        String getProdBlockQuery = "SELECT plc_id,ip,port,name FROM plc_conn WHERE plc_id NOT IN (SELECT plc_id FROM handles) AND plc_id IN(" +
+                "SELECT plc_id FROM controls WHERE scada_id IN("
+                    + "SELECT scada_id FROM scada_conn WHERE ip = ? AND port = ?"
+                    + ")"
+                + ");";
+        try(PreparedStatement getAllPbSt = this.conn.prepareStatement(getProdBlockQuery)){
+            if(ip.isEmpty() || port == 0){
+                throw new IllegalArgumentException("IP and port cannot be empty.");
+            }
+            getAllPbSt.setString(1, ip);
+            getAllPbSt.setInt(2, port);
+            ResultSet getProdBlocksRs = getAllPbSt.executeQuery();
+            while (getProdBlocksRs.next()) {
+                ProductionBlock localProdBlock = new ProductionBlock();
+                localProdBlock.setId(getProdBlocksRs.getInt("plc_id"));
+                localProdBlock.setIpaddress(getProdBlocksRs.getString("ip"));
+                localProdBlock.setPort(getProdBlocksRs.getInt("port"));
+                localProdBlock.setName(getProdBlocksRs.getString("name"));
+                prodBlocks.add(localProdBlock);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error fetching from database:\n" + ex);
+            return null;
+        }
+        return prodBlocks;
     }
 }

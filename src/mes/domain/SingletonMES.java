@@ -146,8 +146,9 @@ public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowth
     public boolean prepareOrder(Order currentOrder, Status status, GrowthProfile growthProfile, int prodBlock) {
         currentOrder.setStatus(status);
         
-        ProductionBlock newProdBlock = new ProductionBlock();
-        newProdBlock.setId(prodBlock);
+        ProductionBlock newProdBlock = this.prodBlockHandler.getProductionBlock(prodBlock);
+        newProdBlock.setGrowthConfigId(growthProfile.getId());
+        this.prodBlockHandler.updateProductionBlock(newProdBlock);
         
         Production newProd = new Production();
         newProd.setBlock(newProdBlock);
@@ -240,7 +241,10 @@ public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowth
 
     @Override
     public List<ProductionBlock> fetchAllProductionBlocks(String ip, int port) {
-        return this.prodBlockHandler.getAllProductionBlocks(ip, port);
+        ArrayList<ProductionBlock> returnList = new ArrayList<>();
+        returnList.addAll(this.prodBlockHandler.getAllProductionBlocks(ip, port));
+        returnList.addAll(this.prodBlockHandler.getIdleProductionBlocks(ip, port));
+        return returnList;
     }
 
     @Override
