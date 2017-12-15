@@ -9,7 +9,10 @@ import java.util.*;
 import shared.ProductionBlock;
 
 /**
- *
+ * This class was intended to be responsible for allocating orders to 
+ * available production blocks in the system.
+ * 
+ * This is available for expansion at a later time.
  * @author AKT
  */
 public class AllocationController {

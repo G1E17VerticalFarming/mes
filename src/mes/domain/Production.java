@@ -10,7 +10,9 @@ import shared.Log;
 import shared.ProductionBlock;
 
 /**
- *
+ * This class is used to hold all information required to begin a production
+ * for an order object
+ * 
  * @author AKT
  */
 public class Production {

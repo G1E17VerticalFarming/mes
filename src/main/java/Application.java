@@ -5,10 +5,6 @@
  */
 package main.java;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import mes.api.HttpOkhttpPostSend;
 import mes.gui.Main;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 // mvn install:install-file -Dfile={dir}.jar -DgroupId=FLIB -DartifactId=flib -Dversion=1.4 -Dpackaging=jar
 
 /**
- *
+ * Class used by MAVEN to run the MES application
  * @author DanielToft
  */
 @SpringBootApplication

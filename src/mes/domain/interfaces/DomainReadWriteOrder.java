@@ -33,13 +33,13 @@ public interface DomainReadWriteOrder {
     public abstract List<Status> fetchStatuses();
     
     /**
-     * Not implemented
+     * Implemente fully
      *
-     * Method to prepare and save an order in the database.
-     * @param currentOrder
-     * @param status
-     * @param growthProfile
-     * @param prodBlock
+     * Method to prepare a production and save an order in the database.
+     * @param currentOrder Order object to begin a production
+     * @param status Status object to set to
+     * @param growthProfile GrowthProfile object this production uses
+     * @param prodBlock Production Block ID this production will be handled by
      * @return boolean reporting on whether the call failed or not.
      */
     public abstract boolean prepareOrder(Order currentOrder, Status status, GrowthProfile growthProfile, int prodBlock);

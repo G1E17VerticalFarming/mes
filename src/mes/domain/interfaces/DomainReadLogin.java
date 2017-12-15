@@ -14,7 +14,8 @@ public interface DomainReadLogin {
     /**
      * Implemented fully
      *
-     * Method to check if login is certified. Just a dummy method.
+     * Method to check if login is certified.
+     * Currently only has a dummy implementation
      *
      * @param username
      * @param password

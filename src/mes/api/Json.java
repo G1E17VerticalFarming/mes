@@ -5,12 +5,11 @@
  */
 package mes.api;
 
-import java.io.File;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- *
+ * Class to convert objects into json, and decode json into objects
  * @author DanielToft
  */
 public class Json {
@@ -19,21 +18,27 @@ public class Json {
      * passed into the parameter.
      *
      * @param <T> returned type of the request
-     * @param fileSource where to read the file from
+     * @param json where to read the file from
      * @param classType which type to return
      * @return a new object of the type that was set with the parameter
      * classType
      */
-    public static <T> T getJSON(String fileSource, Class<T> classType) {
+    public static <T> T getJSON(String json, Class<T> classType) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.readValue(fileSource, classType);
+            return mapper.readValue(json, classType);
         } catch (IOException e) {
             System.out.println(e);
             return null;
         }
     }
     
+    /**
+     * Converts the input obj into a json string object
+     * @param <T> Generic representation of the object
+     * @param obj object to convert into json
+     * @return Json encoded string object which is generic
+     */
     public static <T> String stringifyObject(T obj) {
         ObjectMapper mapper = new ObjectMapper();
 

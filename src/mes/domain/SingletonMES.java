@@ -30,7 +30,8 @@ import mes.domain.interfaces.PersistenceReadWriteProductionBlock;
 import mes.domain.interfaces.PersistenceReadWriteScadaConnections;
 
 /**
- *
+ * This class is the main logic class for the MES application
+ * 
  * @author chris
  */
 public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowthProfile, DomainReadWriteScadaConnections, DomainReadWriteProductionBlock, DomainWriteDate, DomainReadProduction, DomainReadLogin, DomainReadWriteDataLog {
@@ -51,8 +52,10 @@ public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowth
 
     private static SingletonMES instance = null;
 
+    /**
+     * Constructor for SingletonMES
+     */
     protected SingletonMES() {
-        // Is here to prevent instantiation
         DatabaseHandler mainDbHandler = new DatabaseHandler();
         this.prodBlockHandler = mainDbHandler;
         this.groProfHandler = mainDbHandler;
@@ -62,6 +65,10 @@ public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowth
         this.scadConnHandler = mainDbHandler;
     }
 
+    /**
+     * Singleton design pattern
+     * @return The only instance of SingletonMES
+     */
     public static SingletonMES getInstance() {
         if (instance == null) {
             instance = new SingletonMES();
@@ -107,7 +114,6 @@ public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowth
     
     @Override
     public boolean loginCertified(String username, String password) {
-        // Just a dummy implementation
         return username.equals("admin") && password.equals("123");
     }
 

@@ -7,7 +7,8 @@ package mes.domain;
 
 
 /**
- *
+ * This class holds information about current orders in the system
+ * 
  * @author AKT
  */
 public class Order {

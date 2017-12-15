@@ -6,7 +6,7 @@
 package mes.api;
 
 /**
- *
+ * Class will be used to perform HTTP requests from MES. 
  * @author DanielToft
  */
 public class ApiSendController {

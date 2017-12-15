@@ -62,32 +62,6 @@ public interface DomainReadWriteGrowthProfile {
     /**
      * Implemented fully
      *
-     * Sets the variable tempGrowthProfileLights to be equal to the List lights
-     * given in the parameter.
-     * @param lights A list of Light objects
-     */
-    //public abstract void setTempGrowthProfileLights(ArrayList lights);
-    
-    /**
-     * Implemented fully
-     *
-     * returns tempGrowthProfileLights, which is an ArrayList containing Light objects.
-     * @return ArrayList
-     */
-    //public abstract ArrayList<Light> getTempGrowthProfileLights();
-    
-    /**
-     * Implemented fully
-     *
-     * Removes a Light object from tempGrowthProfileLights at the index given in 
-     * the parameter.
-     * @param index of the light to be removed.
-     */
-    //public abstract void removeTempGrowthProfileLight(int index);
-    
-    /**
-     * Implemented fully
-     *
      * Adds the Light object from the parameter to the variable tempGrowthProfileLights.
      * @param light to be added
      */

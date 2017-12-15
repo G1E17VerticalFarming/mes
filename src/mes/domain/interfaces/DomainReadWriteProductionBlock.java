@@ -34,6 +34,10 @@ public interface DomainReadWriteProductionBlock {
      */
     public abstract List<ProductionBlock> fetchActiveProductionBlocks();
     
+    /**
+     * Method to get a suggested production block for an order
+     * @return production block ID suggested by mes
+     */
     public abstract int getSuggestedProductionBlock();
     
     /**
@@ -62,5 +66,10 @@ public interface DomainReadWriteProductionBlock {
      */
     public abstract boolean updateProductionBlock(ProductionBlock prodBlockToSave);
     
-    public abstract boolean deleteProductionBlock(ProductionBlock prodBlockToSave);
+    /**
+     * Method to delete a production block
+     * @param prodBlockToDelete Production block object to delete
+     * @return True on succesful deletion, false otherwise
+     */
+    public abstract boolean deleteProductionBlock(ProductionBlock prodBlockToDelete);
 }
