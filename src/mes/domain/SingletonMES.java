@@ -35,10 +35,10 @@ import mes.domain.interfaces.PersistenceReadWriteScadaConnections;
  */
 public class SingletonMES implements DomainReadWriteOrder, DomainReadWriteGrowthProfile, DomainReadWriteScadaConnections, DomainReadWriteProductionBlock, DomainWriteDate, DomainReadProduction, DomainReadLogin, DomainReadWriteDataLog {
 
-    private List orders;
-    private List growthProfiles;
-    private List retrievedLogs;
-    private List scadaConnections;
+    private List<Order> orders;
+    private List<GrowthProfile> growthProfiles;
+    private List<Log> retrievedLogs;
+    private List<String> scadaConnections;
     private ArrayList<Light> tempGrowthProfileLights;
 
     private String date;
